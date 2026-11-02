@@ -1,0 +1,318 @@
+{
+  "id": "04-structured-extraction",
+  "title": "Structured Data Extraction",
+  "setup": "You run an automated pipeline that turns supplier invoices, vendor contracts and onboarding forms into JSON records that match a fixed schema, replacing a manual data-entry team. Each document is sent to Claude with an extraction tool (`record_document`) whose `input_schema` defines the fields, and a code validator checks every record before it is posted to the ERP. Records post to accounts payable automatically, so the pipeline has to stay accurate on edge cases, not just on clean documents.",
+  "questions": [
+    {
+      "id": "ccar-f-s04-01",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Enforce schemas with tool use and tool choice",
+      "type": "single",
+      "prompt": "The first version of the pipeline ran on Claude Opus 5 with no tools: the system prompt pasted the JSON schema and said \"Return only JSON matching this schema.\" Over 10,000 invoices, 3.1% of responses fail to parse or fail type checks: a sentence of prose before the JSON, a trailing comma, and totals returned as strings like \"1,204.50\". You want schema-valid input on every call. Which change is BEST?",
+      "options": [
+        "Define `record_document` with the schema as `input_schema`, set `strict: true`, and force it with `tool_choice` naming that tool",
+        "Prefill the assistant turn with an opening brace so the reply starts as JSON, and keep the schema text in the system prompt",
+        "Add a repair step that strips leading prose, drops trailing commas and coerces numeric strings before the validator runs",
+        "Add three complete example records to the system prompt that show numeric totals and the exact JSON shape you expect"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Putting the schema in a tool's `input_schema` and setting `strict: true` makes the API constrain sampling to schema-valid input, so wrong types and malformed JSON cannot occur; forcing the named tool (supported on Claude Opus 5) removes the prose preamble because the API prefills the tool call. A prefilled brace stops the preamble but does nothing to guarantee types or field shapes, so the string totals remain. A repair layer treats the symptom and will miss the next malformation it was not written for. Example records improve consistency, but examples are guidance, not a guarantee, and the 3.1% tail would shrink rather than disappear.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/strict-tool-use",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-02",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Manage tool distribution and tool choice",
+      "type": "single",
+      "prompt": "You move the pipeline from Claude Opus 5 to Claude Opus 5.5. Every request still sends `tool_choice: {\"type\": \"tool\", \"name\": \"record_document\"}`, and every request now returns a 400 error. You still need each response to contain schema-valid `record_document` input. What should you change?",
+      "options": [
+        "Switch to `tool_choice` any, because with only one tool defined it still guarantees `record_document` is called on each request",
+        "Turn thinking off for these requests, because forced tool use is rejected only when the model is allowed to think before calling",
+        "Switch to `tool_choice` auto with `strict: true` on the tool and an explicit instruction to call it, or use structured JSON outputs",
+        "Remove the tool and paste the schema into the system prompt, then validate the reply text with the same JSON Schema validator"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The tool-use docs list Claude Opus 5.5 among the models that return a 400 for both `any` and `tool` regardless of thinking settings, and name the replacement: `auto` with strict tool use for guaranteed schema-valid tool input (prompting steers which tool `auto` picks), or structured outputs when you need a fixed JSON response. Switching to `any` fails the same way, since it is also a forced choice. Turning thinking off addresses the manual extended-thinking restriction, which is a different row of that table; Opus 5.5 rejects forcing either way. Dropping the tool for prompt-only JSON throws away the schema guarantee and brings back the parse failures you engineered out.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/strict-tool-use"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-03",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Manage tool distribution and tool choice",
+      "type": "single",
+      "prompt": "On Claude Opus 5 the request now carries four tools: `extract_invoice`, `extract_contract`, `extract_form` and `flag_unsupported` (for brochures, blank scans and other non-target files). The document type is not known before the call. With `tool_choice` left at auto, 4% of responses are prose such as \"This looks like a marketing brochure\" with no tool call, which breaks the parser. What is the MOST direct fix?",
+      "options": [
+        "Set `tool_choice` to the `extract_invoice` tool, since invoices are most of the volume and the others can be rerouted later",
+        "Set `tool_choice` to any so the model must call one of the four tools but still picks the one that matches the document",
+        "Keep auto and add a system prompt rule that every response must be a tool call and never a plain-text description",
+        "Add a cheap classification call first, then send a second request that forces the specific extractor the classifier chose"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "`any` tells Claude it must use one of the provided tools without dictating which, which is exactly this case: a tool call is mandatory but the right tool depends on the document, and `flag_unsupported` gives brochures a valid destination. Forcing `extract_invoice` guarantees a call but misroutes every contract and form. A prompt rule under `auto` lowers the prose rate but is not a guarantee, which is what the parser needs. A classify-then-force pipeline works, but it doubles the calls and adds a second failure point to get something a single `tool_choice` setting already provides.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-04",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Enforce schemas with tool use and tool choice",
+      "type": "single",
+      "prompt": "In `record_document`, `po_number` is declared as a required string. About 12% of invoices genuinely have no PO number. Auditors find that on those invoices the record contains values such as \"PO-000000\", the invoice number copied into the PO field, or a PO number from a different invoice by the same supplier. Which change BEST addresses this?",
+      "options": [
+        "Add a validator rule that rejects a `po_number` equal to the invoice number and retries the request with that error message",
+        "Add \"never guess or invent values\" to the system prompt while keeping `po_number` as a required string in the schema",
+        "Move these invoices to a larger model, since smaller models are more likely to fabricate a value under required-field pressure",
+        "Make `po_number` nullable and state in its description that null means no PO number is printed anywhere on the document"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The schema itself demands a string, so on a document with no PO the only schema-valid move is to invent one; allowing null and describing what null means gives the model a correct answer to give, which is the guidance on letting Claude admit it does not have the information. The validator rule catches one fabrication pattern and the retry simply produces a different invented value. A no-guessing instruction contradicts a schema that still requires a string, and the schema wins. A larger model faces the same impossible constraint, so this treats the symptom.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+        "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-05",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Enforce schemas with tool use and tool choice",
+      "type": "single",
+      "prompt": "`document_type` is an enum of `invoice`, `credit_note` and `receipt`. New suppliers keep sending types you did not plan for: this quarter pro-forma invoices and debit notes, last quarter self-billing statements. Each gets forced into `invoice`, and two pro-formas were paid before goods shipped. Which schema change is BEST?",
+      "options": [
+        "Add `pro_forma` and `debit_note` to the enum so these two types get their own value and can be routed separately",
+        "Change `document_type` to a free-text string so the model can name any type it encounters without being forced into a bucket",
+        "Add an `other` value plus a `document_type_detail` string filled when `other` is chosen, and route `other` records to review",
+        "Keep the enum and add descriptions defining each value precisely so the model stops treating pro-formas as invoices"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "An `other` escape value with a detail field lets the model report \"this is none of the known types\" instead of choosing the closest wrong bucket, and the detail text tells reviewers what arrived so new types can be added deliberately. Adding the two current types fixes this quarter only; the case shows a new unplanned type each quarter. A free-text field loses the closed set that downstream routing depends on. Sharper descriptions do not help when the true type is not in the enum at all, because the model must still pick one of the three.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-06",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Validate, retry, and feed back semantic errors",
+      "type": "single",
+      "prompt": "The validator rejects 6% of contract records, mostly `effective_date` later than `termination_date` on European contracts that write dates as 03/04/2026. On failure the pipeline resends the identical request up to three times; 80% of those retries fail with the same error. Which change to the retry loop is MOST effective?",
+      "options": [
+        "On failure, send the document, the rejected record and the specific validator error back so the model can correct that field",
+        "Raise the retry limit from three to five and vary the temperature on each attempt so later retries explore different readings",
+        "Add a general note on international date formats to the system prompt for every contract and keep the blind retry as it is",
+        "Send every record that fails date validation straight to human review instead of retrying, because retries rarely succeed"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Feeding back the exact failure (which field, which rule, what value) gives the model information it did not have on the first pass, so the correction is targeted; a blind resend reproduces the same reading of the same input, which is why 80% repeat. More attempts with temperature changes only add cost and randomness. A general date note may help the first pass, but it is not tied to the failing record and leaves the ineffective retry in place. Routing all failures to humans gives up on cases a specific error message can fix automatically, which defeats the goal of replacing manual entry.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-07",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Validate, retry, and feed back semantic errors",
+      "type": "single",
+      "prompt": "With error feedback in place, 2% of receipts still fail all three retries on `tax_registration_id`. Spot checks show these are handwritten receipts from small vendors where no tax ID is printed or written anywhere. Each retry costs a full call with page images. What is the BEST change?",
+      "options": [
+        "Send a more explicit error naming the field and its expected format, and allow a fourth retry for this field only",
+        "Add few-shot examples showing tax IDs found in footers and rubber stamps so the model searches those areas more carefully",
+        "Route these receipts to a larger model at higher image resolution in case the tax ID is printed too faintly to read",
+        "Make the field nullable with a `missing_reason`, stop retrying when it is absent, and route those records to a reviewer"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Retries can only fix errors the model can correct from the document; when the value is not in the source at all, every retry is either another failure or a fabricated ID. The fix is to make absence a valid, explained output and send those records to a person who can obtain the value. A sharper error message and an extra attempt still ask for something that does not exist. Footer and stamp examples help when the ID is present but overlooked, which spot checks ruled out. Higher resolution solves faint print, which is a different problem from missing information.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-08",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Validate, retry, and feed back semantic errors",
+      "type": "single",
+      "prompt": "Every record now passes strict schema validation, yet finance finds that 1.5% of multi-page invoices have line items that do not add up to `total_amount`, usually because a line at a page break was skipped. Nothing in the pipeline flags these before payment. What should you add?",
+      "options": [
+        "Add numeric constraints to the schema so each line amount and the total must be positive and below a set ceiling",
+        "Have the model also return `calculated_total`, check line sums against `total_amount` in code, retry on mismatch",
+        "Run a second extraction and accept the record only when both passes agree on `total_amount` and the line item count",
+        "Tell the model in the system prompt to confirm that the line items sum to the total before it calls `record_document`"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A schema checks shape and type, not arithmetic relationships between fields, so a semantic check has to live in code; adding a `calculated_total` field makes the model show its own sum, and a deterministic comparison catches the skipped line and feeds the specific discrepancy into a retry. Numeric bounds are not supported in strict schemas and would not detect a missing line even if they were. Two passes can agree on the same skipped line, so agreement is not correctness. A self-check instruction may help, but nothing verifies it happened, so mismatches still reach payment.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-09",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "State explicit evaluation criteria",
+      "type": "single",
+      "prompt": "The schema has a `duplicate_suspected` flag; flagged invoices are held for a clerk. The prompt says to flag \"only when you are certain.\" On a labeled set the flag has 95% precision and 61% recall. A missed duplicate costs an average of $4,800 paid twice; a false flag costs about three minutes of clerk time. Which change BEST fits the business case?",
+      "options": [
+        "Keep the cautious wording and add few-shot examples of real duplicates so the model flags them with more certainty",
+        "Require two independent passes to both flag an invoice before it is held, so clerks spend less time on false alarms",
+        "Replace \"only when certain\" with explicit match criteria tuned for recall, accepting more false flags",
+        "Add a confidence score to the flag and hold only invoices scored above 0.9 so that clerks see fewer false alarms"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The costs are lopsided: a false negative loses thousands while a false positive costs minutes, so the criteria should favor recall, and explicit conditions (same supplier, amount and date window, for example) replace a vague \"certain\" threshold with something the model can apply consistently. Few-shot examples under a \"certain\" rule still optimize for precision. Requiring two passes to agree raises precision further and lowers recall, the opposite of what the numbers call for. A 0.9 confidence gate also trades recall for fewer alarms, protecting the cheap error at the expense of the expensive one.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-10",
+      "domain": "context-management-reliability",
+      "objective": "Calibrate confidence and human review",
+      "type": "single",
+      "prompt": "Your evaluation set of 2,000 documents shows 97.4% field-level accuracy, and leadership wants to end manual review. The set is 85% typed invoices. Scanned onboarding forms are 4% of the eval set but 18% of production volume, and nobody has looked at their numbers separately. What should you do FIRST?",
+      "options": [
+        "Grow the evaluation set to 10,000 randomly sampled documents so the overall accuracy figure has a narrower confidence interval",
+        "Report accuracy per document type with enough examples of each type, weighted to production mix, before deciding on review",
+        "Raise the bar for ending review to 99% overall accuracy, since 97.4% leaves too many errors at production volume",
+        "Add an LLM grader that scores every extracted record so accuracy is measured on all production traffic, not a sample"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "An aggregate dominated by clean invoices can hide a document type that fails badly; breaking accuracy out by type, with enough examples of each and weighting to the real production mix, shows whether scanned forms are safe before anyone removes review. Sampling more documents the same way keeps the same skew and only tightens the misleading number. A higher overall threshold is still an aggregate and can be met while forms fail. An LLM grader changes how records are scored, not how the results are broken down, so the hidden segment stays hidden.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-11",
+      "domain": "context-management-reliability",
+      "objective": "Calibrate confidence and human review",
+      "type": "single",
+      "prompt": "Today clerks review 100% of records. Per-type evaluation shows invoices at 99.3% field accuracy and handwritten forms at 91%. You want to cut review volume by at least half without letting error rates drift unnoticed. Which review design is BEST?",
+      "options": [
+        "Route fields by calibrated confidence, auto-accept high-confidence ones, and keep a stratified random sample of accepted records",
+        "Route by one document-level confidence score, auto-accept records above the cutoff, and send everything below it to clerks",
+        "Stop reviewing invoices now that they score 99.3%, keep full review for forms, and recheck accuracy at the next quarterly audit",
+        "Review only records the validator rejects, because records that pass schema and arithmetic checks are already verified"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Field-level confidence that has been checked against labeled data sends reviewers to the specific values most likely to be wrong, and a stratified sample of auto-accepted records keeps measuring real accuracy per document type so drift is caught. A single document-level score can be high while one critical field is wrong. Dropping invoice review with only a quarterly check leaves months of silent drift. Validator-only review misses errors that are schema-valid and arithmetically consistent, such as a misread supplier name.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-12",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Use few-shot examples for consistent judgment",
+      "type": "single",
+      "prompt": "Vendor contracts arrive in about 40 layouts. `renewal_term` is extracted correctly from the standard clause layout, but when the term sits in a table or a schedule at the back, the record returns null 30% of the time. The field description already lists the synonyms used (\"auto-renewal\", \"extension period\", \"rollover\"). What is the BEST next step?",
+      "options": [
+        "Lengthen the field description with more synonyms and phrasings, plus a note that the term can appear anywhere in the contract",
+        "Fine-tune a model on a labeled set of contracts from all 40 layouts so it learns where each vendor places the renewal term",
+        "Split each contract into single pages, extract from each page separately, and keep the first non-null `renewal_term` found",
+        "Add three to five varied examples in `<example>` tags, covering the table and schedule layouts and where the term was found"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The failures cluster on layouts the model has not been shown, and a few relevant, diverse examples that include the table and schedule cases are one of the most reliable ways to make extraction consistent across formats. More synonyms target vocabulary, but the description already covers the vocabulary; the gap is layout. Fine-tuning is far heavier than the problem requires when prompting has not been exhausted. Page-by-page extraction loses cross-references such as a clause pointing to a schedule, so it can make this field worse.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-13",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Use batch processing for appropriate workloads",
+      "type": "single",
+      "prompt": "About 60,000 documents arrive by 6 p.m. each day and their records must be in the ERP by 7 a.m. Separately, roughly 200 \"same-day payment\" invoices a day need a record within 30 seconds of upload. Costs are now over budget because everything runs through synchronous Messages API calls. Which design is BEST?",
+      "options": [
+        "Send all documents, including same-day invoices, through the Message Batches API and poll every minute for finished results",
+        "Run the nightly volume as a Message Batch with document IDs as `custom_id`; keep same-day invoices synchronous",
+        "Keep everything synchronous and raise concurrency overnight so the 60,000 documents finish well inside the 13-hour window",
+        "Run the nightly volume as a batch and join results to documents by their position in the results file to avoid a lookup table"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Batches cost 50% of standard prices and suit work that does not need immediate answers, which the overnight window allows; `custom_id` ties each result back to its document because results can come back in any order. The same-day invoices need a 30-second answer, which batches do not promise (processing can take up to 24 hours), so they stay synchronous. Higher concurrency fixes throughput but not cost, which is the stated problem. Matching by position fails because batch results are not guaranteed to follow input order.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-14",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Use batch processing for appropriate workloads",
+      "type": "single",
+      "prompt": "Last night's batch of 40,000 requests has ended: 39,412 `succeeded`, 371 `errored` (some are `invalid_request` because a page image exceeded the size limit, the rest are server errors) and 217 `expired`. The ERP load starts in three hours. What should you do next?",
+      "options": [
+        "Resubmit all 40,000 requests in a fresh batch so that every record in the ERP load comes from one consistent run",
+        "Resubmit the 588 failures as a new batch and match their results to documents by their order in the new results file",
+        "Pick out errored and expired results by `custom_id`, fix the oversized images, and batch only those 588",
+        "Send the 588 failures through the synchronous API right away, repeating each original request until it finally succeeds"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Each result carries its `custom_id` and a result type, so you can pick out exactly the `errored` and `expired` items; the invalid requests must be fixed first or they fail again, and only the failures need resubmitting. Rerunning all 40,000 doubles cost to redo work that already succeeded. Matching by order breaks because batch results can be returned in any order. Sending failures synchronously is reasonable for 588 items, but repeating the identical request means the oversized images fail every time.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+      ]
+    },
+    {
+      "id": "ccar-f-s04-15",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Separate generator and independent reviewer passes",
+      "type": "single",
+      "prompt": "For high-value contracts (over $250,000), legal wants a second check on `liability_cap` and `governing_law` before a record posts. A teammate proposes appending a turn to the same conversation: \"Review your extraction above and correct any mistakes.\" In a pilot this changed only 0.4% of values, while lawyers still found errors in 3% of records. What is the BEST design?",
+      "options": [
+        "Keep the self-review turn but list both fields explicitly and ask the model to quote the clause supporting each value",
+        "Run the extraction twice in parallel and send the record to lawyers only when the two runs disagree on either field",
+        "Raise the effort setting on the original extraction call so the model reasons longer before it calls `record_document`",
+        "Use a separate reviewer call that sees only the contract and the two values, not the first pass, and checks each one"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A reviewer in the same conversation sees the original reasoning and tends to confirm it, which is why it changed almost nothing; a separate call that sees only the source and the claimed values judges them fresh, and asking it to verify each value against the text targets the two fields legal cares about. Quoting inside the same conversation is better grounding but keeps the self-confirmation bias. Two identical generators often make the same mistake, so agreement misses shared errors. More effort on the first pass may reduce errors but adds no independent check, which is what legal asked for.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    }
+  ]
+}

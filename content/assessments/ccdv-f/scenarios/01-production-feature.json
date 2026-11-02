@@ -1,0 +1,328 @@
+{
+  "id": "01-production-feature",
+  "title": "Shipping a Claude Feature in Production",
+  "setup": "You are on the platform team of a project-management SaaS company that is adding an in-app assistant to its web app. The React frontend calls your REST backend at /api/assistant, which calls the Claude Messages API with the Python SDK, uses tools such as get_task to read project data, and runs a worker that analyses uploaded board screenshots. The assistant has to feel responsive, survive API errors without showing corrupted answers, and be released and rolled back like any other production service.",
+  "questions": [
+    {
+      "id": "ccdv-f-s01-01",
+      "domain": "applications-integration",
+      "objective": "Translate business needs into functional and infrastructure requirements",
+      "type": "multiple",
+      "prompt": "The product brief for the assistant lists five needs: (1) answers must name the task IDs they drew on, (2) requests from EU tenants may only be processed in EU regions, (3) the assistant must decline requests to delete or reassign tasks, (4) the first visible words must appear within 2 seconds at p95 under launch traffic, (5) answers must use the language the question was asked in. You are splitting the brief into functional requirements and infrastructure requirements before picking a model or platform. Which TWO belong on the infrastructure list?",
+      "options": [
+        "Answers name the task IDs they used, so users can verify every claim against the project board",
+        "EU tenants' requests are processed only in EU regions, which limits the platforms and endpoints you can use",
+        "The assistant declines delete or reassign requests, so it cannot change a project on a user's behalf",
+        "First visible words arrive within 2 seconds at p95, which constrains model tier, streaming and capacity",
+        "Answers use the question's language, so a user writing in German gets a reply written in German"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Infrastructure requirements describe where and how the system must run: a residency rule removes deployment options before any quality comparison, and a p95 time-to-first-token target drives model tier, streaming and rate-limit capacity. Citing task IDs is a functional behaviour of the answer, checked by reading outputs. Declining destructive requests is a functional (and safety) behaviour of the assistant, enforced in prompts and tool design. Answering in the user's language is likewise a property of the output, so it belongs on the functional list.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/overview",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-latency"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-02",
+      "domain": "applications-integration",
+      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "type": "single",
+      "prompt": "The backend calls `messages.create` without streaming and returns the full answer to the browser as one JSON payload. The system prompt is about 600 tokens; traces show answers average 700 output tokens and that generation time, not input processing, accounts for nearly all of the 9-14 seconds users spend looking at a spinner. Product wants the assistant to feel responsive without changing answer quality. What is the BEST change?",
+      "options": [
+        "Enable prompt caching on the system prompt, because cache hits cut time to first token on repeated requests",
+        "Stream the response and forward text deltas over SSE, so words appear while generation continues",
+        "Lower max_tokens from 4,096 to 1,024, because a smaller output ceiling makes the model generate faster",
+        "Send the questions through the Message Batches API, because it raises throughput and frees backend workers"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "When output generation dominates, streaming is the direct fix for perceived latency: the first tokens reach the user almost immediately while the rest of the answer is still being generated, and the content is unchanged. Prompt caching only speeds processing of a repeated prefix, and a 600-token prompt is both small and likely under the minimum cacheable length. Lowering max_tokens does not make tokens arrive faster; it only truncates answers that run past the cap. The Batch API is asynchronous and suited to work that does not need an immediate response, the opposite of an interactive assistant.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/streaming",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-latency"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-03",
+      "domain": "applications-integration",
+      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "type": "single",
+      "prompt": "Streaming is live on `claude-sonnet-5-5`. A trace shows HTTP 200, about 300 tokens of `content_block_delta` events, then an `error` event with type `overloaded_error`. The client was built with the SDK's default `max_retries=2`, yet no retry happened; the browser rendered the half-answer and marked it complete. How should the backend handle this case?",
+      "options": [
+        "Raise the client's max_retries to 5, so the SDK's exponential backoff also covers overloaded errors in a stream",
+        "Resend the request with the partial text as a prefilled assistant message, so Claude continues the same answer",
+        "Catch the error event, mark the answer incomplete, and resume with a user message carrying the partial text",
+        "Turn streaming off for this route, so overload errors arrive as HTTP 529 responses that the SDK retries itself"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "An error that arrives after the 200 response has started is delivered as a stream event, so the SDK's status-code retry logic never sees it; the backend has to detect the event, stop presenting the partial text as final, and recover. For Claude 4.6 and later models the documented recovery is a new request whose user message contains the partial response and an instruction to continue. Raising max_retries changes nothing because the retry path is not involved mid-stream. Prefilling an assistant message is rejected with a 400 on Claude 4.6 and later models. Turning streaming off would make 529s retryable but gives back the perceived-latency gain the team streamed for.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/streaming",
+        "https://platform.claude.com/docs/en/api/errors"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-04",
+      "domain": "eval-testing-debugging",
+      "objective": "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures",
+      "type": "single",
+      "prompt": "Your backend wraps every `messages.create` call in a custom loop that retries any exception five times with a fixed 1-second sleep, on top of the SDK client's default retries. Last week: 312 `invalid_request_error` 400s saying \"prompt is too long\" (each retried 5 times), 1,940 `rate_limit_error` 429s carrying `retry-after: 20`, 410 `overloaded_error` 529s and 35 `api_error` 500s. Which change is BEST?",
+      "options": [
+        "Delete the custom loop, let the SDK's backoff handle 429 and 5xx, and trim the context before resending 400s",
+        "Keep the custom loop but switch it to exponential backoff, so every error class gets more spacing between attempts",
+        "Set the SDK's max_retries to 0 and keep the custom loop, so all retry behaviour lives in code your team controls",
+        "Keep both retry layers and add a circuit breaker that opens after 50 consecutive failures of any error class"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The SDK already retries connection errors, 429s and 5xx with exponential backoff and honours retry-after, so the custom loop only stacks extra attempts and ignores the 20-second hint. A 400 \"prompt is too long\" is deterministic: resending the same payload fails every time, so the fix is to change the request (trim or summarise context). Exponential backoff in the custom loop still retries the 400s pointlessly. Moving all retries into the custom loop throws away retry-after handling and still retries 400s. A circuit breaker limits damage but keeps the misclassification that causes it.",
+      "references": [
+        "https://platform.claude.com/docs/en/api/errors",
+        "https://platform.claude.com/docs/en/api/rate-limits"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-05",
+      "domain": "eval-testing-debugging",
+      "objective": "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures",
+      "type": "single",
+      "prompt": "At 00:05 on the first of the month every request starts failing with 429 `rate_limit_error`. The responses carry no `retry-after` header, `error.details.error_code` is `enforced_spend_limit_reached`, and request volume is the same as the previous night. The SDK's automatic retries are exhausting on every call and the on-call engineer is paged. What is the right response?",
+      "options": [
+        "Raise max_retries and lengthen the backoff, because rate-limit windows reset within a minute once traffic eases off",
+        "Throttle concurrency to half, because a lower request rate keeps the organisation under its RPM ceiling",
+        "Enable prompt caching for the system prompt, because cache reads do not count toward the ITPM rate limit",
+        "Stop retrying and escalate, because this 429 is a tier spend cap that persists until the tier or limit changes"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A 429 with no retry-after and the enforced_spend_limit_reached code is the usage tier's monthly spend cap, not a per-minute rate limit: retries, including the SDK's, keep failing until access resumes, and moving to a higher tier restores it. Longer backoff assumes a rolling per-minute window that does not apply here. Throttling concurrency addresses RPM pressure, but volume is unchanged and the error code names a spend cap. Prompt caching does raise effective ITPM, yet ITPM is not what is being enforced.",
+      "references": [
+        "https://platform.claude.com/docs/en/api/rate-limits",
+        "https://platform.claude.com/docs/en/api/errors"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-06",
+      "domain": "applications-integration",
+      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "type": "single",
+      "prompt": "The assistant's \"plan my sprint\" feature returns a JSON plan using structured outputs (`output_config.format` with a schema). About 2% of responses fail `json.loads` in the backend. Every failing response has `stop_reason: \"max_tokens\"` at `max_tokens=1500` and comes from projects with more than 60 open tasks. What should the backend do?",
+      "options": [
+        "Run failed responses through a JSON-repair library, because closing open brackets restores a schema-valid plan",
+        "Check stop_reason before parsing and, on max_tokens, retry with a higher limit or ask for a smaller plan",
+        "Add \"always return complete, valid JSON\" to the system prompt, because the schema alone is not being followed",
+        "Switch the feature to strict tool use, because tool inputs are validated against the schema before they return"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Structured outputs guarantee schema compliance only when generation finishes; a response cut off at max_tokens can be incomplete and fail to match the schema. The failures all carry stop_reason max_tokens on large projects, so the cause is the output budget: check stop_reason first and either raise max_tokens or scope the request down. A repair library can produce syntactically valid JSON that silently drops tasks. A prompt instruction cannot add tokens past the cap. Strict tool use shares the same truncation limit, so a tool call cut off at max_tokens is incomplete too.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+        "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-07",
+      "domain": "applications-integration",
+      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "type": "single",
+      "prompt": "In production logs, 0.2% of assistant responses are HTTP 200 with `stop_reason: \"refusal\"` and little or no text, and the UI shows an empty chat bubble. The on-call engineer proposes sending these through the same retry path the backend uses for 500 errors, with the identical request and model. What is the BEST handling?",
+      "options": [
+        "Branch on the refusal stop reason, show a clear fallback message, and retry the request on another Claude model",
+        "Send refusals through the 500 retry path, because a refusal is a transient server error that clears on its own",
+        "Raise max_tokens for these requests, because an empty response means the answer was cut off before any text",
+        "Add a system prompt line telling Claude never to refuse project questions, so the classifier lets them through"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A refusal is a successful 200 response whose stop_reason says a safety classifier declined the request; it is neither an error nor truncation, so the application should branch on it, tell the user, and use the documented fallback of retrying on another Claude model (server-side or client-side fallback). Routing it to the 500 path treats a deliberate outcome as transient and resends the same request to the same model. Raising max_tokens addresses a max_tokens stop, which is a different stop reason. A system prompt instruction does not change what a safety classifier decides.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+        "https://platform.claude.com/docs/en/api/errors"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-08",
+      "domain": "applications-integration",
+      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "type": "multiple",
+      "prompt": "After switching the assistant from `claude-opus-4-8` to `claude-opus-5-5`, two bugs appear. The chat handler intermittently raises `AttributeError` on `response.content[0].text`. The task-lookup tool loop, which rebuilds each assistant turn from only its `tool_use` blocks before appending the `tool_result` blocks, now gets 400 errors on the second call. Which TWO changes fix these bugs?",
+      "options": [
+        "Read text by selecting content blocks whose type is \"text\" instead of indexing the first block in the list",
+        "Append each assistant message unmodified, thinking blocks included, before sending the matching tool results",
+        "Send thinking set to disabled on every request, so Opus 5.5 responses begin with a text block again",
+        "Raise max_tokens on the chat route, so thinking can never use the budget that the leading text block needs",
+        "Strip thinking blocks from the history before each call, so the request matches the shape Opus 4.8 accepted"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "On Claude Opus 5.5 adaptive thinking runs on every request, so a response can start with thinking blocks and content[0] may not be text; select blocks by type. In tool loops the API requires thinking blocks to be returned complete and unmodified, so rebuilding the turn from tool_use blocks alone triggers a 400; echo the assistant message as received. thinking: disabled returns a 400 on Opus 5.5 at every effort level. Raising max_tokens does not change block order, so content[0] can still be thinking. Stripping thinking blocks is exactly the edit the API rejects.",
+      "references": [
+        "https://platform.claude.com/docs/en/models/opus-5-5/migration-guide",
+        "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-09",
+      "domain": "applications-integration",
+      "objective": "Apply REST, JSON, async, version-control, review, and refactoring practices",
+      "type": "single",
+      "prompt": "A \"summarize every project\" button runs `asyncio.gather` over one `AsyncAnthropic` call per project. When a tenant with 800 projects clicked it on launch day, 429s spiked, `anthropic-ratelimit-output-tokens-remaining` sat near zero for several minutes, and interactive chat requests from other tenants failed. What is the BEST change to the backend?",
+      "options": [
+        "Raise the client's max_retries to 6, so the SDK absorbs the 429s with backoff until capacity frees up",
+        "Lower max_tokens on the summary calls, because the output-token limit is charged against the reserved max_tokens",
+        "Request a higher usage tier before the next launch, because more OTPM headroom prevents the burst from failing",
+        "Bound concurrency with a semaphore and a per-tenant queue, so a bulk job cannot use up interactive headroom"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The failure is unbounded fan-out in your own process: 800 simultaneous calls exhaust the organisation's output-token budget and starve unrelated interactive traffic. A semaphore with per-tenant queuing caps in-flight requests and keeps headroom for chat, which is the fix at the layer where the problem lives. More retries add load to an already exhausted limit. OTPM is counted from tokens actually generated, and max_tokens does not factor into it, so lowering it does not help. A higher tier is a reasonable later step, but any fixed limit can be exhausted by an unbounded gather.",
+      "references": [
+        "https://platform.claude.com/docs/en/api/rate-limits",
+        "https://platform.claude.com/docs/en/cli-sdks-libraries/overview"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-10",
+      "domain": "applications-integration",
+      "objective": "Manage CLAUDE.md, settings, model, prompt, and plugin versions",
+      "type": "single",
+      "prompt": "Answer quality shifted on Tuesday and nobody can say why. The model string in config is `claude-sonnet-5-5`; the system prompt is edited by product managers in an admin panel that overwrites a database row with no history. A teammate proposes: \"Dateless IDs float to the newest weights, so pin a dated snapshot and the problem goes away.\" What should you do FIRST?",
+      "options": [
+        "Pin a dated snapshot ID for Sonnet 5.5, because the dateless string can route to newer weights without notice",
+        "Open a support ticket asking which weight update shipped Tuesday, because the model ID resolved differently",
+        "Move the prompt into version control and log its version per request, since the model ID is already fixed",
+        "Freeze prompt edits in the admin panel for two weeks, so any further quality change can be blamed on the model"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "From the 4.6 generation on, a dateless ID such as claude-sonnet-5-5 is itself the pinned snapshot; Anthropic does not change the weights behind an existing ID, so the untracked variable is the prompt. Putting prompts in version control and logging the prompt version and model ID on every request makes the next incident traceable and reversible. There is no dated snapshot to pin to, and the premise of the proposal is the documented misconception. A support ticket starts from the same wrong premise while the prompt history stays lost. A freeze stops new changes but cannot reconstruct Tuesday's edit or support rollback.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions",
+        "https://platform.claude.com/docs/en/about-claude/model-deprecations"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-11",
+      "domain": "applications-integration",
+      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "type": "multiple",
+      "prompt": "An enterprise customer requires inference to stay in its AWS account, so you port the backend to Claude in Amazon Bedrock (the Messages API endpoint on `bedrock-mantle`). In staging, screenshot uploads of about 7 MB base64 that succeed on the Claude API are rejected, and the nightly digest job, which uses the Message Batches API, fails to start. Which TWO changes are needed?",
+      "options": [
+        "Downscale screenshots so each base64 image stays under the 5 MB per-image limit that applies on Bedrock",
+        "Upload screenshots once with the Files API and reference them by file_id, which keeps each request small",
+        "Run the digest through another path than Message Batches, because this Bedrock integration does not offer it",
+        "Change model IDs to the dated -v1:0 format, because Bedrock needs that suffix for every current Claude model",
+        "Send screenshots as URL image sources, because Bedrock fetches remote images instead of reading base64 data"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "Bedrock caps each base64 image at 5 MB, compared with 10 MB on the Claude API, so 7 MB screenshots must be resized or recompressed. Claude in Amazon Bedrock lists the Message Batches endpoint as unsupported, so the digest needs another path, such as rate-limited synchronous calls. The Files API is also unsupported on Bedrock, so file_id references are not available. Current models use IDs like anthropic.claude-opus-5-5 with no -v1:0 suffix. URL sources for images are listed as unsupported on Bedrock as well.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock",
+        "https://platform.claude.com/docs/en/build-with-claude/vision"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-12",
+      "domain": "prompt-context-engineering",
+      "objective": "Place clear instructions, examples, and constraints",
+      "type": "single",
+      "prompt": "The screenshot feature sends one user message: the question \"Which board is blocking the release, and why?\" followed by five board screenshots with no text between them. Users then ask follow-ups such as \"what about the second board?\" and get answers about the wrong image. Accuracy on a 50-case eval set is 71%. Which change should you try FIRST?",
+      "options": [
+        "Put the images first, each preceded by a label such as \"Image 1:\", and place the question after them",
+        "Send each screenshot in its own request and merge the five answers in the backend before replying",
+        "Convert the five screenshots into one PDF document block, so Claude reads them as numbered pages",
+        "Move the feature to a larger model tier, because multi-image comparison needs more visual capability"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The vision guidance recommends placing images before the text that asks about them and labelling each one (Image 1:, Image 2:) when sending several, so both the first answer and follow-ups can refer to images by name. That fixes the observed failure, ambiguity about which image is \"the second\", at the prompt layer at no cost. Splitting into five requests loses the joint comparison the question requires. Wrapping images in a PDF changes the input type without adding the labels users refer to. A larger model is a costlier change to try before fixing an unlabeled, question-first prompt.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/vision",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-13",
+      "domain": "eval-testing-debugging",
+      "objective": "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures",
+      "type": "single",
+      "prompt": "A customer reports that the assistant said task T-482 was \"done\" when it is still open. The trace for that request ID shows the model called `get_task` with `{\"id\": \"T-482\"}`, the tool result returned `\"status\": \"done\"` from the backend's task cache, and the final answer repeated that status. The database shows T-482 has been open since it was reopened two days ago. What is the BEST next step?",
+      "options": [
+        "Add a system prompt instruction to double-check task status, because the model accepted the tool result too readily",
+        "Send the request ID to Anthropic support as a hallucination report, because the answer contradicts the database",
+        "Add an eval case asserting the answer for T-482 says open, so a regression in the model's output gets caught",
+        "Fix the cache invalidation behind get_task, because the model faithfully reported what the tool returned to it"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The trace isolates the fault: the model chose the right tool, passed the right ID and accurately relayed the result, so this is an integration failure in the backend's stale cache, and the fix belongs there. A prompt instruction cannot make the model know the data is stale; it has nothing else to check against. A hallucination report misattributes a data bug to the model. An eval asserting \"open\" would fail against correct model behaviour while the cache is stale, so it would test the wrong layer.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls",
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-14",
+      "domain": "applications-integration",
+      "objective": "Apply system lifecycle practices",
+      "type": "single",
+      "prompt": "Friday's deploy changed the system prompt and moved the assistant from `claude-sonnet-5-5` to `claude-opus-5-5` in the same release. By Monday, support tickets about verbose answers had doubled and cost per conversation rose 40%; rolling back required a full redeploy and nobody knew which change to revert. Which release process would have made this incident smallest?",
+      "options": [
+        "Require two reviewers on every prompt change, so wording problems are caught before the change merges",
+        "Change one variable per release, gate each on the eval suite in staging, and flag it for a config rollback",
+        "Canary each release to 5% of tenants for a day, then roll forward automatically if error rates stay flat",
+        "Point the config at the newest model in each tier, so the assistant always gets the latest quality fixes"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Shipping one change at a time, measuring it against the eval suite in staging, and releasing behind a feature flag gives you attribution (you know which change moved quality and cost) and a rollback that is a config flip rather than a redeploy. Code review catches wording mistakes but measures neither verbosity nor cost. A canary watching error rates would miss this regression, because verbose answers and higher spend are not errors. Following the newest model adds uncontrolled changes, the opposite of what an incident timeline needs.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+        "https://platform.claude.com/docs/en/about-claude/model-deprecations"
+      ]
+    },
+    {
+      "id": "ccdv-f-s01-15",
+      "domain": "prompt-context-engineering",
+      "objective": "Validate and defensively consume structured output",
+      "type": "single",
+      "prompt": "The task-extraction endpoint prompts `claude-sonnet-5-5` to \"respond only with JSON\" and calls `json.loads` on the text. About 1.5% of responses start with a sentence such as \"Here is the JSON you asked for:\" and fail to parse. A teammate's PR prefills the assistant turn with `{` and sets `temperature: 0`. What should you do instead?",
+      "options": [
+        "Merge the PR and add a fallback regex that pulls the first {...} span out of any response that still fails",
+        "Keep the prompt, drop the PR, and strip any text before the first brace before calling json.loads in the backend",
+        "Drop the PR and use structured outputs with a schema, for example the SDK's messages.parse with a Pydantic model",
+        "Drop the PR's temperature change but keep the prefill, because a leading brace forces the model to emit JSON"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Structured outputs constrain decoding to your schema, so the response is valid JSON with the required fields, and messages.parse validates it into a typed object. The PR fails on current models: prefilling the assistant turn returns a 400 on Claude 4.6 and later, and non-default temperature returns a 400 on Sonnet 5.5. Stripping text before the first brace treats the symptom and still leaves missing fields and wrong types unchecked. A regex fallback on top of a broken PR inherits both 400s.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+        "https://platform.claude.com/docs/en/build-with-claude/working-with-messages"
+      ]
+    }
+  ]
+}

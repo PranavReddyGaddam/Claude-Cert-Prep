@@ -1,0 +1,288 @@
+{
+  "id": "01-claude-code-team",
+  "title": "Claude Code on a Development Team",
+  "setup": "You lead a twelve-person team that works in a shared monorepo with Claude Code. The repo holds services/billing, services/web, packages/ledger and db/migrations, plus a committed .claude/ directory, a root CLAUDE.md and a .mcp.json. Engineers use Claude Code interactively, and a build box runs nightly maintenance scripts with `claude -p`. Shared configuration in git has to work for every engineer, and hard rules have to hold no matter what Claude decides.",
+  "questions": [
+    {
+      "id": "ccar-f-s01-01",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Design CLAUDE.md hierarchy, imports, rules, and memory",
+      "type": "single",
+      "prompt": "A pull request adds three lines to the root CLAUDE.md: \"Use my staging sandbox at https://sbx-17.internal for manual checks\", \"Seed test data with the account test+maya\", and \"Keep explanations short.\" Other engineers now see Claude pointing them at a sandbox they cannot reach. The author still wants these notes, but only for this repository and only for themselves. Where should the three lines go?",
+      "options": [
+        "Into ~/.claude/CLAUDE.md, because user-level instructions are private to the author and load in every session they start",
+        "Into CLAUDE.local.md at the project root, added to .gitignore, because it is private and loads only for this project",
+        "Into .claude/rules/personal.md with no paths field, because rules files load at launch alongside the project CLAUDE.md",
+        "Into .claude/settings.local.json under env, because local settings are gitignored and never reach other engineers"
+      ],
+      "correct": [1],
+      "explanation": "CLAUDE.local.md at the project root is the documented place for personal, project-specific instructions such as sandbox URLs and preferred test data; it loads alongside CLAUDE.md, is read last at that level, and stays out of git once listed in .gitignore. ~/.claude/CLAUDE.md is private too, but it loads in every project, so a sandbox URL for this repo would leak into unrelated work. A .claude/rules/ file lives in the committed .claude/ directory and would reach the whole team just like the root CLAUDE.md. settings.local.json is a settings file for permissions, env vars and similar configuration, not a place Claude reads instructions from.",
+      "references": [
+        "https://code.claude.com/docs/en/memory"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-02",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Apply path-specific rules",
+      "type": "single",
+      "prompt": "The root CLAUDE.md has grown to 420 lines, 150 of which are money-handling conventions (integer minor units, idempotency keys, rounding rules). Those conventions apply to services/billing/**, packages/ledger/** and every file named *.money.ts anywhere in the repo. Web engineers report Claude quoting ledger rules while editing React components. What is the BEST way to restructure the money conventions?",
+      "options": [
+        "Move them into services/billing/CLAUDE.md, because subdirectory CLAUDE.md files load only when Claude touches that tree",
+        "Move them into a skill named money-rules, because a skill body loads only when Claude judges it relevant to the task",
+        "Move them into docs/money.md and import it from CLAUDE.md with @docs/money.md, so the root file stays short to read",
+        "Move them into .claude/rules/money.md with a paths list covering all three patterns, so they load on matching files"
+      ],
+      "correct": [3],
+      "explanation": "A rules file with paths frontmatter loads when Claude reads or edits a file matching any listed glob, so one file can cover two directories plus a filename pattern scattered across the repo, and web-only work never pulls it in. A subdirectory CLAUDE.md does load on demand, but it covers only its own tree, so packages/ledger and the scattered *.money.ts files would be missed or need copies. A skill also loads on demand, but whether it loads depends on Claude's judgment rather than on which file is open, which is weaker for conventions that must apply on every matching edit. An @import still expands into context at launch, so the web team keeps paying for and seeing the money rules.",
+      "references": [
+        "https://code.claude.com/docs/en/memory"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-03",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Create project and user commands and Skills",
+      "type": "single",
+      "prompt": "The nine-step release procedure (tag, changelog, version bump, publish, announce) lives in CLAUDE.md. Last week an engineer typed \"looks ready to ship?\" and Claude began tagging a release on its own. The team wants the procedure available to everyone as /release, but it must start only when a person explicitly asks for it. What should you do?",
+      "options": [
+        "Create .claude/skills/release/SKILL.md with disable-model-invocation: true so it runs only when someone types /release",
+        "Create .claude/skills/release/SKILL.md with a narrow description stating it applies only to explicit release requests",
+        "Keep the steps in CLAUDE.md and add an IMPORTANT line saying never to start a release unless asked word for word",
+        "Create .claude/rules/release.md with paths set to CHANGELOG.md so the steps load only when the changelog is open"
+      ],
+      "correct": [0],
+      "explanation": "Setting disable-model-invocation: true on a project skill keeps the procedure shared through git and invokable as /release while preventing Claude from triggering it on its own, which is exactly the failure seen. A tighter description still leaves invocation to Claude's judgment, so a phrase like \"ready to ship\" can still match. An IMPORTANT line in CLAUDE.md is guidance Claude may decide does not apply, and it also keeps a long procedure in always-loaded context. A path-scoped rule loads on file access, not on a person's request, and opening CHANGELOG.md for an unrelated edit would load the release steps.",
+      "references": [
+        "https://code.claude.com/docs/en/skills",
+        "https://code.claude.com/docs/en/memory"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-04",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Use hooks for deterministic controls and normalization",
+      "type": "single",
+      "prompt": "Policy: a migration file that has been applied to production must never change. Applied files are listed in db/migrations/APPLIED, which CI updates after each deploy. Claude routinely creates new migration files in db/migrations/, and that must keep working. Despite a CLAUDE.md rule, Claude edited 0042_add_index.sql last week. What should you implement?",
+      "options": [
+        "Add permissions.deny Edit(db/migrations/**) to project settings, because deny rules hold in every permission mode",
+        "Add a prompt-type PreToolUse hook that asks a model whether the edit would modify an already-applied migration",
+        "Add a command PreToolUse hook on Edit|Write that exits 2 when the target path is listed in db/migrations/APPLIED",
+        "Rewrite the CLAUDE.md rule as a numbered checklist that tells Claude to read APPLIED before editing any migration"
+      ],
+      "correct": [2],
+      "explanation": "A command hook runs your own code before each Edit or Write, can read the APPLIED list, and blocks with exit code 2 only for applied files, so the rule holds deterministically while new migrations still get created. The deny rule is enforced in every mode, but Edit(db/migrations/**) would also block creating new migration files, which breaks the stated workflow. A prompt-type hook hands the decision to another model, so it is not deterministic enforcement. A better-written CLAUDE.md rule is still guidance that Claude can skip, which is the failure that already happened.",
+      "references": [
+        "https://code.claude.com/docs/en/best-practices",
+        "https://code.claude.com/docs/en/hooks-guide"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-05",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Choose Claude Code file, shell, and search tools safely",
+      "type": "single",
+      "prompt": "Project settings contain \"deny\": [\"Read(./secrets/**)\"]. A transcript review finds that Claude ran `python scripts/print_config.py`, a helper that opens every file under secrets/ and prints the merged config, and the secret values appeared in the session. No permission prompt was shown because Bash(python scripts/*) is allowed. What is the MOST effective fix?",
+      "options": [
+        "Add Read(./scripts/print_config.py) to the deny list so Claude can no longer open or run the helper that leaked them",
+        "Enable the Bash sandbox with filesystem rules for secrets/, because Read deny rules do not cover files a script opens",
+        "Add a CLAUDE.md rule telling Claude never to run scripts that print configuration or environment values in a session",
+        "Replace the allow rule with Bash(python scripts/build_*.py) so that only build helpers can run without any prompt"
+      ],
+      "correct": [1],
+      "explanation": "Read and Edit deny rules apply to Claude's file tools and to file commands Claude Code recognizes in Bash, but not to arbitrary subprocesses such as a Python script that opens files itself; the docs point to the sandbox for OS-level enforcement that blocks every process. Denying Read on the helper's source does not stop Bash from executing it, and any other script could do the same. A CLAUDE.md rule is guidance, not enforcement. Narrowing the allow pattern only brings back a prompt for some scripts and relies on fragile command-text matching, while a build script could still read secrets.",
+      "references": [
+        "https://code.claude.com/docs/en/permissions",
+        "https://code.claude.com/docs/en/sandboxing"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-06",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Choose plan mode, direct execution, or Explore",
+      "type": "single",
+      "prompt": "Two tickets land on the same afternoon. Ticket 1: change the signature of formatAmount(cents) to formatAmount(amount, currency) and update its 38 call sites across services/web, services/billing and packages/ledger, where some callers pass already-converted values. Ticket 2: a failing unit test shows an off-by-one in the loop of one function in packages/ledger/round.ts. How should the engineer run Claude Code for each?",
+      "options": [
+        "Use plan mode for both, so Claude proposes each change and the engineer approves before any file is touched on disk",
+        "Use direct execution for both and rely on the test suite, since failing tests will reveal any bad call-site update",
+        "Use an Explore subagent to edit the 38 call sites in its own context, and fix the off-by-one directly in the session",
+        "Use plan mode for the signature change and direct execution for the off-by-one, since only one spans many modules"
+      ],
+      "correct": [3],
+      "explanation": "Plan mode lets Claude read and propose without editing until the plan is approved, which pays off for a multi-module change where callers differ and the approach needs agreement first; a one-file fix with a failing test that pins the bug is faster done directly. Plan mode for the trivial fix adds an approval round for no design decision. Direct execution of the signature change risks a wrong approach for callers that pass converted values, and tests catch only what they cover. Explore is a read-only search agent, so it cannot make the edits.",
+      "references": [
+        "https://code.claude.com/docs/en/permission-modes",
+        "https://code.claude.com/docs/en/common-workflows"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-07",
+      "domain": "context-management-reliability",
+      "objective": "Use scratchpads, subagents, manifests, and compaction for large codebases",
+      "type": "single",
+      "prompt": "Midway through a feature, an engineer's session sits at 60% of the context window with design decisions they still need. They now need to know every place across roughly 2,000 files that reads the FEATURE_FLAGS environment variable, but they only need a short list of modules and patterns, not the raw matches. What is the BEST way to get this?",
+      "options": [
+        "Ask Claude to delegate the search to the Explore subagent, which searches in its own context and returns a summary",
+        "Run /compact first, then let Claude grep the whole repository in the main session so the matches fit in the window",
+        "Run /clear to free the window, then search with Grep in the main session and restate the design decisions afterward",
+        "Ask Claude to run the grep with its output piped through head -50 in the main session to keep the results bounded"
+      ],
+      "correct": [0],
+      "explanation": "Explore is the built-in read-only search agent: the wide search runs in a separate context window and only the summary comes back, so the main session keeps its design decisions and gains a few lines. Compacting first frees space, but the raw grep output then lands in the main context and fills it again. /clear throws away the decisions the engineer said they still need. Truncating with head keeps context small but returns an incomplete answer to a question that asked for every place.",
+      "references": [
+        "https://code.claude.com/docs/en/sub-agents",
+        "https://code.claude.com/docs/en/best-practices"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-08",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Run headless CI with structured output and independent review",
+      "type": "single",
+      "prompt": "The nightly job runs `claude -p \"Run pnpm lint and pnpm test, fix what fails, then summarize\"` with no other flags. It exits 0, but the summary says it could not run pnpm lint or pnpm test and made no changes. The box runs Claude Code v2.1.302 or later, where -p runs start in Manual mode. What is the BEST change?",
+      "options": [
+        "Add --dangerously-skip-permissions so that the nightly run never stops at a permission check on the shared build box",
+        "Add a CLAUDE.md line stating that pnpm lint and pnpm test are approved to run in unattended nightly maintenance jobs",
+        "Add --allowedTools \"Bash(pnpm lint *)\" \"Bash(pnpm test *)\" \"Edit\" so only the calls the job needs are pre-approved",
+        "Add --permission-mode plan so Claude can run read-only commands and explore the repo before proposing any fixes"
+      ],
+      "correct": [2],
+      "explanation": "With no permission mode set, -p runs start in Manual mode and calls needing approval are denied unless an allow rule, hook or callback approves them; --allowedTools pre-approves exactly the lint, test and edit calls this job needs. Skipping all permissions makes the job run, but it removes every check on an unattended shared machine when a narrow allow list suffices. CLAUDE.md text shapes behavior but does not grant tool permissions. Plan mode does not edit source, so the job still could not fix anything.",
+      "references": [
+        "https://code.claude.com/docs/en/permission-modes",
+        "https://code.claude.com/docs/en/headless"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-09",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Run headless CI with structured output and independent review",
+      "type": "single",
+      "prompt": "A dependency-audit script runs `claude -p` and regex-parses the plain-text answer for \"VERDICT: PASS\" and a bullet list of package names. Twice this month the wording drifted (\"Verdict - pass\", numbered lists) and the script reported false failures. The script needs a verdict, a list of packages and the run's cost. What should you change?",
+      "options": [
+        "Keep text output and add a few-shot example of the exact VERDICT line and bullet format to the end of the prompt",
+        "Use --output-format json with --json-schema, then read structured_output and total_cost_usd from the JSON result",
+        "Use --output-format stream-json and scan each event for the assistant text that contains the VERDICT line and list",
+        "Use --output-format json without a schema and tell Claude to put its answer as JSON inside the result field text"
+      ],
+      "correct": [1],
+      "explanation": "With --output-format json plus --json-schema, the response carries validated data matching the schema in structured_output alongside metadata such as total_cost_usd, so the script stops depending on wording. A few-shot example improves consistency but the script still parses free text that can drift. stream-json gives events in real time but the verdict is still free text inside them. JSON output without a schema wraps the result in metadata, yet the result field is still unvalidated text that Claude was only asked to format.",
+      "references": [
+        "https://code.claude.com/docs/en/headless",
+        "https://code.claude.com/docs/en/cli-reference"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-10",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Resume or fork without carrying stale context",
+      "type": "single",
+      "prompt": "A headless job migrating 120 test files from Jest to Vitest ran with `--max-turns 40 --output-format json` and exited with an error at the turn limit after converting 70 files. The JSON includes a session_id. Four other `claude -p` jobs run in the same working directory on that box at the same time. How should the follow-up run continue the migration?",
+      "options": [
+        "Run `claude -p --continue` with a higher --max-turns, since it reopens the most recent session in this directory",
+        "Rerun the original command with --max-turns 150, since a clean session avoids carrying the earlier partial work",
+        "Run `claude -p --resume <session_id> --fork-session` so the original transcript stays untouched as a fallback",
+        "Run `claude -p --resume <session_id>` with a higher --max-turns and a prompt to finish the remaining 50 files"
+      ],
+      "correct": [3],
+      "explanation": "Resuming by the captured session_id reopens exactly this job's conversation, with the files already converted and the decisions made, and a higher --max-turns lets it finish. --continue picks the most recent conversation in the directory, and with four other jobs running there it can attach to the wrong session. Rerunning from scratch repeats 70 files of work and spends the budget again. Forking is for trying an alternative while keeping the original intact; here the goal is simply to continue, so a fork only adds a second session ID to track.",
+      "references": [
+        "https://code.claude.com/docs/en/cli-reference",
+        "https://code.claude.com/docs/en/agent-sdk/sessions"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-11",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Resume or fork without carrying stale context",
+      "type": "single",
+      "prompt": "An engineer spent an hour in session auth-review having Claude map the authentication module, its callers and its tests. They now want Claude to prototype two competing designs, signed JWTs and server-side sessions, each starting from that same analysis, and compare them afterward without either attempt influencing the other. What is the BEST approach?",
+      "options": [
+        "Resume auth-review twice with --fork-session, one fork per design, so each attempt starts from the shared analysis",
+        "Resume auth-review, prototype JWTs, then ask Claude in that same session to set it aside and prototype sessions",
+        "Run /compact in auth-review to shrink the analysis, then prototype both designs one after another in that session",
+        "Ask Claude for a written summary of auth-review, then start two new sessions and paste the summary into each one"
+      ],
+      "correct": [0],
+      "explanation": "--fork-session with --resume creates a new session ID that starts from the original history, so each design gets the full hour of analysis and neither sees the other's attempt. Prototyping both in one session means the second design is written with the first one's code and reasoning in context, which is the contamination the engineer wants to avoid. Compacting keeps both attempts in one thread and also loses detail. Pasting a summary into fresh sessions avoids cross-talk but discards most of the analysis that forking would carry over intact.",
+      "references": [
+        "https://code.claude.com/docs/en/cli-reference",
+        "https://code.claude.com/docs/en/agent-sdk/sessions"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-12",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Scope MCP configuration and resources",
+      "type": "single",
+      "prompt": "The team wants everyone to get the same issue-tracker MCP server, but each engineer must authenticate with their own personal token. A first attempt committed this to .mcp.json: \"headers\": {\"Authorization\": \"Bearer 9f3c...e1\"}, and security has rotated that token. What configuration should replace it?",
+      "options": [
+        "Have each engineer add the server at user scope with their own token, so no credential ever lands in the repository",
+        "Keep the server in .mcp.json and move the token into the env block of the committed .claude/settings.json file",
+        "Keep the server in .mcp.json with \"Bearer ${TRACKER_TOKEN}\" and have each engineer export their own TRACKER_TOKEN",
+        "Have each engineer add the server at local scope, since local entries are private and stored outside the repository"
+      ],
+      "correct": [2],
+      "explanation": ".mcp.json supports ${VAR} expansion in headers, so one committed project-scope entry gives the whole team the same server definition while each engineer supplies their own token from the environment. User-scope or local-scope entries keep tokens out of git, but every engineer then maintains a private copy and the shared definition drifts, which defeats the goal of one shared server. Putting the token in the committed settings.json env block just moves the leaked secret to a different committed file.",
+      "references": [
+        "https://code.claude.com/docs/en/mcp"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-13",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Scope MCP configuration and resources",
+      "type": "single",
+      "prompt": "After the shared .mcp.json added a server named tracker pointing at the production tracker URL, one engineer still gets results from the old staging tracker. Months ago they ran `claude mcp add --transport http tracker https://staging.tracker.internal/mcp` in this repo. `claude mcp list` shows a single tracker entry. What explains this, and what fixes it?",
+      "options": [
+        "Project scope overrides local scope, so the engineer must first approve the .mcp.json server in an interactive session",
+        "Their local-scope tracker entry outranks the project one by name, so they should remove it with claude mcp remove",
+        "The two entries merged field by field and kept the staging url, so they should add the url again to the local entry",
+        "User scope outranks project scope, so they should move the staging entry to project scope to let the newer one win"
+      ],
+      "correct": [1],
+      "explanation": "claude mcp add without --scope writes to local scope, and when the same name exists in several scopes Claude Code connects once using the highest-precedence source, which is local, then project, then user. Removing the local entry lets the project definition load. Project scope does not override local, so approval would not change which definition wins. Entries are never merged across scopes; the whole entry from one source is used. The old entry was local, not user, and moving it to project scope would collide with the shared definition rather than fix anything.",
+      "references": [
+        "https://code.claude.com/docs/en/mcp"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-14",
+      "domain": "context-management-reliability",
+      "objective": "Use scratchpads, subagents, manifests, and compaction for large codebases",
+      "type": "single",
+      "prompt": "An engineer just merged a three-hour session's work on a CSV export feature. The session sits at 70% of the context window. Their next task is an unrelated timezone bug in services/web that touches none of the export code. Nothing from the export conversation is needed for the bug. What should they do before starting?",
+      "options": [
+        "Run /compact keep only the build and test commands, so the export history becomes a short summary before starting",
+        "Keep going in the same session, since automatic compaction will summarize the old history once the window fills up",
+        "Ask Claude to hand the timezone bug to a subagent, so the export history stays in the main session but out of its way",
+        "Run /clear, since the bug is unrelated and the next task should not keep paying for the export session's history"
+      ],
+      "correct": [3],
+      "explanation": "The docs recommend /clear between unrelated tasks: it costs nothing and the next task stops carrying the previous one's history, while the build and test commands already live in CLAUDE.md. /compact is meant for keeping a focused summary of work still in progress, and on a long session it is itself a large request that reads the whole conversation. Waiting for auto-compaction leaves irrelevant history in every request until then. A subagent isolates the bug work, but the main session still drags 70% of stale context through each turn.",
+      "references": [
+        "https://code.claude.com/docs/en/best-practices",
+        "https://code.claude.com/docs/en/context-window"
+      ]
+    },
+    {
+      "id": "ccar-f-s01-15",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Design CLAUDE.md hierarchy, imports, rules, and memory",
+      "type": "single",
+      "prompt": "The nightly `claude -p` jobs run on a build box that an engineer provisioned under their own account. Their ~/.claude/CLAUDE.md says \"write tests with Jest\" and their ~/.claude/settings.json defines a PostToolUse hook that runs their personal formatter. The repo uses Vitest, and the same job gives different results on a teammate's box. What is the BEST fix?",
+      "options": [
+        "Run the jobs with --bare and pass the project's instructions, settings and MCP config to each run through flags",
+        "Add a line to the root CLAUDE.md telling Claude to disregard any user-level instructions while it runs a job",
+        "Move the Vitest guidance into a .claude/rules/testing.md file so that it loads after the user-level instructions",
+        "Delete that engineer's ~/.claude/CLAUDE.md on the build box before the nightly jobs start running each evening"
+      ],
+      "correct": [0],
+      "explanation": "--bare skips auto-discovery of hooks, CLAUDE.md, skills, plugins and MCP servers, so a hook or instruction in someone's ~/.claude never runs; the docs call it out for scripts that need the same result on every machine, with context supplied explicitly through flags such as --append-system-prompt-file, --settings and --mcp-config. A CLAUDE.md line cannot switch off a hook, and conflicting instructions leave Claude to pick one. A rules file only changes ordering, the Jest line still loads, and the hook still fires. Deleting one file removes the instruction but leaves the personal hook and the next person's files in play.",
+      "references": [
+        "https://code.claude.com/docs/en/headless",
+        "https://code.claude.com/docs/en/memory"
+      ]
+    }
+  ]
+}

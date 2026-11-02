@@ -1,0 +1,320 @@
+{
+  "id": "04-tools-mcp",
+  "title": "Tools and an MCP Server for Internal Systems",
+  "setup": "Your platform team is exposing three internal systems to Claude: the Helpdesk ticketing system, the Ledger billing service, and the Wiki documentation store. You maintain an Agent SDK support assistant with custom tools, plus an MCP server named atlas-mcp that other teams connect to from Claude Code and from their own Messages API apps. The goals are that Claude picks the right tool on the first try and that refunds and ticket deletions never happen without a human approving them.",
+  "questions": [
+    {
+      "id": "ccdv-f-s04-01",
+      "domain": "tools-mcps",
+      "objective": "Design descriptions, schemas, errors, approvals, and tool sets",
+      "type": "single",
+      "prompt": "atlas-mcp exposes `search_tickets` and `search_docs`. Both descriptions read \"Searches for information. Takes a query string.\" In a trace review of 200 conversations, 31% of questions such as \"what is the status of INC-4471?\" were routed to `search_docs`, which returned unrelated wiki pages. The input schemas are correct and the backend calls succeed. What is the BEST fix?",
+      "options": [
+        "Enable strict: true on both tools so that every query argument Claude sends always conforms to the declared input schema.",
+        "Add a system prompt rule telling Claude to use search_docs only for how-to questions and search_tickets for everything else.",
+        "Rewrite both descriptions to say what each returns, when to use it instead of the other, and which ID formats it accepts.",
+        "Force tool_choice to search_tickets whenever the incoming user message contains a string that looks like a ticket ID."
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Tool descriptions are by far the most important factor in tool selection; two near-identical descriptions give Claude nothing to choose with, so stating what each tool returns, when to prefer it over its sibling, and the ID formats it handles (INC-####) fixes the cause where Claude reads it. Strict mode constrains the shape of inputs, but the inputs here are already valid; the problem is which tool gets picked. A system-prompt rule can help, but it is a weaker patch that sits apart from the definitions and still leaves both descriptions vague. Forcing tool_choice by regex moves selection into brittle code and breaks requests that mention a ticket while asking a documentation question.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-02",
+      "domain": "tools-mcps",
+      "objective": "Design descriptions, schemas, errors, approvals, and tool sets",
+      "type": "single",
+      "prompt": "In the Agent SDK assistant, the custom tool `ledger_get_invoice` lets an HTTP client throw when Ledger returns 404. The trace shows Claude receiving \"Request failed with status code 404\" and then calling `ledger_get_invoice` with the same ID three more times before telling the user that billing is down. Invoice IDs are `INV-` plus 8 digits, and users often paste order numbers instead. What should you change FIRST?",
+      "options": [
+        "Wrap the Ledger call in a retry with exponential backoff so that transient 404 responses resolve before Claude sees them.",
+        "Catch the 404 and return is_error: true with a message naming the ID format and suggesting ledger_search_invoices by customer.",
+        "Return a normal success result containing {\"invoice\": null} so the agent loop treats the lookup as completed and moves on.",
+        "Add a system prompt instruction that Claude must never call the same tool more than once with identical input arguments."
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A thrown exception does not stop the SDK loop; the in-process MCP server converts it to an error result carrying the raw exception message, which here tells Claude nothing it can act on. Catching it and returning an is_error result with an actionable message (the ID format, the likely mix-up, the tool to try instead) lets Claude self-correct. Backoff retries treat a 404 as transient when it is a wrong ID that will fail every time. A success result with a null invoice hides the failure signal, so Claude may tell the user the invoice is empty. A no-repeat rule in the prompt suppresses the symptom without giving Claude any path to the right invoice.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/custom-tools",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-03",
+      "domain": "tools-mcps",
+      "objective": "Design descriptions, schemas, errors, approvals, and tool sets",
+      "type": "single",
+      "prompt": "The support assistant passes `allowedTools: [\"mcp__atlas__ledger_get_invoice\", \"mcp__atlas__ledger_issue_refund\", \"mcp__atlas__helpdesk_get_ticket\"]` and a `canUseTool` callback that shows the support agent an Approve/Deny dialog. The permission mode is `default`. An audit finds 14 refunds issued last week with no dialog ever shown. What is the BEST fix?",
+      "options": [
+        "Add a system prompt instruction that Claude must ask the user to confirm the amount in chat before any refund call.",
+        "Set the destructiveHint: true annotation on the refund tool so the SDK knows to prompt before running it each time.",
+        "Move the approval into a PostToolUse hook that pages the support lead with refund details after each call completes.",
+        "Remove the refund tool from allowedTools so that its calls fall through to the canUseTool approval callback again."
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "An allow rule approves a call before canUseTool is ever consulted, so listing the refund tool in allowedTools silently bypassed the dialog; removing that entry (or giving the tool an always_ask policy) routes every refund back to the callback. A chat confirmation is a prompt-level request the model can skip and is not an enforced approval. Annotations are metadata, not enforcement, and do not override an allow rule that already approved the call. A PostToolUse hook runs after the refund has happened, so it can alert but cannot prevent.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/permissions",
+        "https://code.claude.com/docs/en/agent-sdk/custom-tools"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-04",
+      "domain": "tools-mcps",
+      "objective": "Design descriptions, schemas, errors, approvals, and tool sets",
+      "type": "single",
+      "prompt": "atlas-mcp has grown to 64 tools across Helpdesk, Ledger and Wiki. Tool definitions now cost about 41,000 input tokens per request, and in your eval set wrong-tool selection rose from 4% to 17% after the last 20 tools were added. Logs show a typical request uses 3 or 4 tools. What is the MOST effective change?",
+      "options": [
+        "Mark most tools with defer_loading and add the tool search tool so Claude loads only the few definitions it needs.",
+        "Add a cache_control breakpoint after the tool definitions so the 41,000 tokens are billed at cache-read rates.",
+        "Move to a model with a larger context window so the definitions use a smaller share of the space available per turn.",
+        "Split the assistant into three subagents, one per system, each holding only that system's tools and a router above."
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Selection accuracy degrades once dozens of tools are in context, and tool search keeps deferred definitions out of the window until Claude searches for them, addressing both the token cost and the 17% wrong-tool rate. Prompt caching lowers the price of the definitions but leaves all 64 in front of Claude, so selection does not improve. A larger context window treats space as the problem when the issue is too many similar choices at once. Splitting into subagents with a router could work but adds an orchestration layer when a configuration change on the existing toolset solves it.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-05",
+      "domain": "tools-mcps",
+      "objective": "Author and deploy MCP tools, resources, and prompts across transports",
+      "type": "single",
+      "prompt": "Today each engineer runs atlas-mcp locally over stdio with their own `LEDGER_API_KEY` in the environment. Leadership now wants 300 support staff to reach one central deployment from an internal web app and from Claude Code, and Ledger must log which person triggered each refund. What deployment should you choose?",
+      "options": [
+        "Keep stdio and commit a shared Ledger service key to the project's .mcp.json so every client starts the server the same way.",
+        "Serve atlas-mcp over Streamable HTTP and use the MCP authorization flow so each user's own token reaches the server.",
+        "Serve atlas-mcp over Streamable HTTP behind one static bearer token that every client sends in its request headers.",
+        "Run the stdio server on one shared VM and have clients start it there over SSH so credentials never leave that host."
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A remote, shared server is what Streamable HTTP is for, and the MCP authorization spec (OAuth-based) is designed for HTTP transports so each request carries the calling user's identity, which Ledger needs for per-person audit. Committing a shared key to .mcp.json leaks a secret into version control and still gives every user the same identity. A single static bearer token secures the endpoint but collapses 300 people into one identity, so the audit requirement fails. Tunnelling stdio over SSH is an improvised remote transport that still runs as one service identity and adds per-client SSH setup.",
+      "references": [
+        "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http",
+        "https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/index"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-06",
+      "domain": "tools-mcps",
+      "objective": "Author and deploy MCP tools, resources, and prompts across transports",
+      "type": "multiple",
+      "prompt": "You are mapping atlas-mcp features to MCP primitives. Tools are model-controlled, resources are application-driven, and prompts are user-controlled. Which TWO of these mappings are correct?",
+      "options": [
+        "A postmortem template the engineer picks from a slash menu, taking an incident ID argument, exposed as a prompt.",
+        "A Wiki page the engineer browses in the host's file picker and attaches as read-only context, exposed as a resource.",
+        "Creating a Helpdesk ticket whenever Claude decides that one is needed mid-conversation, exposed as a resource.",
+        "A billing-dispute triage workflow that Claude starts on its own when it spots a dispute, exposed as a prompt.",
+        "Looking up a live invoice balance whenever Claude judges it needs the current figure, exposed as a prompt."
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Prompts are user-controlled templates that require explicit invocation and can take arguments, which matches a slash-menu postmortem template; resources are application-driven context that the host can let users browse and attach, which matches a read-only Wiki page. Creating a ticket is an action the model chooses to take, so it belongs in a tool, not a resource. A workflow Claude starts on its own contradicts the user-controlled nature of prompts. Fetching a live balance on the model's judgment is again a model-controlled call, so it is a tool rather than a prompt.",
+      "references": [
+        "https://modelcontextprotocol.io/docs/2026-07-28/learn/server-concepts",
+        "https://modelcontextprotocol.io/specification/2026-07-28/server/prompts"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-07",
+      "domain": "tools-mcps",
+      "objective": "Author and deploy MCP tools, resources, and prompts across transports",
+      "type": "single",
+      "prompt": "After a teammate added `console.log(\"ledger request\", payload)` lines to atlas-mcp for debugging, Claude Code connections over stdio began failing intermittently with JSON parse errors, though `node server.js` still starts cleanly by hand. The failures appear only on code paths that hit Ledger. What is the MOST likely cause and fix?",
+      "options": [
+        "Debug lines are going to stdout, which must carry only MCP messages; send that logging to stderr instead.",
+        "Ledger responses are slow on those paths, so the client times out; raise the MCP server timeout setting.",
+        "The stdio framing cannot carry large payloads reliably; move the server to the Streamable HTTP transport.",
+        "The spawned process is missing Ledger credentials; pass LEDGER_API_KEY to it with the --env option."
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "On stdio the server must not write anything to stdout that is not a valid MCP message, while stderr is allowed for logging, so console.log lines interleave with JSON-RPC and break parsing exactly on the Ledger paths that log. Raising the timeout treats a parse error as latency. Switching to HTTP would hide the bug by moving transports but is a large change for a one-line logging fix. Missing credentials would produce a Ledger auth error inside a valid tool result, not a client-side JSON parse failure.",
+      "references": [
+        "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-08",
+      "domain": "tools-mcps",
+      "objective": "Choose among built-in tools, custom tools, Skills, and MCP",
+      "type": "single",
+      "prompt": "The docs team uses Claude Code with atlas-mcp, whose `wiki_publish` tool already writes pages. They want Claude to follow a 9-page article style guide and a six-step review checklist, but only when drafting Wiki articles; most of their sessions are code work. Which addition fits BEST?",
+      "options": [
+        "A new atlas-mcp tool, wiki_get_style_guide, that returns the full guide text whenever Claude chooses to call it.",
+        "The full style guide and checklist pasted into the project CLAUDE.md so every session starts with them loaded.",
+        "A Skill holding the style guide and checklist, whose description says to use it when drafting Wiki articles.",
+        "A PreToolUse hook on wiki_publish that runs the six-step checklist script before any page is published."
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "A Skill packages knowledge and workflows that load on demand: only its name and description sit in context until a Wiki-drafting request matches, so code sessions pay roughly nothing while drafting sessions get the full guide. A retrieval tool could work, but MCP is for connecting to external systems; it adds a tool definition to every session and relies on Claude deciding to call it. CLAUDE.md is always-on context, so nine pages would load into every code session. A hook is a deterministic gate, but a style review needs judgment while drafting, not a script at publish time.",
+      "references": [
+        "https://code.claude.com/docs/en/features-overview",
+        "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-09",
+      "domain": "tools-mcps",
+      "objective": "Choose among built-in tools, custom tools, Skills, and MCP",
+      "type": "single",
+      "prompt": "One internal billing app, built directly on the Messages API, needs Claude to compute proration when a customer changes plans mid-cycle. The proration rules already exist as a tested Python function in that app's codebase, use internal discount tables, and no other team needs them. How should you give Claude this capability?",
+      "options": [
+        "Add the function to atlas-mcp as a new tool so that Claude Code and every other client can reuse the same proration logic.",
+        "Enable the code execution server tool and describe the proration formula in the system prompt for Claude to implement.",
+        "Write a Skill that explains the proration formula and discount tables so Claude can work the arithmetic out on its own.",
+        "Define a client tool in the app's request whose handler calls the existing Python function and returns the result."
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A client tool defined in the request lets Claude decide when proration is needed while the app's own tested function does the arithmetic with its internal tables, which keeps the logic deterministic and local to the one consumer. Publishing it through atlas-mcp adds a shared server dependency for logic no other team needs. Code execution would have Claude reimplement the rules in a sandbox that cannot see the internal discount tables. A Skill gives Claude knowledge, but the calculation would then be done by the model instead of the tested function.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-10",
+      "domain": "tools-mcps",
+      "objective": "Author and deploy MCP tools, resources, and prompts across transports",
+      "type": "single",
+      "prompt": "`ledger_get_invoice` currently returns a text block such as \"Invoice INV-00412233: $1,240.00, due 2026-11-30\". Two teams' apps regex-parse that text. You want to add an `outputSchema` and return typed fields so new clients can validate results, without breaking the two existing apps. What should the new version return?",
+      "options": [
+        "Only structuredContent matching the new outputSchema, plus a bumped server version so old clients know to upgrade.",
+        "structuredContent matching the outputSchema, and the same data serialized as JSON in a TextContent block as well.",
+        "The old text block unchanged under ledger_get_invoice, and the typed fields under a new ledger_get_invoice_v2 tool.",
+        "structuredContent only, then a tools list-changed notification so connected clients refetch the new definitions."
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The MCP spec says a tool returning structured content should also return the serialized JSON in a TextContent block for backwards compatibility, so clients that only read text keep working while new clients validate structuredContent against the outputSchema. Dropping the text block breaks the two regex-based apps regardless of a version bump. A parallel v2 tool is workable but doubles the tool surface and adds a near-duplicate that hurts selection when one tool can serve both. A list-changed notification tells clients the list changed but does nothing to make old parsers understand the new result.",
+      "references": [
+        "https://modelcontextprotocol.io/specification/2026-07-28/server/tools"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-11",
+      "domain": "tools-mcps",
+      "objective": "Design descriptions, schemas, errors, approvals, and tool sets",
+      "type": "single",
+      "prompt": "When asked to summarize INC-101, INC-102 and INC-103, Claude's first response contains three `helpdesk_get_ticket` tool_use blocks. Your loop runs them and appends three user messages, each holding one tool_result. Over the following turns Claude stops batching calls and fetches tickets one at a time, tripling latency. What should you fix?",
+      "options": [
+        "Add a system prompt line encouraging Claude to call independent tools at the same time whenever it can do so.",
+        "Set disable_parallel_tool_use: false explicitly in the request so that parallel calls are switched back on.",
+        "Return all three tool_result blocks together in one user message, placed before any text in that message.",
+        "Mark helpdesk_get_ticket with readOnlyHint: true so the loop knows the tool is safe to batch with others."
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Sending each tool_result in its own user message is the most common way to teach Claude to stop making parallel calls; every result for a turn belongs in the next user message, with tool_result blocks first. A prompt nudge can raise parallelism, but it fights against a history that keeps showing the wrong pattern. Parallel tool use is already on by default, so setting the flag to false changes nothing. readOnlyHint is an Agent SDK annotation for custom tools that governs whether calls may run in parallel, which is not this hand-written Messages API loop's problem.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/parallel-tool-use",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-12",
+      "domain": "tools-mcps",
+      "objective": "Design descriptions, schemas, errors, approvals, and tool sets",
+      "type": "multiple",
+      "prompt": "In one response Claude emits four tool_use blocks: `helpdesk_get_ticket`, `ledger_get_invoice`, `ledger_issue_refund` and `helpdesk_close_ticket`. Your loop runs the two lookups, then the refund, and the refund fails with a Ledger validation error, so the loop decides not to run the close-ticket call. Which TWO actions are correct?",
+      "options": [
+        "Run the two read-only lookups concurrently and the refund and close-ticket calls one after the other.",
+        "Return a tool_result for the skipped close-ticket call with is_error: true and a one-line reason.",
+        "Leave out the skipped call's tool_result so that Claude re-issues it on the next turn when ready.",
+        "Re-run the failed refund automatically before replying so Claude only ever sees a clean batch.",
+        "Set disable_parallel_tool_use as a top-level request parameter for any turn that includes refunds."
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Independent read-only calls are safe to run in parallel, while calls with side effects or ordering needs are better run sequentially, and every tool_use needs a matching tool_result, so a deliberately skipped call gets one with is_error: true and a short explanation. Omitting the result breaks the required pairing of tool_use and tool_result. Silently re-running a refund that failed validation repeats a side effect and hides the error Claude needs to explain. disable_parallel_tool_use lives inside tool_choice, not at the top level, and turning it off is unnecessary when the loop controls execution order.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/parallel-tool-use"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-13",
+      "domain": "tools-mcps",
+      "objective": "Design descriptions, schemas, errors, approvals, and tool sets",
+      "type": "single",
+      "prompt": "`ledger_search_invoices` declares `customer_id` as an integer and `currency` as a required string enum. In production, 6% of calls send `customer_id: \"4821\"` as a string or omit `currency`, and the Ledger client rejects them before any business logic runs. The descriptions are already detailed. What is the MOST direct fix?",
+      "options": [
+        "Set strict: true on the tool so sampling is constrained and inputs always match the declared types and required fields.",
+        "Add input_examples showing an integer customer_id and a currency value so Claude copies the correct shape each time.",
+        "Validate inputs in the handler and return is_error results naming the bad field so that Claude retries with a fix.",
+        "Repeat in the description, in capitals, that customer_id is a number and currency must always be supplied with it."
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Strict tool use applies grammar-constrained sampling so tool inputs match the JSON Schema, which removes exactly these failures: wrong types such as \"4821\" and missing required fields. input_examples can improve conformance for complex inputs, but they guide rather than guarantee. Handler validation with is_error is good defense, but it costs an extra round trip on each of the 6% instead of preventing them. Shouting in an already-detailed description adds emphasis without any guarantee.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/strict-tool-use"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-14",
+      "domain": "tools-mcps",
+      "objective": "Author and deploy MCP tools, resources, and prompts across transports",
+      "type": "single",
+      "prompt": "For local development, engineers run the Streamable HTTP build of atlas-mcp with `--host 0.0.0.0 --port 8080` and no auth, pointing it at the Ledger sandbox. A security review shows that a web page open in an engineer's browser can make cross-origin requests to that port and invoke tools. What should the local configuration do?",
+      "options": [
+        "Put the local server behind a TLS certificate so that browser traffic to port 8080 is encrypted in transit.",
+        "Add per-IP rate limiting on port 8080 so a hostile page cannot invoke tools quickly enough to cause damage.",
+        "Switch local development back to stdio, because only the stdio transport is allowed to reach a sandbox.",
+        "Bind the local server to 127.0.0.1 and validate the Origin header on every incoming connection it accepts."
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The Streamable HTTP spec requires servers to validate Origin on all incoming connections, to prevent DNS rebinding, and says local servers should bind only to localhost rather than all interfaces; together those close the cross-origin path the review found. TLS encrypts traffic but does not stop a page in the engineer's own browser from making the request. Rate limiting slows abuse without stopping it. stdio would also avoid the problem, but nothing restricts sandbox access to stdio, and the review is about this HTTP build's configuration.",
+      "references": [
+        "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http"
+      ]
+    },
+    {
+      "id": "ccdv-f-s04-15",
+      "domain": "tools-mcps",
+      "objective": "Choose among built-in tools, custom tools, Skills, and MCP",
+      "type": "single",
+      "prompt": "Engineers keep a nightly Markdown export of the Wiki in a folder inside their repo and use Claude Code there. A teammate proposes adding `wiki_read_file`, `wiki_list_files` and `wiki_grep` tools to atlas-mcp so Claude can search the export. The export is plain files on local disk, and no Wiki API calls are involved. What should you recommend?",
+      "options": [
+        "Build the three tools as proposed so Wiki access goes through one audited server for every client that needs it.",
+        "Rely on Claude Code's built-in file reading and searching on that folder and add no new tools for the export.",
+        "Expose each exported page as an MCP resource so the files appear in the host's picker for engineers to attach.",
+        "Write a Skill describing the export layout and bundle read, list and grep scripts in it for Claude to run."
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Claude Code already reads and searches local files with built-in tools (Read, plus file search that runs as Glob and Grep or, on macOS and Linux by default, as embedded find and grep through Bash), so a folder on disk needs no custom tools; three duplicates would enlarge the toolset with near-identical choices. Routing local file reads through atlas-mcp adds a server hop and audit layer for data that never touches the Wiki API. Resources make sense for context the host app curates, but the export is already directly readable and searchable. A Skill describing the layout can be a useful complement, but bundling scripts that re-create read, list and grep rebuilds what Claude Code already provides.",
+      "references": [
+        "https://code.claude.com/docs/en/tools-reference",
+        "https://code.claude.com/docs/en/features-overview"
+      ]
+    }
+  ]
+}

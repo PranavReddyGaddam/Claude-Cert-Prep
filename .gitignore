@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# env files
+.env*
+
+# typescript
+*.tsbuildinfo
+
+# Anthropic's documentation pages are kept locally for fact-checking only; the site ships just the link index
+/content/official-docs/pages/
+/content/official-docs/*-coverage.md
+
+# local backups
+/snapshots/

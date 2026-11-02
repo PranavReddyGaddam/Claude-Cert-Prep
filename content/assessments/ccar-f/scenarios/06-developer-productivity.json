@@ -1,0 +1,319 @@
+{
+  "id": "06-developer-productivity",
+  "title": "Developer Productivity Agent",
+  "setup": "You are building a developer productivity agent on the Claude Agent SDK that helps engineers explore a large monorepo they have not worked in, generate boilerplate that matches local conventions, and automate routine tasks. It runs with the built-in Read, Write, Edit, Bash, Grep and Glob tools enabled through `allowedTools`, plus MCP servers for the issue tracker, internal docs search and cross-repository code search. Engineers use it in sessions that last hours, so context budget and choosing the right tool matter as much as raw capability.",
+  "questions": [
+    {
+      "id": "ccar-f-s06-01",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Choose Claude Code file, shell, and search tools safely",
+      "type": "single",
+      "prompt": "An engineer asks: \"Which files call `emitAuditEvent(`?\" The agent runs Glob with `**/*audit*`, gets 41 paths, and starts reading each file in full. After nine reads it has found three callers and used 60,000 tokens. Most real callers live in files whose names have nothing to do with auditing. What should the agent have done?",
+      "options": [
+        "Run Glob with `**/*.ts` to list every TypeScript file, then Read them in batches until all callers have been found",
+        "Run Grep for `emitAuditEvent\\(` in files_with_matches mode, then Read only the matching files around the call sites",
+        "Read the module that defines `emitAuditEvent` and follow its exports to find every file that imports the function",
+        "Keep the Glob results but Read each file with a small `limit`, so the agent scans 41 files without the full token cost"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The question is about file contents, not file names, so Grep is the right tool: it searches inside files across the tree and, in its default files_with_matches mode, returns only paths, after which the agent reads just those files. Globbing every TypeScript file and reading them is the same name-based approach at a larger scale. Following exports from the definition tells you what is exported, not who calls it. Partial reads of the 41 name matches still search the wrong set of files and can miss calls past the read limit.",
+      "references": [
+        "https://code.claude.com/docs/en/tools-reference"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-02",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Choose Claude Code file, shell, and search tools safely",
+      "type": "single",
+      "prompt": "Generated API clients live under `gen/`, which is listed in `.gitignore`. The agent runs Grep for `class \\w+Client` across the repository to list them and gets no results, then tells the engineer the repository has no generated clients. An engineer confirms there are 37 files named like `gen/billing/billing_client.ts`. What should the agent do to find them?",
+      "options": [
+        "Rerun Grep with `multiline: true`, because class declarations in generated code often span more than one line",
+        "Rerun Grep in `count` mode so the total tells it whether there are zero matches before it reports a conclusion",
+        "Call Read on the `gen/` directory so that it lists the directory's files and the agent can open each client",
+        "Run Glob with `gen/**/*_client.ts`, because Glob does not skip gitignored files the way Grep does by default"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Grep respects `.gitignore`, so it skipped `gen/` entirely; Glob does not respect `.gitignore` by default and matches by path, which is exactly what a naming pattern like `*_client.ts` needs. Multiline matching changes how a pattern spans lines, but the files were never searched. Count mode reports the same zero for the same reason. Read reads files, not directories, so it cannot list `gen/`.",
+      "references": [
+        "https://code.claude.com/docs/en/tools-reference"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-03",
+      "domain": "context-management-reliability",
+      "objective": "Use scratchpads, subagents, manifests, and compaction for large codebases",
+      "type": "single",
+      "prompt": "An engineer asks how request authentication works in `services/payments/`, which has 380 source files. The agent's plan is \"Read every file under services/payments to build a complete picture, then explain.\" The session already holds 40,000 tokens of earlier work. What approach is BEST?",
+      "options": [
+        "Grep for auth middleware and token checks, Read the entry points it finds, then follow imports only as questions arise",
+        "Read every file as planned, but inside a subagent so the 380 files never enter the main conversation's context",
+        "Read only the service's README and its CLAUDE.md, then answer from the documented architecture without opening code",
+        "Read every file as planned, using `allow_large` so whole files come back in fewer calls and less per-call overhead"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Exploring incrementally from search results lets the agent find the few files that implement authentication and pull in more only when a question requires it, which keeps both cost and context small. Moving a full read into a subagent protects the main context but still pays for reading 380 files to answer a question that touches a handful. Docs alone may be stale or silent on the actual checks. `allow_large` reduces the number of calls but not the amount of text read, so it makes the context problem worse.",
+      "references": [
+        "https://code.claude.com/docs/en/best-practices",
+        "https://code.claude.com/docs/en/large-codebases"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-04",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Choose Claude Code file, shell, and search tools safely",
+      "type": "single",
+      "prompt": "The agent must change the payments client timeout from 30 to 45 seconds in `config/clients.ts`. Its Edit call with `old_string: \"timeout: 30,\"` fails because that text appears four times in the file, once each in `paymentsClient`, `ledgerClient`, `searchClient` and `authClient`. Only the payments timeout should change. What should the agent do next?",
+      "options": [
+        "Retry the same Edit with `replace_all: true` so every occurrence is updated and the uniqueness check no longer applies",
+        "Use Write to save the whole file with the payments value changed, since Write does not require a unique match at all",
+        "Retry Edit with an `old_string` that includes the `paymentsClient: {` line above it, so the match occurs exactly once",
+        "Run `sed -i` through Bash on the line number Grep reports for the payments timeout, which avoids the match requirement"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Edit requires `old_string` to appear exactly once; when it does not, the documented fix is to include enough surrounding text to pin down one occurrence, which here is the `paymentsClient` block. `replace_all` satisfies the tool but changes all four clients, three of them wrongly. Rewriting the whole file with Write risks clobbering other content and is a much larger change than one value. A line-number `sed` edit bypasses Edit's checks and breaks if the file shifts between the Grep and the edit.",
+      "references": [
+        "https://code.claude.com/docs/en/tools-reference"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-05",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Use Task, allowedTools, isolated context, parallelism, and forked sessions",
+      "type": "single",
+      "prompt": "Two hours into a session, context is about 70% full. The engineer asks: \"Find every place feature flags are read across our 12 services and summarize the patterns.\" A dry run of this search in another session read 140 files. The engineer wants to keep working on the current refactor in this session afterward. What is the BEST way to run this task?",
+      "options": [
+        "Run the search in the main conversation, using Grep in files_with_matches mode so the tool output stays small",
+        "Delegate it to a subagent with only Read, Grep and Glob, and have it return a concise summary of the patterns found",
+        "Run `/compact` first to free space, then run the search in the main conversation with the context that was freed",
+        "Switch the session to a model with a larger context window so the 140 file reads fit alongside the refactor work"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A subagent runs in its own context, and only its final message comes back, so 140 file reads stay out of the main conversation and the refactor keeps its room; restricting it to read-only tools fits an exploration task. Compact Grep output helps, but the agent still has to Read many of those files in the main context. Compacting first frees space and then fills it again with exploration that is irrelevant to the refactor. A larger window postpones the crowding rather than isolating the work.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents",
+        "https://code.claude.com/docs/en/best-practices"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-06",
+      "domain": "context-management-reliability",
+      "objective": "Use scratchpads, subagents, manifests, and compaction for large codebases",
+      "type": "single",
+      "prompt": "During a four-hour database migration session the context compacts twice. After the second compaction the agent re-verifies three facts it had already confirmed and retries a connection-pool approach it had ruled out an hour earlier because it deadlocks under load. What change MOST reliably prevents this?",
+      "options": [
+        "Have the agent keep a notes file of verified facts, decisions and ruled-out approaches, and re-read it after compaction",
+        "Put the confirmed facts into a path-scoped rule file for the migration directory so they load whenever those files are read",
+        "Ask for a longer, more detailed summary at compaction time that lists every fact and every rejected approach",
+        "Turn off automatic compaction and let the session run until the context fills, then start a new session from scratch"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A notes file on disk survives compaction intact, and re-reading it gives the agent its verified facts and dead ends back verbatim. Path-scoped rules load into message history when a matching file is read, so compaction summarizes them away along with everything else. A more detailed summary helps, but summaries are still lossy and the ruled-out approach is exactly the kind of detail that gets compressed. Disabling compaction trades a lossy summary for losing everything at the reset.",
+      "references": [
+        "https://code.claude.com/docs/en/context-window",
+        "https://www.anthropic.com/research/effective-context-engineering-for-ai-agents"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-07",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Scope MCP configuration and resources",
+      "type": "single",
+      "prompt": "An engineer asks which services consume the `order.created` event. The local checkout contains only the `orders` repository; consumers live in about 600 other repositories. The company runs an indexed cross-repository code search service, exposed to the agent as the `codesearch` MCP server. What should the agent use?",
+      "options": [
+        "Grep the local checkout with a broader pattern that also matches topic constants and event wrapper classes",
+        "Clone the most likely consumer repositories into the workspace, then Grep across all of them together",
+        "Query the internal docs search MCP server for pages that list the consumers of the `order.created` event",
+        "Query the `codesearch` MCP server for `order.created`, since the consumers are outside the local checkout"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Built-in Grep can only search what is on disk, and the consumers are in other repositories; an existing code-search index exposed over MCP is the documented way to let Claude query a codebase it cannot read locally. A broader local pattern searches the wrong files more thoroughly. Cloning guesses which repositories matter and is slow and incomplete across 600 of them. Docs search finds what someone wrote down about consumers, which may be stale, rather than the code that subscribes.",
+      "references": [
+        "https://code.claude.com/docs/en/large-codebases",
+        "https://code.claude.com/docs/en/mcp"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-08",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Choose Claude Code file, shell, and search tools safely",
+      "type": "single",
+      "prompt": "A teammate connected a `filesystem` MCP server with `read_file` and `write_file` tools and wants the agent to use them for all local edits. Your permission rules include `Edit(/infra/**)` in deny, and a PostToolUse hook matched on `Write|Edit` runs the formatter. After the change, unformatted files appear and an `/infra` file was modified. What should you do?",
+      "options": [
+        "Keep the MCP server and add `mcp__filesystem__write_file` to the hook matcher so the formatter runs on its writes as well",
+        "Keep the MCP server and add a system prompt rule that the agent must never write to any path under the `/infra` directory",
+        "Use the built-in Read, Edit and Write for local files, and remove the filesystem server's tools from the agent's tool set",
+        "Keep the MCP server and add a PreToolUse hook on `write_file` that denies writes under `/infra` and runs the formatter"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Your `Edit(...)` permission rules apply to Edit, Write and NotebookEdit, and your hook matches those tool names, so a third-party write tool routes around both; the built-in tools already have read-before-edit and exact-match checks and are covered by your controls. Extending the hook matcher fixes formatting but leaves the deny rule bypassed. A prompt rule replaces an enforced control with a request. A custom PreToolUse hook rebuilds controls you already have for a tool that adds nothing locally.",
+      "references": [
+        "https://code.claude.com/docs/en/tools-reference",
+        "https://code.claude.com/docs/en/permissions"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-09",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Manage tool distribution and tool choice",
+      "type": "single",
+      "prompt": "Over a few months the team connected six MCP servers, and the agent now sees 85 tools. Tool-selection errors have risen: it calls `jira_search` when asked to find code, and `docs_lookup` when asked for a file's contents. Most tasks use fewer than ten of the 85 tools. What is the BEST fix?",
+      "options": [
+        "Scope the tool set per task type with `allowedTools` or subagent `tools`, so each workflow sees only the tools it uses",
+        "Expand the descriptions of all 85 tools with detailed usage notes and examples so the model can tell them apart",
+        "Move to a larger model, since selection among this many tools requires more capacity than the current model offers",
+        "Add a system prompt table mapping each kind of request to the tool that should handle it, covering all 85 tools"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Selection accuracy degrades once an agent has more than about 30 to 50 tools, and most tasks here need fewer than ten, so giving each workflow a focused tool set removes the distractors rather than asking the model to sort through them. Longer descriptions on all 85 add tokens and still leave 85 choices. A larger model treats the symptom of an oversized tool list. A routing table in the prompt adds more text to read and has to be maintained as servers change.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+        "https://www.anthropic.com/research/writing-tools-for-agents"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-10",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Write precise tool descriptions and boundaries",
+      "type": "single",
+      "prompt": "Two MCP servers each expose a tool named `search`. The docs server describes its tool as \"Search for information\" and the code-search server as \"Search the codebase.\" When engineers ask \"how do we configure retries for the payments client?\", the agent queries docs search 70% of the time and returns a design document from 2023 instead of the current code. What is the BEST change?",
+      "options": [
+        "Remove the docs server from the agent, since code is the source of truth and docs can always drift away from it",
+        "Rewrite both descriptions to say what each one searches and returns, when to prefer the other, and an example query",
+        "Add a system prompt rule that the agent must always query code search first and only then try docs search after",
+        "Have the docs server return results sorted by date so newer design documents appear above older ones in results"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The model chooses tools from their descriptions, and \"search for information\" claims everything; describing what corpus each tool covers, what it returns and when the other one fits gives the agent a real basis for choosing, and an example query makes the boundary concrete. Removing docs search loses design rationale that code cannot provide. A fixed order costs a wasted call on questions that really are about documentation. Date sorting improves docs results but leaves the agent on the wrong tool.",
+      "references": [
+        "https://www.anthropic.com/research/writing-tools-for-agents",
+        "https://code.claude.com/docs/en/mcp"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-11",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Use Task, allowedTools, isolated context, parallelism, and forked sessions",
+      "type": "single",
+      "prompt": "To scaffold a new service, the agent reads six independent template files. Traces show six turns: one Read, a round trip, the next Read, and so on, which adds about 25 seconds. No call depends on another's result. What is the MOST direct change?",
+      "options": [
+        "Spawn six subagents, one per template, so the reads run in separate contexts at the same time and report back",
+        "Merge the six templates into a single file in the repository so the agent can read all of them in one Read call",
+        "Set `disable_parallel_tool_use` to false on each request so the API is allowed to run the Read calls concurrently",
+        "Add a system prompt instruction to make all independent tool calls in parallel in one turn, such as reading files"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Claude can call several tools in one response, and a prompt that tells it to issue independent calls together, such as reading three files at once, is the documented way to get that behavior; the SDK can then run read-only tools like Read concurrently. Six subagents add startup cost and context handoffs to do six reads. Merging templates changes the repository to suit the agent. Parallel tool use is already the default, so setting that flag to false changes nothing.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+        "https://code.claude.com/docs/en/agent-sdk/agent-loop"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-12",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Use Task, allowedTools, isolated context, parallelism, and forked sessions",
+      "type": "single",
+      "prompt": "You wrote an in-process SDK MCP tool, `get_ticket`, that fetches one issue from the tracker. When asked to summarize five tickets, Claude emits all five `get_ticket` calls in a single turn, yet traces show them executing one after another, taking 5x the time of a single call. Built-in Read calls in the same turn run concurrently. What should you change?",
+      "options": [
+        "Add the parallel tool calls instruction to the system prompt so that Claude groups the `get_ticket` calls more tightly",
+        "Replace `get_ticket` with a `get_tickets` tool that takes a list, so all five tickets come back in one single call",
+        "Set `readOnlyHint` in the `get_ticket` tool's annotations so the SDK can run concurrent calls to it in parallel",
+        "Wrap the five ticket fetches in a subagent so that its tool calls run in their own context and in parallel there"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Custom tools run sequentially by default; the SDK runs a custom tool concurrently only when its annotations mark it read-only with `readOnlyHint`, which is why Read parallelizes and `get_ticket` does not. The prompt instruction targets whether Claude emits calls together, which it already does. A batch tool would work, but it is a redesign when one annotation fixes the execution. A subagent runs under the same rule, so its `get_ticket` calls would still be sequential.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/agent-loop",
+        "https://code.claude.com/docs/en/agent-sdk/mcp"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-13",
+      "domain": "context-management-reliability",
+      "objective": "Use scratchpads, subagents, manifests, and compaction for large codebases",
+      "type": "single",
+      "prompt": "Before changing its signature, an engineer needs every caller of `computeRiskScore`. A word-boundary Grep for the name finds 14 call sites. Code review later reveals 9 more in files that do `import { computeRiskScore as score } from '@risk/core'` or call it through a re-exporting `risk/index.ts`. What tracing approach should the agent use?",
+      "options": [
+        "Grep for imports of the defining module and its re-exports, note each local alias, then Grep for those alias names",
+        "Grep for `computeRiskScore` without word boundaries, so partial matches inside longer identifiers are also captured",
+        "Read every file in the `@risk/core` package and list each place it uses the function inside that package",
+        "Glob for files whose names contain `risk` and Read them, since callers of a risk function usually sit nearby"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Aliased imports and re-exports break a name-only search, so the trace has to follow how the function enters each file: find who imports the module or its re-exporting index, record the local name, then search for that name. Dropping word boundaries adds false matches but still never matches `score`. Reading the defining package finds internal uses, not the external callers that break. Name-based Glob guesses at file locations rather than tracing references.",
+      "references": [
+        "https://code.claude.com/docs/en/tools-reference",
+        "https://code.claude.com/docs/en/large-codebases"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-14",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Enforce prerequisites, decompose concerns, and structure handoffs",
+      "type": "single",
+      "prompt": "Your exploration subagent's prompt ends with \"Report what you found.\" Its replies average 9,000 tokens, mostly pasted file contents, and after three delegations the main conversation is as full as if it had done the reading itself. What change BEST fixes this?",
+      "options": [
+        "Run `/compact` in the main conversation after each subagent returns, so the long replies get summarized away",
+        "Specify the return format: key findings with file:line references, open questions, and a 300-word limit",
+        "Switch the subagent to a forked session so it shares the main context and does not need to repeat file contents",
+        "Give the main agent a larger context window so three or four full subagent reports fit before it fills up"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The subagent's final message is all the parent receives, so the parent should define that message: concise findings with pointers back to the code let the main agent read more only if needed. Compacting after each delegation pays for the bloated reply and then loses detail in the summary. A fork starts from the parent's conversation, which does not change what it sends back. A larger window makes room for the dump instead of shrinking it.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents",
+        "https://www.anthropic.com/research/effective-context-engineering-for-ai-agents"
+      ]
+    },
+    {
+      "id": "ccar-f-s06-15",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Use examples, test-driven iteration, and interviews",
+      "type": "single",
+      "prompt": "Engineers ask the agent for new HTTP handlers. The generated handlers compile but break local conventions: they throw raw errors instead of returning `Result` types, skip the request-ID logger, and name files in camelCase where the repository uses kebab-case. The system prompt already has a paragraph describing these conventions. What change is MOST effective?",
+      "options": [
+        "Expand the conventions paragraph into a detailed style guide that covers errors, logging, naming and file layout",
+        "Generate the handler as now and then run the linter with auto-fix so that naming and formatting issues get corrected",
+        "Fine-tune a model on the repository's existing handlers so that it absorbs the conventions without any prompting",
+        "Have the agent Read two or three existing handlers as reference examples first, then generate code that follows them"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Concrete examples are among the most reliable ways to steer format and structure, and existing handlers show the `Result` pattern, logger usage and file naming together in real code. A longer style guide is more description of what a short paragraph already failed to convey. A linter can rename files and fix formatting, but it will not convert thrown errors into `Result` returns or add the logger. Fine-tuning is out of proportion when the examples are already in the repository.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+        "https://code.claude.com/docs/en/best-practices"
+      ]
+    }
+  ]
+}

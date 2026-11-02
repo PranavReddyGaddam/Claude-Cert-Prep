@@ -1,0 +1,322 @@
+{
+  "id": "02-cost-latency",
+  "title": "Cost and Latency Optimization",
+  "setup": "Your project-management SaaS assistant works, but at two million requests a day it is too slow and too expensive. Every request sends the same tool definitions and a long system prompt of product documentation, the interactive chat path runs on a Sonnet-tier model, an intent-tagging step runs before each answer, and a nightly job writes weekly digests for every project. You have an eval suite with quality, cost and latency tracking, and the goal is to cut cost and latency without losing measured quality.",
+  "questions": [
+    {
+      "id": "ccdv-f-s02-01",
+      "domain": "model-selection-optimization",
+      "objective": "Balance model quality, latency, cost, capability, and version changes",
+      "type": "single",
+      "prompt": "Before answering, the assistant tags each question with one of 12 intent categories. Tagging runs inline on `claude-opus-5-5` and adds about 1.8 seconds to every chat turn. On the 2,000-question labelled eval set, Opus scores 99.1% agreement and `claude-haiku-5-5` scores 98.7%; the product's acceptance bar is 98%. What should you do?",
+      "options": [
+        "Keep Opus 5.5 for tagging and set effort to low, so the step costs less while the stronger model stays in place",
+        "Move tagging to the Message Batches API, so its 50% discount applies to every one of the tagging requests",
+        "Move tagging to Haiku 5.5, because it clears the 98% bar and is the tier built for fast, high-volume tagging",
+        "Cache the tagging prompt with cache_control, so each repeated call skips reprocessing of the category list"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Haiku 5.5 is positioned for high-volume, latency-sensitive classification, and your own eval shows it clears the acceptance bar, so the cheaper, faster tier is the right choice; the 0.4-point gap is inside the requirement. Lowering effort on Opus trims tokens but keeps the higher per-token price and slower model class for a task that does not need it. Batch results are asynchronous, so they cannot sit inline in a chat turn. A short tagging prompt is likely below the minimum cacheable length, and caching only reduces input cost, not the model-tier cost and latency at issue.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+        "https://platform.claude.com/docs/en/models/overview"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-02",
+      "domain": "model-selection-optimization",
+      "objective": "Budget tokens and use prompt caching",
+      "type": "single",
+      "prompt": "The system prompt is three blocks: block 1 is `Current time: 2026-11-01T14:03:22Z. User: {display_name}, plan: {plan}`; blocks 2 and 3 hold 9,000 tokens of product documentation and policies that never change. `cache_control` sits on block 3. Usage on consecutive requests shows `cache_creation_input_tokens` near 9,100 every time and `cache_read_input_tokens` of 0. What is the BEST fix?",
+      "options": [
+        "Round the timestamp to the hour, so the prefix stays identical for every request made within the same hour",
+        "Move the per-request values out of the top block to after the static docs, keeping the breakpoint on the docs",
+        "Switch the breakpoint to the 1-hour TTL, so the cached prefix survives longer between requests from each user",
+        "Add a breakpoint on each of the three blocks, so the lookback can find an earlier cache entry to read from"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The cache key is a hash of everything from the start of the prompt (tools, then system, then messages) up to the breakpoint, so a timestamp and user name in the first block make every prefix unique. Moving dynamic values after the static content, for example into the user turn, lets the 9,000-token prefix hash the same on every request. Rounding the timestamp still leaves the per-user name and plan in front of the docs. A longer TTL does nothing when the prefix never repeats. Extra breakpoints only write entries whose prefixes also begin with the changing block, so nothing ever matches.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-03",
+      "domain": "model-selection-optimization",
+      "objective": "Budget tokens and use prompt caching",
+      "type": "single",
+      "prompt": "To save money on the tagging step, a developer adds `cache_control` to its 600-token system prompt. The requests succeed with no errors, but after a full day of traffic every response still shows `cache_creation_input_tokens: 0` and `cache_read_input_tokens: 0`. Requests are sent one at a time from a single worker. What explains this?",
+      "options": [
+        "The prefix is under the model's minimum cacheable length, so the API skips caching silently without an error",
+        "System blocks cannot carry cache_control, so the breakpoint has to move onto the last tool definition instead",
+        "Explicit breakpoints need a beta header on this model, so the field is ignored until the header is included",
+        "A cache entry only becomes available after a first response starts, so back-to-back requests never share it"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "When both cache usage fields are 0 and the API returns no error, the documented cause is a prompt shorter than the model's minimum cacheable length: such requests are processed without caching. Padding the cached content up to the threshold can be worthwhile only if reads would be frequent. System blocks are valid cache breakpoints; caching follows tools, then system, then messages. Prompt caching needs no beta header on active models. The rule about entries becoming available after the first response starts matters for parallel requests, but this worker sends sequentially, and it would not keep writes at zero anyway.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-04",
+      "domain": "model-selection-optimization",
+      "objective": "Budget tokens and use prompt caching",
+      "type": "single",
+      "prompt": "Chat sessions reuse a 12,000-token cached prefix (tools plus system prompt). Analytics show users typically pause 6 to 15 minutes between turns while they read linked documents. Most second and third turns show a full cache write in `cache_creation_input_tokens` instead of a read. Which change addresses this MOST directly?",
+      "options": [
+        "Send a keep-alive request every 4 minutes for each open session, so the 5-minute lifetime keeps getting refreshed",
+        "Add a second breakpoint at the end of the tools array, so the lookback window has a closer entry to fall back on",
+        "Use the 1-hour TTL on the prefix breakpoint, so one costlier write covers the turns of a typical session",
+        "Move the chat turns to the Message Batches API, where prompt caching gets a higher hit rate across requests"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The default cache lifetime is 5 minutes, refreshed on each use, so 6-15 minute pauses let entries expire and each turn pays a fresh write. The 1-hour TTL costs 2x base input for the write instead of 1.25x, but then several turns read the prefix at the cache-read rate, which beats repeated 1.25x writes after the second turn. Keep-alive requests are extra billable calls for every idle session, which is more machinery than a TTL setting. A second breakpoint helps when a conversation outgrows the 20-block lookback, not when the entry has expired. Batches are asynchronous and their cache hits are best-effort, so they do not suit interactive chat.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+        "https://platform.claude.com/docs/en/about-claude/pricing"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-05",
+      "domain": "applications-integration",
+      "objective": "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+      "type": "multiple",
+      "prompt": "The nightly weekly-digest job summarizes 40,000 projects with synchronous calls between 01:00 and 04:00, hits 429s, and competes with early-morning chat traffic. Digests must be in inboxes by 08:00. You plan to submit the work as Message Batches instead. Which TWO points must the new design account for?",
+      "options": [
+        "Results can come back in any order, so each one has to be matched to its project through its custom_id",
+        "A batch can take up to 24 hours to finish, so a 01:00 submit is not a guarantee of results by 08:00",
+        "Batch requests stream their output, so the digest page can show partial summaries while the batch runs",
+        "Expired batch requests are still billed, so each batch should be capped at 1,000 requests to limit waste",
+        "Batches do not support prompt caching, so the shared digest instructions are billed at the full input rate"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Batch results are not guaranteed to match submission order, so custom_id is the only reliable join key back to each project. Most batches finish within an hour, but processing can run until the 24-hour expiry, so an 08:00 deadline needs an earlier submit time or a fallback for unfinished requests. Batch requests reject stream: true, and results arrive as a file, not a stream. Requests that expire are not billed. Prompt caching is supported in batches, on a best-effort basis, and its discount stacks with the batch discount.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-06",
+      "domain": "model-selection-optimization",
+      "objective": "Budget tokens and use prompt caching",
+      "type": "single",
+      "prompt": "Users can attach a project export to a question. Product wants to reject attachments that would push a request's input past a 150,000-token budget and to route large-but-allowed requests to a different model, all before any generation is paid for. The request includes a system prompt, 14 tool definitions and sometimes base64 images. Which approach fits BEST?",
+      "options": [
+        "Estimate tokens as characters divided by four in the backend, because a local estimate adds no network call",
+        "Send the request and read usage.input_tokens from the response, then refuse follow-ups that exceed the budget",
+        "Set max_tokens to 150,000 on these requests, so the API stops the call when the budget would be exceeded",
+        "Call the token counting endpoint with the same system, tools and messages, then route or reject on the count"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The token counting endpoint accepts the same structured input as a Messages request, including system prompts, tools and base64 images, and returns the input token count before you pay for generation, which is exactly what budget checks and model routing need. A characters/4 heuristic ignores tool schemas and images and drifts on code and non-English text. Reading usage after the call means the over-budget request has already been processed and billed. max_tokens limits output length, not input size, so it cannot enforce an input budget.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/token-counting"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-07",
+      "domain": "model-selection-optimization",
+      "objective": "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+      "type": "single",
+      "prompt": "The sprint-plan generator moved from `claude-sonnet-5` with thinking disabled to `claude-opus-5-5` at `effort: \"high\"`. It keeps `max_tokens: 2000`, which was always enough before. Now 6% of responses end with `stop_reason: \"max_tokens\"`, and some contain thinking blocks but no text block at all. What is the right change?",
+      "options": [
+        "Send thinking set to disabled on this route, so Opus 5.5 spends the whole token budget on the visible plan",
+        "Raise max_tokens to leave room for thinking plus the plan, and run an effort sweep on your plan evals",
+        "Set a thinking budget_tokens of 500, so the model reserves the remaining 1,500 tokens for the visible plan",
+        "Add \"keep your reasoning brief\" to the system prompt, so thinking stops consuming the output allowance"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "On Opus 5.5 adaptive thinking runs on every request and max_tokens is a hard limit on total output, thinking plus text, so a cap sized for a no-thinking model now truncates; the docs advise a larger max_tokens at higher effort and an effort sweep on your own evals rather than carrying settings over. thinking: disabled returns a 400 on Opus 5.5. Manual thinking budgets (type enabled with budget_tokens) are also rejected on this model. A prompt request for brevity is a soft influence, while effort and max_tokens are the actual controls.",
+      "references": [
+        "https://platform.claude.com/docs/en/models/opus-5-5/migration-guide",
+        "https://platform.claude.com/docs/en/build-with-claude/effort"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-08",
+      "domain": "model-selection-optimization",
+      "objective": "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+      "type": "single",
+      "prompt": "Interactive chat runs on `claude-sonnet-5-5` with no `effort` set, and p95 latency is 11 seconds. On the 300-conversation chat eval, `effort: \"medium\"` scores within 0.5 points of the current setting and cuts output tokens by 38%. The team wants lower latency and cost without changing models yet. What should you do?",
+      "options": [
+        "Set effort to medium on the chat route, because effort trades tokens for depth and your eval shows quality holds",
+        "Set max_tokens to 512 on the chat route, because a lower ceiling caps how long each answer can take to finish",
+        "Switch chat to claude-opus-5-5, because its default effort is medium and it already runs at that level",
+        "Enable fast mode on the chat route, because faster output speed cuts p95 latency without touching quality"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Sonnet 5.5 defaults to high effort, and effort is the documented control for trading thoroughness against tokens, latency and cost; for chat and other latency-sensitive work the guidance is to start at medium or low, and your eval confirms quality holds. A 512-token ceiling truncates long answers instead of making the model more economical. Opus 5.5 defaults to medium, but it is a slower, pricier tier, so switching raises cost. Fast mode increases output speed at premium pricing, which conflicts with the cost goal.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/effort",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-latency"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-09",
+      "domain": "model-selection-optimization",
+      "objective": "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+      "type": "single",
+      "prompt": "QA reports that the same question produces differently worded answers on each run. A teammate's PR adds `temperature: 0` to every request to `claude-sonnet-5-5` \"to make it deterministic\", and staging now returns 400 `invalid_request_error`. A second teammate suggests `top_p: 1` instead. What should you do?",
+      "options": [
+        "Use top_p: 1 instead of temperature, because nucleus sampling at 1 is the neutral setting the model accepts",
+        "Pin the anthropic-version header to an older API version, so the sampling parameters are accepted again",
+        "Drop sampling parameters and pin the answer shape with explicit format rules, examples and structured outputs",
+        "Cache each answer keyed by the question text, so a repeated question always gets the identical response"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "On Sonnet 5.5 and other current models any non-default temperature, top_p or top_k returns a 400, and the guidance is to omit them and steer behaviour with prompting; temperature 0 never guaranteed identical outputs anyway. Consistency comes from specifying the format with clear instructions, examples and structured outputs, and from graders that tolerate wording differences. top_p defaults to 0.99 on these models, so top_p: 1 also returns a 400. The rejection on these models applies regardless of API version. Caching whole answers by question text returns stale answers as project data changes.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/working-with-messages",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-10",
+      "domain": "model-selection-optimization",
+      "objective": "Balance model quality, latency, cost, capability, and version changes",
+      "type": "single",
+      "prompt": "The assistant runs on `claude-sonnet-5`. A teammate proposes switching production to `claude-sonnet-5-5` this Friday, keeping the current `effort: \"medium\"` setting: \"Model IDs are pinned snapshots and the new model scores higher on public benchmarks, so nothing can regress.\" You have a 400-case eval suite with cost and latency tracking. What should happen before the switch?",
+      "options": [
+        "Ship on Friday with the same effort, because a pinned snapshot ID guarantees the new model behaves consistently",
+        "Wait for Sonnet 5 to be deprecated, because migrating before a retirement date is announced is premature work",
+        "Switch only the free tier first, because public benchmark gains carry over to most customer conversation mixes",
+        "Run the eval suite on Sonnet 5.5 with a fresh effort sweep, compare quality, cost and latency, then roll out"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A pinned ID only means one model's behaviour stays fixed; switching IDs is a change in behaviour that your own evals must measure. Sonnet 5.5's effort levels are recalibrated, so the docs advise a fresh effort sweep instead of carrying over the old setting, and the comparison should cover cost and latency as well as quality. Shipping straight away treats snapshot pinning as a compatibility guarantee across models. Waiting for deprecation delays a measurable improvement and leaves the migration until it is urgent. A free-tier rollout without evals still assumes public benchmarks predict your workload.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions",
+        "https://platform.claude.com/docs/en/build-with-claude/effort",
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-11",
+      "domain": "prompt-context-engineering",
+      "objective": "Prevent context drift and bloat with pruning, compaction, and isolation",
+      "type": "single",
+      "prompt": "Because the model has a 1M-token context window, the backend now sends each project's entire history (about 300,000 tokens of tasks, comments and changelogs) with every question. Cost per request has tripled, and the eval shows more answers missing details that sit in the middle of the history. What is the BEST change?",
+      "options": [
+        "Cache the 300,000-token history, so later questions about the same project read it at the cache-read rate",
+        "Retrieve only the tasks and comments relevant to the question and put them above it, then ask at the end",
+        "Move these questions to claude-fable-5-1, because a stronger model recalls details better across long inputs",
+        "Raise effort to max on these requests, so the model spends more thinking on locating the relevant details"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "More context is not automatically better: accuracy and recall degrade as token count grows (context rot), and every extra token is billed. Sending only the relevant material, with long-form data at the top and the question at the end, attacks both the cost and the missed details. Caching makes the oversized prefix cheaper but leaves the recall problem in place. A larger model and higher effort both raise cost further while still asking the model to search 300,000 tokens of mostly irrelevant history.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/context-windows",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-12",
+      "domain": "model-selection-optimization",
+      "objective": "Budget tokens and use prompt caching",
+      "type": "single",
+      "prompt": "To \"help the model\", the backend sorts the 14 tool definitions per user so each user's most-used tools come first, and it places an explicit breakpoint at the end of the system prompt. The cache hit rate for the tools-plus-system prefix is under 5%, even for users who send several questions within a few minutes of each other. What should you change?",
+      "options": [
+        "Send the tools in one fixed canonical order on every request, so the tools and system prefix hash the same",
+        "Move the breakpoint to the last tool definition, so the tools are cached apart from the system prompt",
+        "Add a second breakpoint after the system prompt, so the system cache survives when the tool order changes",
+        "Switch the prefix breakpoint to the 1-hour TTL, so each sorted tools array stays cached for longer per user"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Tools come first in the cached prefix, and any change to tool definitions invalidates the tools, system and message caches, so per-user ordering produces a different hash every time a user's usage shifts and shares nothing across users. A single canonical order makes the prefix identical for everyone. Moving the breakpoint onto the tools still hashes a reordered array. A breakpoint after the system prompt cannot survive a tools change, because the system cache builds on the tools level. A longer TTL keeps entries that are rarely reused while the arrays keep changing.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-13",
+      "domain": "model-selection-optimization",
+      "objective": "Integrate SDK and transport fundamentals",
+      "type": "single",
+      "prompt": "Interactive traffic is hitting the organisation's input-tokens-per-minute (ITPM) limit at peak, returning 429s. About 85% of each request's input is the static tools-plus-system prefix, which is not cached today. The usage-tier upgrade is two weeks away. Which change raises effective throughput the most right now?",
+      "options": [
+        "Lower max_tokens across the chat route, because a smaller reserved output shrinks each request's rate-limit cost",
+        "Move part of the peak traffic to Message Batches, because batch requests have rate limits of their own",
+        "Ramp traffic gradually through the morning, because sudden usage increases trigger acceleration limits",
+        "Cache the static prefix, because for most models cache reads do not count toward the ITPM rate limit"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "For most current models only uncached input tokens (input_tokens plus cache_creation_input_tokens) count toward ITPM, so caching an 85% static prefix cuts the counted input per request sharply and raises effective throughput without a tier change. max_tokens affects neither ITPM nor OTPM accounting. Batches do have separate limits, but interactive chat needs immediate responses, so it cannot move there. Acceleration limits apply to sharp jumps in usage; this traffic is steadily hitting the ITPM ceiling at peak.",
+      "references": [
+        "https://platform.claude.com/docs/en/api/rate-limits",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-14",
+      "domain": "model-selection-optimization",
+      "objective": "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+      "type": "single",
+      "prompt": "After moving the assistant to `claude-opus-5-5`, the UI's \"show reasoning\" panel, which renders `thinking_delta` events, stays blank, and users report a long pause before any text appears. Streaming is enabled and the request sends no `thinking` field. Total latency is unchanged from the old model. What should you change?",
+      "options": [
+        "Set the thinking display option to summarized, so readable reasoning streams in while the model works",
+        "Send thinking set to disabled, so the response skips its reasoning step and text starts streaming at once",
+        "Lower max_tokens on the route, so the thinking phase has less room and the first text arrives sooner",
+        "Turn on stream accumulation with get_final_message, so the SDK buffers the reasoning before rendering"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "On Opus 5.5 thinking.display defaults to omitted, so thinking blocks stream with empty text; the migration guide notes this looks like a long pause in products that show reasoning and recommends display: summarized to restore visible progress. Disabling thinking returns a 400 on Opus 5.5. Lowering max_tokens risks truncating the answer and does not make reasoning visible. get_final_message waits for the whole response, which makes the pause longer, not shorter.",
+      "references": [
+        "https://platform.claude.com/docs/en/models/opus-5-5/migration-guide",
+        "https://platform.claude.com/docs/en/build-with-claude/thinking"
+      ]
+    },
+    {
+      "id": "ccdv-f-s02-15",
+      "domain": "model-selection-optimization",
+      "objective": "Budget tokens and use prompt caching",
+      "type": "multiple",
+      "prompt": "Finance asks for a lower cost per interactive chat turn without any drop in measured quality. Each turn sends 12,000 tokens of static tools and system prompt, uncached, plus the conversation, on `claude-sonnet-5-5` at default effort with `max_tokens: 4000`; answers average 450 output tokens. Your eval shows quality holds at `effort: \"medium\"`. Which TWO changes cut cost per turn?",
+      "options": [
+        "Cache the static tools and system prompt with a breakpoint placed at the end of that unchanging prefix",
+        "Move interactive chat to the Message Batches API, so every chat turn gets the 50% batch price discount",
+        "Set effort to medium on the chat route, since the eval shows quality holds and fewer tokens are spent",
+        "Lower max_tokens from 4,000 to 1,000, because the unused part of the reserved output budget is billed",
+        "Count tokens before every request, because counted requests are billed at a lower input token rate"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "Caching the 12,000-token static prefix turns most of each turn's input into cache reads billed at a fraction of the base input price, and lowering effort reduces output and thinking tokens; both leave quality intact per your eval. Batches are asynchronous, so chat cannot wait for them. You are billed for tokens actually generated, not for the max_tokens ceiling, so lowering it saves nothing on 450-token answers. Token counting is an estimate for budgeting and routing; it does not change the price of the request that follows.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+        "https://platform.claude.com/docs/en/build-with-claude/effort"
+      ]
+    }
+  ]
+}

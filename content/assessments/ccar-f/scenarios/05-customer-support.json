@@ -1,0 +1,317 @@
+{
+  "id": "05-customer-support",
+  "title": "Customer Support Resolution Agent",
+  "setup": "You are building a customer support agent on the Claude Agent SDK that handles returns, billing disputes and account issues. It works through four tools on a `support` MCP server: `get_customer`, `lookup_order`, `process_refund` and `escalate_to_human` (exposed to the SDK as `mcp__support__<tool>`). The target is at least 80% first-contact resolution, while every case that policy says needs a person still reaches one with enough context to act.",
+  "questions": [
+    {
+      "id": "ccar-f-s05-01",
+      "domain": "context-management-reliability",
+      "objective": "Escalate ambiguity and policy gaps",
+      "type": "single",
+      "prompt": "The system prompt says: \"Escalate when the customer is upset or when you are not confident.\" Escalation runs at 31%, and first-contact resolution at 62%. A review finds most escalations are angry customers with simple in-policy late-delivery refunds, while several customers who had already filed a chargeback with their bank were handled by the agent alone. Which change is BEST?",
+      "options": [
+        "Add a sentiment-scoring tool and escalate only when the frustration score passes 0.8, so mild annoyance no longer escalates",
+        "Have the agent report a 1-10 confidence score on each turn and escalate below 6, replacing the vague notion of \"not confident\"",
+        "Replace the rule with explicit escalation criteria, such as an existing chargeback, legal threats or refunds over the limit",
+        "Add a hook that escalates any conversation longer than eight turns, since long conversations are where cases go wrong"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Both failure modes come from triggers that are not tied to policy: anger is not a reason a case needs a person, and a chargeback is, regardless of tone. Listing the concrete conditions that require a human makes escalation predictable and auditable. A sentiment threshold still escalates on tone and still misses calm chargeback cases. A self-reported confidence number is not calibrated against anything, so it does not track whether policy requires a human. A turn-count hook is a proxy that escalates long but simple cases and misses short chargeback cases.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-02",
+      "domain": "context-management-reliability",
+      "objective": "Escalate ambiguity and policy gaps",
+      "type": "single",
+      "prompt": "A customer's first message: \"My order ORD-55120 had a $12 shipping charge that was supposed to be free. I want to talk to a real person, not a bot.\" The agent could verify the account and refund the $12 in under a minute, which would count toward first-contact resolution. How should the agent respond?",
+      "options": [
+        "Call `escalate_to_human` now with the order ID and the shipping complaint, and tell the customer a person will pick it up",
+        "Process the $12 refund first since it is clearly in policy, then offer a human if the customer still wants to talk to one",
+        "Explain that the refund can be done instantly here and ask whether the customer would still prefer to wait for a person",
+        "Verify identity and look up the order first, so the human receives a fully investigated case instead of a bare request"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "An explicit request for a person is itself an escalation criterion: the customer has stated how they want the case handled, and acting first overrides that choice. Passing the order ID and complaint means the human does not start from zero. Refunding first optimizes the resolution metric at the cost of ignoring the request. Asking whether they still want a person makes the customer repeat a choice they already made. Investigating before handing off delays the person they asked for; the escalation payload can carry what is already known without extra tool calls.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-03",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Enforce prerequisites, decompose concerns, and structure handoffs",
+      "type": "single",
+      "prompt": "Policy: identity must be verified with `get_customer` before any refund. The system prompt states this in bold. Audit logs show 3% of `process_refund` calls happen with no prior verified `get_customer` result in the session, mostly when the customer pasted their order number in the first message. What is the MOST reliable fix?",
+      "options": [
+        "Move the verification rule to the first line of the system prompt in capitals and repeat it again just above the tool list",
+        "Remove `process_refund` from the agent's allowed tools so that every refund is sent to a human through `escalate_to_human`",
+        "Rewrite the `process_refund` description to say it must only be called after `get_customer` has verified the customer",
+        "Add a PreToolUse hook on `mcp__support__process_refund` that denies the call unless the session has a verified customer"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A 3% bypass rate on a stated rule means prompting is not enough for a hard prerequisite; a PreToolUse hook runs in code before every refund call, can deny it, and its reason tells Claude to verify first, so the rule holds every time. Moving or capitalizing the instruction is still a request the model can skip. Removing the refund tool enforces safety by giving up most refund resolutions, which wrecks the 80% target. A stronger tool description is the same prompt-level control in a different place.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/hooks",
+        "https://code.claude.com/docs/en/agent-sdk/permissions"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-04",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Use hooks for deterministic controls and normalization",
+      "type": "single",
+      "prompt": "New policy: refunds above $500 need supervisor approval before they are issued. A teammate has drafted a PostToolUse hook on `mcp__support__process_refund` that checks the amount and pages a supervisor whenever it is over $500. Which approach BEST implements the policy?",
+      "options": [
+        "Keep the PostToolUse hook, and also add the $500 rule to the system prompt so the agent rarely triggers the page at all",
+        "Use a PreToolUse hook that denies refunds over $500 and tells the agent to call `escalate_to_human` with an approval request",
+        "Use the SDK's permission prompt for refunds over $500 so the customer confirms the amount before the refund is processed",
+        "Keep the PostToolUse hook but have it also log the refund to a supervisor queue so each one is reviewed the next morning"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Approval has to happen before the money moves, and only a PreToolUse hook runs before the call and can block it; its deny reason steers the agent to the escalation path. A PostToolUse hook fires after the refund has executed, so paging or logging is notification after the fact, and a prompt rule does not change that. A permission prompt that reaches the customer asks the wrong person: the policy needs a supervisor's approval, not the requester's.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/hooks"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-05",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Write precise tool descriptions and boundaries",
+      "type": "single",
+      "prompt": "The billing team adds `lookup_invoice` to the server, described as \"Look up customer purchase information.\" The existing `lookup_order` says \"Retrieves order information.\" Since the change, 22% of \"where is my package\" questions call `lookup_invoice`, which has no shipment data, and the agent answers \"I can't find tracking for that order.\" What is the BEST fix?",
+      "options": [
+        "Add few-shot examples to the system prompt that show shipping questions going to `lookup_order` and billing ones to `lookup_invoice`",
+        "Rename the new tool to `billing_lookup_invoice` so the prefix makes its domain clear while keeping both existing descriptions",
+        "Rewrite both descriptions to say what each returns, which ID it takes (ORD- or INV-), and when to use the other",
+        "Route shipment questions with a classifier first and then force `lookup_order` through `tool_choice` on the following call"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The two descriptions overlap almost completely, so the model has no basis for choosing; saying what each returns, what identifier it accepts and when the other tool is the right one draws the boundary where the confusion is. Few-shot routing examples help, but they work around descriptions that still say the same thing and do not cover cases the examples miss. A name prefix helps a little, but \"purchase information\" still sounds like it covers orders. A classifier plus forced choice adds a step to the pipeline to fix what is a two-sentence description problem.",
+      "references": [
+        "https://www.anthropic.com/research/writing-tools-for-agents",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-06",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Return structured and retry-aware MCP errors",
+      "type": "single",
+      "prompt": "`process_refund` returns the text \"Error: refund failed\" for every failure. Transcripts show the agent retrying three times when the payment gateway timed out (and then giving up), and also retrying three times when the refund was refused because the 30-day return window had closed. What change to the tool is BEST?",
+      "options": [
+        "Return `isError` results with a category (transient, validation, business rule), a retryable flag and a safe reason",
+        "Add a system prompt rule telling the agent to retry failed refunds up to three times and then call `escalate_to_human`",
+        "Return the gateway's HTTP status code in the error text so the agent can tell timeouts from rejections by their code",
+        "Have the server retry timeouts internally and keep returning \"Error: refund failed\" for every failure that remains"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The agent cannot pick the right recovery without knowing why the call failed; a structured tool-execution error that says whether the failure is transient, a bad input or a policy refusal, and whether retrying can help, lets it retry the timeout and explain the closed window instead. A retry-count rule treats every failure the same, which is the current bug. A raw HTTP code pushes interpretation onto the model and does not distinguish a policy refusal clearly. Server-side retries for timeouts are a good addition, but the remaining failures still arrive as one opaque string.",
+      "references": [
+        "https://modelcontextprotocol.io/specification/2026-07-28/server/tools",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-07",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Choose sequential or adaptive decomposition",
+      "type": "single",
+      "prompt": "A customer writes: \"Order ORD-1182 arrived broken, I was charged twice for my March subscription, and I can't log in to change my address.\" The agent refunds the broken item, says \"Is there anything else?\" and the customer leaves. Logs show 14% of sessions mention multiple issues and in most only the first is resolved. What should you change?",
+      "options": [
+        "Send any message that names more than one issue to `escalate_to_human`, since multi-issue cases are too complex to automate",
+        "Have a classifier split multi-issue messages into separate sessions, so each session handles exactly one issue",
+        "Raise the agent's turn limit and `max_tokens`, so it has room to keep working after the first issue is resolved",
+        "Have the agent list each issue up front, track each to a resolution or escalation, and confirm them all before closing"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The agent stops because nothing makes it account for the full set of issues; listing them first and tracking each one turns an open-ended message into a checklist, and confirming all of them before closing prevents the silent drop. Escalating every multi-issue message sends 14% of traffic to people even when each issue is routine. Splitting into separate sessions loses shared context such as the verified identity and makes the customer deal with three threads. The agent is not running out of turns or tokens, so raising limits does not change when it decides it is done.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/todo-tracking",
+        "https://www.anthropic.com/research/building-effective-agents"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-08",
+      "domain": "context-management-reliability",
+      "objective": "Place facts to reduce lost-in-the-middle failures",
+      "type": "single",
+      "prompt": "Long billing disputes trigger context summarization. Afterward the agent has re-asked customers for the disputed amount ($214.37), quoted the wrong order ID, and lost the date the customer said the charge appeared. These facts were stated early in the conversation. Which change MOST reliably prevents this?",
+      "options": [
+        "Tell the summarizer to be thorough and to keep every number, ID and date that appears anywhere in the conversation",
+        "Keep a case-facts block of IDs, amounts, dates and status outside the history and send it on every request",
+        "Keep the most recent ten turns verbatim during summarization and summarize only the older part of the conversation",
+        "Move to a model with a larger context window so these disputes no longer reach the summarization threshold at all"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Summaries are lossy by design, so facts the case depends on should live outside the summarized history in a structured block that is updated as they change and re-sent on every request. A thoroughness instruction makes summaries longer but does not guarantee that a specific amount survives. Keeping recent turns verbatim does not help because these facts were stated early, in the part that gets summarized. A larger window postpones the problem for long disputes rather than removing it.",
+      "references": [
+        "https://www.anthropic.com/research/effective-context-engineering-for-ai-agents",
+        "https://platform.claude.com/docs/en/build-with-claude/compaction"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-09",
+      "domain": "context-management-reliability",
+      "objective": "Escalate ambiguity and policy gaps",
+      "type": "single",
+      "prompt": "A customer asks for a price adjustment: the jacket they bought went on sale for $40 less three days after purchase. The return policy covers damaged items and 30-day returns and says nothing about price adjustments. In two transcripts the agent told customers \"we offer price matching within 7 days\", which is not company policy. How should the agent handle this request?",
+      "options": [
+        "Issue a goodwill credit of up to $20 at the agent's discretion so the customer leaves satisfied without a full adjustment",
+        "Decline the adjustment because the policy does not list it, and point the customer to the 30-day return option instead",
+        "Tell the customer this is outside current policy and call `escalate_to_human` with the request and the gap it falls into",
+        "Process a return of the jacket and suggest the customer buy it again at the sale price, the closest match within policy"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The policy is silent, so any decision the agent makes on its own creates policy; the right move is to say so and hand the request to a person who can decide, noting the gap so it can be closed. A discretionary credit invents a rule that nobody approved. Declining also invents a rule, since silence is not a prohibition. A return-and-rebuy workaround uses policy for something it was not written for and commits the company to a decision the agent is not authorized to make.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-10",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Enforce prerequisites, decompose concerns, and structure handoffs",
+      "type": "single",
+      "prompt": "Human agents say escalated cases take 6 minutes longer than fresh ones because they re-ask the customer everything. `escalate_to_human` currently takes only the session ID, and the human's console shows the raw transcript, which averages 40 turns. What change BEST reduces handling time?",
+      "options": [
+        "Make `escalate_to_human` require a structured summary: customer, verified status, issue, steps taken, what is needed",
+        "Keep sending the session ID and add a free-text `notes` field the agent may fill in with anything it thinks is relevant",
+        "Generate summaries of escalated transcripts in an overnight batch job and attach them to each ticket the next morning",
+        "Highlight the customer's own messages in the transcript view so that human agents can skim all 40 turns more quickly"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A required, structured handoff forces the agent to pass exactly what the human needs to continue without re-asking, including what was already tried and why it escalated. An optional free-text field gets filled inconsistently or not at all. Overnight summaries arrive after the human has already picked up the case. Highlighting still makes the person read the whole transcript and reconstruct the actions taken.",
+      "references": [
+        "https://www.anthropic.com/research/writing-tools-for-agents",
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-11",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Use few-shot examples for consistent judgment",
+      "type": "single",
+      "prompt": "The escalation criteria are now explicit and detailed, but borderline cases still go both ways: a late delivery where the customer wants the shipping fee and a discount, or a partial refund on a bundle where one item was returned. Reviewers agree on the right outcome for these, yet the agent resolves some and escalates otherwise identical ones. What is the BEST next step?",
+      "options": [
+        "Add more rules to the criteria section that spell out each borderline condition in additional detail and wording",
+        "Fine-tune a model on a set of past tickets labeled with the outcome reviewers chose for each borderline case",
+        "Lower the temperature to zero so that the agent gives the same decision whenever it sees similar cases",
+        "Add a few borderline examples in `<example>` tags showing each case, the decision, and the reason that decides it"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "When the rules are already detailed but judgment is inconsistent at the edges, a handful of worked examples showing the decision and the deciding reason is one of the most reliable ways to make the judgment consistent. More rule text adds length to a section that is already detailed and still leaves gaps between rules. Fine-tuning is heavy for a problem a few prompt examples address. A lower temperature makes outputs more repeatable but does not make the decision right, and similar cases with different wording still diverge.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-12",
+      "domain": "context-management-reliability",
+      "objective": "Propagate structured errors and partial results",
+      "type": "single",
+      "prompt": "During a database failover, `lookup_order` timed out for 9 minutes. The tool caught the timeout and returned an empty result list, so the agent told 140 customers \"I couldn't find an order with that number\" and several of them reordered. Which change to the tool prevents a repeat?",
+      "options": [
+        "Have the agent ask for the order number a second time whenever `lookup_order` returns no results, to rule out a typo",
+        "Return a timeout as a retryable `isError` result, and keep empty results only for searches that match nothing",
+        "Add a system prompt rule that an empty `lookup_order` result may mean the database is down and to suggest trying later",
+        "Wrap `lookup_order` in three automatic retries with backoff, and keep returning an empty list if every attempt fails"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The bug is that a failure was reported as a valid answer: \"no matching order\" and \"could not check\" need different results, so a timeout should be an error the agent can recognize and retry, while an empty list stays reserved for real non-matches. Re-asking for the number assumes a typo and repeats the false not-found. A prompt rule asks the model to guess which kind of empty result it got, which it cannot know. Retries help with short blips, but after a 9-minute outage the final empty list still claims the order does not exist.",
+      "references": [
+        "https://modelcontextprotocol.io/specification/2026-07-28/server/tools",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-13",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Resume or fork without carrying stale context",
+      "type": "single",
+      "prompt": "Customers can come back to the same chat later, and the app resumes the earlier SDK session. A customer returns 26 hours later; the resumed history includes yesterday's `lookup_order` result showing \"in transit\", and the agent says the package is still on its way. It was delivered this morning. What is the BEST change?",
+      "options": [
+        "Stop resuming sessions entirely and always start a new session, so no earlier history is ever carried into the chat",
+        "Fork the earlier session on return so the original history is preserved unchanged while the new chat continues from it",
+        "On resume, add context that earlier tool results may be stale and have the agent re-query live data before relying on it",
+        "Cache `lookup_order` results for 24 hours and serve them on resume, so the agent has a consistent view across visits"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Resuming is useful because it keeps who the customer is and what was discussed, but tool results in that history are snapshots from when they were taken; telling the agent they may be outdated and re-fetching order state keeps the context and fixes the stale answer. Starting fresh every time throws away the conversation the customer expects you to remember. Forking keeps the same stale history in the new branch. A cache makes the problem worse by guaranteeing the old status is served.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/sessions"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-14",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Use hooks for deterministic controls and normalization",
+      "type": "single",
+      "prompt": "`lookup_order` comes from a carrier's MCP server you cannot modify. It returns status codes such as `S3` and `R7` and Unix timestamps. The system prompt contains a table of 30 codes, but in 5% of transcripts the agent misstates the status or gives a delivery date off by a day. What is the BEST fix?",
+      "options": [
+        "Add a PostToolUse hook for `lookup_order` that rewrites its output into readable statuses and local dates",
+        "Move the status code table next to the tool list and add a worked example converting a Unix timestamp to a local date",
+        "Ask the carrier to change its server to return readable statuses and ISO dates, and keep the prompt table meanwhile",
+        "Add a `decode_status` tool that the agent can call with a status code and timestamp whenever it needs to read an order"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "When raw tool output is easy to misread, normalizing it in code before Claude sees it removes the error source; a PostToolUse hook can replace the tool output with plain statuses and local dates for every call. Moving the table or adding an example still relies on the model decoding correctly each time. Asking the carrier is outside your control, as the case says, and leaves the errors in place in the meantime. A decode tool adds a step the agent can skip and another call to every lookup.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/hooks"
+      ]
+    },
+    {
+      "id": "ccar-f-s05-15",
+      "domain": "context-management-reliability",
+      "objective": "Place facts to reduce lost-in-the-middle failures",
+      "type": "single",
+      "prompt": "The system prompt is about 30,000 tokens: brand voice, then the full returns and billing policy, then tool guidance, then examples. The rule \"final-sale items cannot be refunded, only exchanged\" appears once in the middle of the policy. The agent refunded final-sale items in 7% of relevant cases. The customer's message is appended at the end. What change is MOST likely to help?",
+      "options": [
+        "Repeat the final-sale rule in capital letters three times in different sections of the policy so it is harder to miss",
+        "Shorten the policy by removing rarely used sections so the final-sale rule sits closer to the start of the prompt",
+        "Add a `check_final_sale` tool the agent must call before every refund, so the rule is checked in a separate step",
+        "Put the policy near the top, and add a short block of critical refund rules right before the customer's message"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Long material works best near the top, with instructions and the query after it, and a short restatement of the rules that most often decide a refund placed next to the customer's message keeps them in view at the decision point. Repeating the rule in capitals adds emphasis but leaves it scattered through the middle of a long document. Trimming the policy shifts the rule but drops content the agent may need for other cases. A separate tool adds a call to every refund to solve a placement problem, and the model still has to remember to call it.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+        "https://www.anthropic.com/research/effective-context-engineering-for-ai-agents"
+      ]
+    }
+  ]
+}

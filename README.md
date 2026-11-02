@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Claude Cert Prep
 
-## Getting Started
+A free, community study guide for the Claude certification exams: reading material, practice quizzes, and
+scenario-based exam simulations that work the way the real exams do (a fixed system description, then a run of
+questions set inside it).
 
-First, run the development server:
+Tracks:
+
+- **Claude Certified Developer – Foundations (CCDV-F)**: developer guide, lessons, a diagnostic, a full mock exam
+  and six practice scenarios.
+- **Claude Certified Architect – Foundations (CCAR-F)**: original notes, lessons, a diagnostic, a full mock exam
+  and six practice scenarios.
+
+Progress is stored in your browser only. There are no accounts and no tracking.
+
+## Run it locally
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Contributing questions
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Scenario questions live in `content/assessments/<track>/scenarios/*.json`. Each file is one scenario with 15
+questions. Before opening a pull request, run the quality check, which rejects sets where the answer can be guessed
+from the shape of the options (for example, when the correct answer is usually the longest one):
 
-## Learn More
+```bash
+python3 scripts/check-scenarios.py
+```
 
-To learn more about Next.js, take a look at the following resources:
+Every fact should match Anthropic's official documentation, and every question should cite the page it relies on.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Official docs links
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Each chapter ends with links to the official documentation. Those links are chosen from
+`content/official-docs/<track>-terms.json`. To rebuild that index, put local copies of the pages in
+`content/official-docs/pages/` (they are not committed) and run `node scripts/docs-terms.mjs`.
 
-## Deploy on Vercel
+## License and credits
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Application code: [MIT](LICENSE).
+- Study material: see [content/LICENSE.md](content/LICENSE.md). The original notes and scenarios are CC BY-NC-SA
+  4.0. The developer guide is by [V.Korostyshevskiy](https://github.com/vkorost/claude-certified-developer-guide)
+  (CC BY-NC-SA 4.0). The lessons, quizzes and mock exams are from
+  [Rohit Ghumare's AI Engineering from Scratch](https://github.com/rohitg00/ai-engineering-from-scratch) (MIT).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This is an unofficial community resource, not affiliated with or endorsed by Anthropic. Claude is a trademark of
+Anthropic, PBC.

@@ -1,0 +1,323 @@
+{
+  "id": "03-agent-sdk",
+  "title": "Building an Internal Agent with the Claude Agent SDK",
+  "setup": "Your platform team is building Opsbot, an internal operations assistant on the Claude Agent SDK in Python, running inside a Slack service on a host you operate. An orchestrator agent takes requests from the on-call channel and delegates to subagents: log-investigator (read-only logs and metrics through MCP tools), runbook-executor (runs approved runbook scripts through Bash) and ticket-writer. Production changes must never happen without a deterministic check, and on-call engineers must be able to reconstruct afterwards what the agent did and why.",
+  "questions": [
+    {
+      "id": "ccdv-f-s03-01",
+      "domain": "agents-workflows",
+      "objective": "Choose workflows or agents from task constraints",
+      "type": "single",
+      "prompt": "Two request types dominate the on-call channel. (a) \"Rotate the TLS certificate for service X\": the runbook is always the same six steps in the same order, with a verification check after step 4. (b) \"Why did checkout p99 latency jump at 03:10?\": the next query depends on what the last one showed, and the number of steps varies from 3 to 40. How should Opsbot handle them?",
+      "options": [
+        "Run (a) as a fixed workflow in code with checks between steps, and give (b) to the orchestrator as an agent",
+        "Run both through the orchestrator as agents, so one code path handles every request type and stays simple",
+        "Run both as fixed workflows chosen by a router, so every investigation follows a predictable list of steps",
+        "Give (a) to the agent with a strict system prompt listing the six steps, and handle (b) as a prompt chain"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Workflows orchestrate the model and tools through predefined code paths and suit tasks whose steps are known in advance; agents suit open-ended problems where the model must decide the next step from what it just found. Certificate rotation has fixed steps and a gate after step 4, so code should own the sequence; the latency investigation cannot be written down ahead of time. Running both as agents spends latency and cost to let the model choose steps that are already known. A router plus fixed workflows cannot express an investigation whose path depends on intermediate results. Prompting an agent with the six steps leaves the ordering to the model instead of code, and a prompt chain is a fixed sequence again.",
+      "references": [
+        "https://www.anthropic.com/engineering/building-effective-agents"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-02",
+      "domain": "agents-workflows",
+      "objective": "Design manager and subagent hierarchies",
+      "type": "single",
+      "prompt": "During an incident, the orchestrator learns from the Slack thread that the problem is in `payments-api` in `eu-west-1`, starting 03:10 UTC. It then delegates with the Agent tool prompt \"Investigate the current incident.\" The `log-investigator` subagent searches every service across all regions for the last 24 hours and returns irrelevant findings. What is the BEST fix?",
+      "options": [
+        "Add the current incident's service, region and start time to the project CLAUDE.md before each delegation",
+        "Raise the log-investigator's max_turns, so it has room to work through every service until it finds the cause",
+        "Tell the orchestrator to put service, region and time window in the Agent tool prompt it writes for subagents",
+        "Give the log-investigator the same tool set as the orchestrator, so it can read the Slack thread on its own"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "A subagent starts with a fresh context: it gets its own system prompt and the Agent tool's prompt string, not the parent's conversation history. Anything it needs from the thread, here the service, region and time window, has to be written into that prompt, which you can require in the orchestrator's instructions. CLAUDE.md is for durable project facts; rewriting it per incident turns shared configuration into a scratchpad. More turns let the subagent search the wrong scope for longer. Widening its tool set gives a read-only investigator more privilege to recover context that the delegation prompt should have carried.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-03",
+      "domain": "agents-workflows",
+      "objective": "Build with the Claude Agent SDK, custom loops, managed agents, and hooks",
+      "type": "single",
+      "prompt": "Opsbot must run inside an existing Python Slack service on a host your team operates, reach internal metrics endpoints that are not exposed outside the corporate network, use shell and file tools on local runbooks, and enforce deterministic checks before commands run. The team wants to write as little loop and tool plumbing as possible. Which foundation fits BEST?",
+      "options": [
+        "The client SDK's tool runner, because it drives the tool loop for you and keeps the code inside your service",
+        "The Claude Agent SDK, because it runs the agent loop on your host with built-in tools, hooks and sessions",
+        "Claude Managed Agents on an Anthropic-managed cloud sandbox, because the hosted harness runs the loop for you",
+        "The Claude Code CLI run interactively by the on-call engineer, because it already has shell and file tools"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The Agent SDK embeds Claude Code's agent loop in a Python or TypeScript application you operate, with built-in tools such as Bash and Read, permissions, sessions and hooks, so it meets every constraint with the least plumbing. The tool runner drives the loop, but you would still build shell and file tools, permission checks and hooks yourself. Managed Agents can run in a self-hosted sandbox, but an Anthropic-managed cloud sandbox cannot reach endpoints that exist only inside the corporate network. An interactive CLI session is not embedded in the Slack service and depends on a person driving it.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/overview",
+        "https://platform.claude.com/docs/en/managed-agents/overview",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-runner"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-04",
+      "domain": "security-safety",
+      "objective": "Use hooks for deterministic safety controls",
+      "type": "single",
+      "prompt": "The runbook-executor's system prompt says: \"Only run scripts under /opt/runbooks/approved/. NEVER run kubectl delete.\" Last night's trace shows it ran `kubectl delete pod payments-api-7f9c` through Bash after deciding a restart would help. Policy says this must be impossible without a ticket, whatever the model decides. What should you add?",
+      "options": [
+        "A CLAUDE.md section repeating the rule in capitals, so it is re-injected on every request and survives compaction",
+        "A PostToolUse hook on Bash that detects kubectl delete in the command and pages on-call when one has run",
+        "Removing Bash from the runbook-executor, so it can no longer run any shell command in any situation at all",
+        "A PreToolUse hook on Bash that checks the command against an allowlist and returns deny with a reason"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A PreToolUse hook runs in your code before the tool executes, every time, and returning permissionDecision deny with a reason blocks the call and tells Claude why, which turns the policy into a deterministic control. CLAUDE.md is context the model reads, not enforced configuration, so a stronger wording is still a request. A PostToolUse hook fires after the pod is already deleted, so it can only report the violation. Removing Bash blocks the violation but also breaks the approved runbooks the executor exists to run.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/hooks",
+        "https://code.claude.com/docs/en/memory"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-05",
+      "domain": "security-safety",
+      "objective": "Use hooks for deterministic safety controls",
+      "type": "single",
+      "prompt": "Opsbot registers two PreToolUse hooks on Bash. `auto_approve_reads` returns `permissionDecision: \"allow\"` for commands that start with `kubectl get`. `block_destructive` returns `\"deny\"` for any command containing `delete`. A reviewer asks what happens when Claude runs `kubectl get pods && kubectl delete pod web-1`, since both hooks match. What is the correct answer?",
+      "options": [
+        "The call is blocked, because when PreToolUse hooks disagree a deny decision takes priority over an allow",
+        "The call runs, because the first hook registered for an event decides, and auto_approve_reads is listed first",
+        "The call runs, because an allow from any hook skips the permission check, and later hooks cannot overrule it",
+        "The call pauses for a user prompt, because conflicting hook decisions are always escalated to ask instead"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "When multiple PreToolUse hooks return different decisions, deny takes priority over defer, which beats ask, which beats allow, so block_destructive's deny wins and the command does not run. Registration order does not decide the outcome. An allow is the weakest decision, not one that ends evaluation. Conflicts resolve by that fixed priority order rather than escalating to ask. The case also shows why the deny hook should inspect the whole command string, since a prefix check alone would have approved it.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/hooks"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-06",
+      "domain": "agents-workflows",
+      "objective": "Apply tool-loop, memory, context, and framework patterns",
+      "type": "multiple",
+      "prompt": "An open-ended request (\"find anything weird in last week's logs\") ran 140 turns calling `search_logs` with slightly different queries, cost $38, and never produced a final answer before an engineer killed the process. Opsbot's `query()` call sets no limits. Which TWO changes give the loop a deterministic stopping point?",
+      "options": [
+        "Set max_turns on the query, and handle the error_max_turns result by posting partial findings to the thread",
+        "Add \"stop after 20 searches and summarise\" to the system prompt, so the model ends the run by itself",
+        "Set max_budget_usd on the query, so the loop stops once estimated spend for the run reaches your threshold",
+        "Lower the effort setting for the run, so each turn spends fewer tokens and the total cost stays below $38",
+        "Rely on automatic compaction, so the context stays small enough for the search loop to keep going safely"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "max_turns and max_budget_usd are the SDK's hard caps: when either is reached the loop ends with a ResultMessage whose subtype (error_max_turns or error_max_budget_usd) your code can branch on, for example to post partial findings. Without them the loop runs until Claude stops on its own, which open-ended prompts may never do. A prompt instruction is a soft request the model can drift past. Lower effort makes each turn cheaper but does not stop the loop. Compaction keeps a long loop running, which is the opposite of bounding it.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/agent-loop"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-07",
+      "domain": "agents-workflows",
+      "objective": "Apply tool-loop, memory, context, and framework patterns",
+      "type": "single",
+      "prompt": "Each Opsbot run now sets `max_budget_usd=5.00`. Finance flags that runs ending with `error_max_budget_usd` report `total_cost_usd` between $5.40 and $5.90, mostly on runs where the orchestrator had two background subagents running. A teammate files a bug against the SDK. What is the correct reading, and what should you do?",
+      "options": [
+        "It is a bug: the cap should reject any request that would cross $5.00, so file it and set max_turns as well",
+        "The cap counts only the orchestrator, so subagent spend is extra; give each subagent its own budget option",
+        "Spend is checked after each response, so it can pass the cap by a response plus running subagents; leave headroom",
+        "total_cost_usd includes cache writes that the cap ignores, so compare the cap against uncached tokens instead"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The SDK compares spend with the cap after each model response arrives, because cost comes from the usage that response returns; the response that crosses the cap still completes, and background subagents still running can spend a little more before they stop. The documented guidance is to set the cap with headroom below your true limit. The behaviour is by design, so filing a bug does not change it. The cap does include subagent spend. There is no carve-out for cache writes in how the cap is checked.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/agent-loop",
+        "https://code.claude.com/docs/en/agent-sdk/cost-tracking"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-08",
+      "domain": "agents-workflows",
+      "objective": "Apply tool-loop, memory, context, and framework patterns",
+      "type": "single",
+      "prompt": "On-call engineers want Opsbot to remember lessons it learns during incidents, such as \"payments-api logs use UTC-5 timestamps\" or \"the eu-west-1 Grafana board lags 4 minutes\", and apply them in future incidents weeks later. Each incident currently starts a new session. Which design fits BEST?",
+      "options": [
+        "Resume the previous incident's session for each new incident, so the agent has every prior finding in context",
+        "Give the agent a memory tool backed by a store you control, which it reads at the start and writes lessons to",
+        "Rely on automatic compaction summaries, so the lessons persist in the summary that carries over between runs",
+        "Have engineers add each lesson to the system prompt string in code, so it ships with the next deployment"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "A memory tool lets the agent itself create, read and update files that persist across sessions, while your application decides where they live; the agent checks memory before starting and records what it learns, so lessons carry over without old transcripts. Resuming the previous session restores the whole prior conversation, filling a new incident with an unrelated one. Compaction summarises within a session and does not carry knowledge into a fresh one. Hand-editing the system prompt depends on engineers and redeploys, so lessons the agent learns are lost unless someone copies them over.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool",
+        "https://code.claude.com/docs/en/agent-sdk/sessions"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-09",
+      "domain": "prompt-context-engineering",
+      "objective": "Prevent context drift and bloat with pruning, compaction, and isolation",
+      "type": "single",
+      "prompt": "Major incidents keep one Opsbot session open for six hours. The first prompt of each session tells it to log every action in the incident timeline as `HH:MM UTC - action - result`. Traces show that after a `compact_boundary` system message, the timeline switches to free-form sentences. Which fix is MOST reliable?",
+      "options": [
+        "Add a PreCompact hook that archives the full transcript, so the original instruction is kept in storage",
+        "Move the agent to a model with a larger context window, so compaction happens less often in long incidents",
+        "Turn off automatic compaction and open a new session whenever the context window fills during an incident",
+        "Move the timeline format into CLAUDE.md, which is re-injected on every request instead of being summarised"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Compaction replaces older messages with a summary, so instructions given only early in the conversation may not survive; the SDK docs advise putting persistent rules in CLAUDE.md, loaded through settingSources, because it is re-injected on every request (you can also add summary instructions there). A PreCompact hook can archive the transcript, but archived text is not in the model's context. A larger window delays compaction but the rule still disappears when it happens. Starting new sessions loses the incident's working context and still drops the instruction.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/agent-loop",
+        "https://code.claude.com/docs/en/memory"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-10",
+      "domain": "eval-testing-debugging",
+      "objective": "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures",
+      "type": "single",
+      "prompt": "The in-process custom tool `query_metrics` lets upstream timeouts propagate as uncaught exceptions. Traces show Claude then reads `ReadTimeout: HTTPSConnectionPool(host='metrics.internal', port=443): Read timed out` and either repeats the identical 7-day query until max_turns or tells on-call that metrics are unavailable. Queries over about 6 hours usually time out, and a separate hourly-rollup tool handles long ranges. What is the BEST change?",
+      "options": [
+        "Catch the timeout and return is_error with a message suggesting a range under 6 hours or the rollup tool",
+        "Leave the exception uncaught, since the SDK already turns it into an error result that Claude can act on",
+        "Wrap the whole query() call in a retry loop, so a run that stalls on timeouts starts over from the beginning",
+        "Add a PostToolUseFailure hook that pages on-call for each timeout, so a person can choose the next query"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "An uncaught handler exception does not stop the SDK loop: the in-process MCP server converts it into an error result carrying the raw exception text, and that is what Claude has to act on. Catching the timeout and returning is_error with a composed message (narrow the range, or use the hourly-rollup tool) gives Claude the context the raw text lacks, so it can recover in the next turn. Leaving the exception uncaught is the current behaviour that produces the repeated query. Restarting the whole run repeats the same failing call. Paging a person for each timeout adds toil while the agent still lacks the guidance it needs.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/custom-tools",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-11",
+      "domain": "eval-testing-debugging",
+      "objective": "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures",
+      "type": "single",
+      "prompt": "A trace shows the log-investigator calling `search_logs` with `{\"service\": \"payments-api\", \"since\": \"03:10\"}`. The MCP server returned zero results, and the agent reported \"no errors found since 03:10\". The server's code parses `since` as ISO 8601 and, when parsing fails, silently defaults to the current time. The tool's input schema describes `since` only as `string`. What is the correct diagnosis and fix?",
+      "options": [
+        "A model error: add few-shot examples of ISO 8601 timestamps to the investigator's system prompt for future runs",
+        "A model error: move the log-investigator to a larger model tier, which formats tool arguments more reliably",
+        "An integration bug: reject unparseable since values with a clear error, and document the format in the schema",
+        "An integration bug: raise the MCP server's timeout, so the search has time to return the complete result set"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The model passed a reasonable value for a parameter described only as string, and the server turned an invalid input into a valid-looking empty result; that silent fallback is the integration defect. Validating input and returning an actionable error lets the agent correct itself, and documenting the expected format in the schema prevents the mistake. Few-shot examples patch one caller while the server still fails silently for every other client. A larger model cannot detect an undocumented format the server hides. The search returned promptly with zero results, so a timeout is not involved.",
+      "references": [
+        "https://www.anthropic.com/engineering/writing-tools-for-agents",
+        "https://modelcontextprotocol.io/specification/2026-07-28/server/tools"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-12",
+      "domain": "claude-code",
+      "objective": "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings",
+      "type": "single",
+      "prompt": "A teammate added a CI step that reviews runbook changes with `claude -p --bare \"Review the runbook diff against our conventions\" --allowedTools Read`. The review comments ignore the conventions in the repo's committed CLAUDE.md, although the same prompt run interactively in the repo follows them. What explains this, and what is the fix?",
+      "options": [
+        "CI runs without a TTY, so CLAUDE.md never loads in headless mode; paste the conventions into the prompt text",
+        "--bare skips CLAUDE.md auto-discovery; pass the conventions with --append-system-prompt-file or drop --bare",
+        "--allowedTools Read blocks Claude from opening CLAUDE.md; add Glob and Grep so it can find the file itself",
+        "CLAUDE.md must live at .claude/CLAUDE.md to load in CI; move the file there and keep the current command"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Bare mode deliberately skips auto-discovery of hooks, skills, MCP servers, auto memory and CLAUDE.md so CI runs are reproducible; context it needs has to be passed explicitly with flags such as --append-system-prompt-file, or the step can run without --bare. Headless -p without --bare loads CLAUDE.md as an interactive session would, so a missing TTY is not the cause. CLAUDE.md is loaded as context at startup, not opened through the Read tool, so tool permissions do not matter. Moving the file does not help, because bare mode skips both locations.",
+      "references": [
+        "https://code.claude.com/docs/en/headless",
+        "https://code.claude.com/docs/en/memory"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-13",
+      "domain": "claude-code",
+      "objective": "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings",
+      "type": "multiple",
+      "prompt": "The team wants the Bash PreToolUse hook that blocks `kubectl delete` to apply to every engineer who uses Claude Code in the Opsbot repo. Separately, one engineer wants Claude Code to stop asking before running `kubectl get` for herself only, without changing anyone else's setup. The project settings file has no ask rule for kubectl. Which TWO placements are correct?",
+      "options": [
+        "Put the hook in .claude/settings.json and commit it, so every clone of the repo picks it up",
+        "Put her kubectl get allow rule in .claude/settings.local.json, which stays out of version control",
+        "Put the hook in ~/.claude/settings.json on her machine, so it reaches teammates through the repo",
+        "Put her allow rule in .claude/settings.json, because the team file only applies to whoever edits it",
+        "Put the hook in the repo's CLAUDE.md, so every teammate's session enforces it before Bash runs"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Shared project settings in .claude/settings.json apply to everyone working in the repo once committed, which is where team hooks and permissions belong. .claude/settings.local.json applies only to that user in that project and is kept out of git, so it fits a personal allow rule. ~/.claude/settings.json is per-machine and never travels with the repository. The committed project file affects every teammate, so a personal rule there changes everyone's setup. CLAUDE.md is context Claude reads, not a place to configure hooks, and it enforces nothing.",
+      "references": [
+        "https://code.claude.com/docs/en/settings",
+        "https://code.claude.com/docs/en/permissions"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-14",
+      "domain": "security-safety",
+      "objective": "Layer guardrails with least privilege",
+      "type": "single",
+      "prompt": "The `ticket-writer` subagent is defined with a description and a prompt but no `tools` field. A trace shows it ran `curl` through Bash to fetch a dashboard screenshot to attach to a ticket, an action nobody intended it to take. The orchestrator and runbook-executor legitimately need Bash. What is the BEST change?",
+      "options": [
+        "Add \"never use Bash\" to the ticket-writer's prompt, so the subagent keeps to the ticketing tools it was built for",
+        "Add a PreToolUse hook that denies Bash for every agent, so no session can run a shell command without approval",
+        "Remove Bash from the orchestrator's options, so subagents spawned from it cannot inherit a shell tool at all",
+        "Set the ticket-writer's tools field to the ticketing MCP tools only, since an omitted field inherits every tool"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "When AgentDefinition omits tools, the subagent inherits every tool available to subagents, including Bash; listing only the ticketing tools gives it the least privilege its job needs without touching agents that legitimately use the shell. A prompt instruction is a soft control on a capability that should not exist. A deny-all Bash hook also blocks the orchestrator and runbook-executor. Removing Bash from the orchestrator breaks the agents that need it in order to fix one that does not.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents",
+        "https://code.claude.com/docs/en/agent-sdk/hooks"
+      ]
+    },
+    {
+      "id": "ccdv-f-s03-15",
+      "domain": "eval-testing-debugging",
+      "objective": "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures",
+      "type": "single",
+      "prompt": "After each incident, reviewers need to reconstruct what Opsbot did: which tools each agent called and in what order, how long each model request took, tokens and cost per step, and where failures happened, all in the company's existing OpenTelemetry backend. Today the team stores only each run's final `ResultMessage`. What should you add?",
+      "options": [
+        "Ask the orchestrator to finish each run with a summary of its actions, and store that summary as the record",
+        "Enable the Agent SDK's OpenTelemetry export, so spans, metrics and events go to the existing OTLP backend",
+        "Keep storing the ResultMessage and add its total_cost_usd and duration fields to the incident review document",
+        "Add a PostToolUse hook that writes each tool name and input to a log file that reviewers can read afterwards"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The Agent SDK can export OpenTelemetry traces, metrics and log events, with spans around each model request and tool execution plus token and cost counters, to any OTLP backend, which covers every item reviewers listed. A model-written summary is a narrative, not a record, and can omit or misstate steps. The ResultMessage gives run totals but no per-step timing or ordering. A PostToolUse log captures tool calls but not model request latency, per-step tokens or failures outside tools.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/observability",
+        "https://code.claude.com/docs/en/agent-sdk/agent-loop"
+      ]
+    }
+  ]
+}

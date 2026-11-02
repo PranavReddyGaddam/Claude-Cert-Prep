@@ -1,0 +1,291 @@
+{
+  "id": "03-multi-agent-research",
+  "title": "Multi-Agent Research System",
+  "setup": "You run a research service built on the Claude Agent SDK. A coordinator agent takes a user's topic, delegates through the Agent tool to web-search, document-analysis, synthesis and report-generation subagents, and returns a written report. Reports must cover the whole topic and every claim must trace to a real source. Users expect a report within 30 minutes, and the team watches cost per report.",
+  "questions": [
+    {
+      "id": "ccar-f-s03-01",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Choose sequential or adaptive decomposition",
+      "type": "single",
+      "prompt": "For the topic \"How is generative AI changing the creative industries?\" the coordinator spawned four web-search subagents: digital illustration, photography, graphic design and concept art. Each returned thorough, well-cited findings, and the report is accurate. Reviewers flag it as incomplete: music, film, publishing and games are absent. Where should the fix go?",
+      "options": [
+        "In the web-search subagent prompt, telling each one to widen its queries to adjacent creative fields it might find",
+        "In the synthesis subagent prompt, telling it to list which creative industries the findings do not yet cover",
+        "In the coordinator's spawn step, adding more web-search subagents per subtopic so each area is searched deeper",
+        "In the coordinator's planning step, having it list the topic's main dimensions and check its subtasks cover them"
+      ],
+      "correct": [3],
+      "explanation": "Every subagent did its assigned slice well; the gap is that the coordinator decomposed the topic into visual-art slices only, so the fix belongs in how the coordinator plans and checks coverage of the request before delegating. Widening each searcher's queries pushes the coordinator's job onto workers and causes overlapping, unplanned coverage. Having synthesis list gaps is useful detection, but it does not change what gets researched. More subagents per existing subtopic deepens the same narrow areas and still skips music, film, publishing and games.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents",
+        "https://code.claude.com/docs/en/sub-agents"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-02",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Enforce prerequisites, decompose concerns, and structure handoffs",
+      "type": "single",
+      "prompt": "The user asked for \"EU rules only, from 2024 onward.\" The coordinator gathered 23 findings and then called the synthesis subagent with the prompt \"Synthesize the research findings into key themes.\" The synthesis output discusses US policy, cites nothing from the 23 findings and asks what material it should work from. What should change?",
+      "options": [
+        "Add the EU-only, 2024-onward constraint to the coordinator's system prompt so every subagent it spawns follows it",
+        "Put the 23 findings and the user's constraints directly into the Agent tool prompt that starts the synthesis run",
+        "Run synthesis as a fork so it inherits the coordinator's whole conversation, including every raw search result",
+        "Resume the synthesis subagent's earlier session and send the findings and the constraints as a follow-up turn"
+      ],
+      "correct": [1],
+      "explanation": "A non-fork subagent starts fresh and the only thing passed from parent to child is the Agent tool's prompt string, so the findings and constraints have to be written into that prompt. The coordinator's system prompt is not part of what a subagent receives. A fork does carry the conversation, but it hauls every raw search result into synthesis, which bloats its context when a curated list of 23 findings is what it needs. Resuming the failed run keeps its wrong first attempt in context and still relies on a second message to supply what the first prompt lacked.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-03",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Use Task, allowedTools, isolated context, parallelism, and forked sessions",
+      "type": "single",
+      "prompt": "Traces show the coordinator calls the Agent tool once per response: it spawns the web-search subagent for subtopic 1, waits for its result, then spawns subtopic 2, and so on. Five independent subtopics take 26 minutes of a 30-minute budget. CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS is unset. What change BEST cuts the wall-clock time?",
+      "options": [
+        "Set CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS to 10 so the SDK can run more of the web-search subagents at once",
+        "Replace the five subagents with one web-search subagent that covers all five subtopics within a single run",
+        "Prompt the coordinator to issue all five Agent calls in one response, since the subtopics are independent",
+        "Move the web-search subagents to a faster, smaller model so that each one of the sequential runs finishes sooner"
+      ],
+      "correct": [2],
+      "explanation": "Independent subagents run concurrently when the coordinator issues several Agent tool calls in the same response; the trace shows it never does, so prompting for one fan-out turn removes the serial wait. The concurrency limit defaults to 20 running subagents, so it is not what is serializing five calls. One combined subagent loses context isolation and still works through the subtopics in sequence. A faster model shortens each step but leaves five runs back to back.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/parallel-tool-use"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-04",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Manage tool distribution and tool choice",
+      "type": "single",
+      "prompt": "The synthesis subagent's AgentDefinition omits tools, so it inherits web search. In 40% of runs it launches fresh searches mid-synthesis, adding sources nobody vetted and 6 extra minutes. About once per report it does need to check whether a specific claim is supported by the material already collected. What is the BEST tool setup for synthesis?",
+      "options": [
+        "Set tools to Read plus a verify_claim tool that checks one claim against the collected sources and nothing else",
+        "Keep web search and add \"Search only when strictly necessary\" to the synthesis subagent's system prompt text",
+        "Set tools to an empty list so the synthesis subagent works only from the findings in its prompt with no tools",
+        "Keep web search but have a PostToolUse hook log every search so the team can audit unvetted sources later"
+      ],
+      "correct": [0],
+      "explanation": "Listing tools in the AgentDefinition limits the subagent to exactly what its role needs, and a narrow verify_claim tool covers the one legitimate need without letting synthesis go back to the open web. A prompt request leaves the capability in place, so the model still decides when a search is \"necessary\". Removing every tool stops the stray searches but also removes the claim check that synthesis needs about once per report. A logging hook records the unvetted searches after the fact without preventing them or their runtime cost.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents",
+        "https://code.claude.com/docs/en/best-practices"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-05",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Return structured and retry-aware MCP errors",
+      "type": "single",
+      "prompt": "The web_search MCP tool calls a provider that sometimes times out after returning part of a result page. Today the tool catches the timeout and returns {\"results\": []} as a normal result. In one run, 6 of 10 results had already arrived, and the coordinator concluded the subtopic had no coverage. How should the tool report this case?",
+      "options": [
+        "Retry inside the tool until the provider answers fully, then return the complete result set as a normal result",
+        "Return the empty list as now, and write the timeout to the server log so the operations team can investigate",
+        "Raise an unhandled exception so the subagent run stops and the coordinator restarts the subtopic from scratch",
+        "Return an error result marked as a timeout and retryable, with the 6 partial results and the query attached"
+      ],
+      "correct": [3],
+      "explanation": "Marking the result as an error (isError in MCP, is_error in a tool_result) with the error type, a retryable hint and the partial results lets the agent tell a transient failure from an empty answer and decide whether to use the six results, retry or report the gap. Unbounded retries inside the tool can hang the run against a 30-minute budget and still hide what happened from the agent. An empty success is what misled the coordinator in the first place; a server log does not reach the model. An unhandled exception throws away the six results and turns a recoverable fault into a restart.",
+      "references": [
+        "https://modelcontextprotocol.io/specification/2026-07-28/server/tools",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-06",
+      "domain": "context-management-reliability",
+      "objective": "Propagate structured errors and partial results",
+      "type": "single",
+      "prompt": "After the timeout fix, a new problem appears: for a niche query the academic-index tool correctly finds zero papers, but the coordinator treats the empty list as a failure and spawns three more document-analysis subagents for the same query, adding 9 minutes. Real outages also occur with this index. What is the BEST change?",
+      "options": [
+        "Cap the coordinator at one retry per subtopic, so that an empty search can never trigger more than one extra run",
+        "Return a successful result with status no_matches and the query, and reserve error results for actual failures",
+        "Have the tool return an error for every empty search, so the coordinator always knows to retry with new terms",
+        "Have the subagent write \"nothing found\" into its prose summary so the coordinator can read it before retrying"
+      ],
+      "correct": [1],
+      "explanation": "A valid search that matches nothing is a finding, not a failure, so returning it as a success with an explicit no_matches status, while true outages come back as error results, lets the coordinator treat the two differently. A retry cap limits the waste but still retries a correct answer and also limits recovery from real outages. Turning every empty search into an error makes the confusion worse. A prose note is unstructured and easy to miss or misread, where a status field is unambiguous.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls",
+        "https://modelcontextprotocol.io/specification/2026-07-28/server/tools"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-07",
+      "domain": "context-management-reliability",
+      "objective": "Track provenance, conflicts, dates, and content types",
+      "type": "single",
+      "prompt": "An audit of one report finds 11 of 40 claims with no citation, although each traces back to something a web-search subagent found. The subagents return findings as narrative paragraphs with a source list at the bottom, and synthesis merges paragraphs from several subagents into themes. What change BEST preserves attribution?",
+      "options": [
+        "Have subagents return each finding as a record of claim, source URL, quote and date that synthesis must carry",
+        "Have the report subagent search the web for a supporting source for each uncited claim before it publishes",
+        "Add \"Always cite your sources for every claim\" to the synthesis and report-generation subagent prompts",
+        "Have subagents put each source list at the top of their paragraphs so synthesis sees the sources first"
+      ],
+      "correct": [0],
+      "explanation": "Attribution is lost because a paragraph plus a trailing source list has no claim-to-source mapping, and merging paragraphs severs it; structured records keep each claim tied to its source, quote and date through every handoff. Searching for sources after the fact attaches whatever supports the wording, which may not be where the claim came from. A cite-everything instruction cannot recover a mapping that the input never carried. Moving the list to the top changes order, not the missing link between each claim and its source.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+        "https://code.claude.com/docs/en/agent-sdk/subagents"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-08",
+      "domain": "context-management-reliability",
+      "objective": "Track provenance, conflicts, dates, and content types",
+      "type": "single",
+      "prompt": "Spot checks show the report-generation subagent cites 3 of 25 URLs that were never collected by any subagent; two do not resolve at all. The report agent gets the sources as one block of text listing titles and URLs, and writes citations itself. The report is generated through the Messages API. What change MOST directly stops invented citations?",
+      "options": [
+        "Add \"Never cite a source that is not in the list provided\" in bold to the report-generation system prompt",
+        "Send an HTTP request to each cited URL after generation and remove any citation whose link does not resolve",
+        "Pass each source as a search_result block with citations on, so every citation points into a provided source",
+        "Lower the temperature of the report-generation call to zero so that it stays closer to the material provided"
+      ],
+      "correct": [2],
+      "explanation": "With search_result content blocks, Claude cites your content the way it cites web results, and API citations point into the provided sources, so a citation cannot name something that was never supplied. A bold prompt rule asks for the behavior without enforcing it. Checking that links resolve catches dead URLs but passes a real URL that was never collected or does not support the claim, which is one of the three failures. A lower temperature reduces variety, not fabrication of plausible-looking references.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/search-results",
+        "https://platform.claude.com/docs/en/build-with-claude/citations"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-09",
+      "domain": "context-management-reliability",
+      "objective": "Track provenance, conflicts, dates, and content types",
+      "type": "single",
+      "prompt": "Two findings disagree. A 2022 industry survey puts the European market for a product at EUR 4.1B; a 2025 regulator report puts it at EUR 7.3B and counts a wider product category. The draft report says \"about EUR 5.7B\" with both sources cited. What should the synthesis subagent be told to do with conflicts like this?",
+      "options": [
+        "Keep only the newest figure and cite it, since a 2025 source supersedes a 2022 source on the same market size",
+        "Average the two figures as now but add a footnote saying the sources disagreed, so readers can judge for themselves",
+        "Keep only the figure from the more authoritative source, since a regulator outranks an industry survey on data",
+        "Report both figures with their sources, dates and scope, and state the conflict instead of merging the numbers"
+      ],
+      "correct": [3],
+      "explanation": "The figures differ in date and in scope, so the honest output keeps each value tied to its source, year and definition and names the conflict; a merged number matches neither source. Keeping only the newest ignores that the newer report measures a wider category, so it is not a straight update. An average with a footnote still presents a figure no source supports. Ranking by authority discards a valid data point and hides the scope difference the reader needs.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+        "https://platform.claude.com/docs/en/build-with-claude/citations"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-10",
+      "domain": "context-management-reliability",
+      "objective": "Use scratchpads, subagents, manifests, and compaction for large codebases",
+      "type": "single",
+      "prompt": "Each of 12 web-search subagents returns the full text of every page it read, about 15,000 tokens per subagent. By the synthesis step the coordinator's context holds roughly 180,000 tokens of raw pages, and its delegation prompts grow vague and repetitive. What is the BEST change?",
+      "options": [
+        "Have subagents write full extracts to a shared store and return a short summary with references to those files",
+        "Move the coordinator to a model with a larger context window so all twelve full results fit with room to spare",
+        "Cut the number of web-search subagents from twelve to six so the raw page text the coordinator holds is halved",
+        "Run compaction on the coordinator after each subagent returns so the raw pages are summarized as they arrive"
+      ],
+      "correct": [0],
+      "explanation": "Subagents exist so their bulky work stays in their own context; storing full extracts outside the conversation and returning concise summaries with references keeps the coordinator focused while synthesis can still read the details. A larger window holds more tokens but the coordinator still reasons over 180,000 tokens of raw pages it does not need. Halving the subagents halves coverage along with the noise. Compacting after every return spends a summarization pass each time and the summaries are lossy, so detail that synthesis needs may not survive.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents",
+        "https://platform.claude.com/docs/en/build-with-claude/context-windows"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-11",
+      "domain": "context-management-reliability",
+      "objective": "Use scratchpads, subagents, manifests, and compaction for large codebases",
+      "type": "single",
+      "prompt": "A run crashed when the host restarted, 22 minutes in: the plan had five research subtopics, three had finished, and their extracts were already in storage. The service restarted the job from the user's original query and redid all five, missing the 30-minute target. What should the coordinator do so a restart picks up where the run stopped?",
+      "options": [
+        "Resume the coordinator's SDK session by its session ID after any crash and let it work out what was finished",
+        "Keep a manifest of the plan, each subtask's status and its output paths, update it per step, and read it on start",
+        "Run the whole research job inside one subagent so a crash affects only that subagent and not the coordinator",
+        "Raise the host's restart grace period so the coordinator has time to finish in-flight subagents before it exits"
+      ],
+      "correct": [1],
+      "explanation": "A manifest written after each step records the plan, which subtasks are done and where their outputs live, so a fresh coordinator reads it and launches only the two pending subtopics. Resuming the session restores the conversation, but the run was cut mid-turn and Claude must infer state from a transcript instead of reading explicit status. Wrapping the job in one subagent moves the failure without making progress durable. A longer grace period helps planned shutdowns, not crashes, and still stores no state.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool",
+        "https://code.claude.com/docs/en/agent-sdk/sessions"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-12",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Choose sequential or adaptive decomposition",
+      "type": "single",
+      "prompt": "A user asked for six aspects of a topic. A rubric check on the draft finds two aspects, supply chain and labor impact, backed by one weak source each, while the other four are strong. Twelve minutes of the 30-minute budget remain. What should the coordinator do next?",
+      "options": [
+        "Rerun the whole pipeline with a larger search budget, so every aspect gets deeper coverage on the second pass",
+        "Ask the report-generation subagent to expand the two thin sections using what was already collected for them",
+        "Ship the draft now with a note that supply chain and labor impact are thin, since four of six aspects are strong",
+        "Spawn targeted searches for the two thin aspects, merge new findings, re-check coverage and stop when it passes"
+      ],
+      "correct": [3],
+      "explanation": "An adaptive loop evaluates coverage against the request, sends new work only at the gaps, re-synthesizes and stops when the check passes or the budget runs out, which fits twelve remaining minutes. Rerunning everything repeats the four strong aspects and cannot finish in the time left. Expanding thin sections from one weak source each produces longer text with no new evidence. Shipping with a caveat is honest but gives up while there is enough budget to close the gap.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents",
+        "https://code.claude.com/docs/en/agent-sdk/agent-loop"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-13",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Enforce prerequisites, decompose concerns, and structure handoffs",
+      "type": "single",
+      "prompt": "Two web-search subagents both spent eight minutes on the same 2025 semiconductor export rules, while a third returned general background nobody asked for. The coordinator's delegation prompts were \"Research semiconductor regulation\", \"Research semiconductor trade policy\" and \"Research the semiconductor industry.\" What change MOST directly prevents this?",
+      "options": [
+        "Give the web-search subagents a shared cache of search results, so a repeated query costs nothing the second time",
+        "Have synthesis drop duplicate findings and off-topic background before it builds the themes for the final report",
+        "Have the coordinator give each subagent a distinct objective, scope limits, sibling coverage and output format",
+        "Merge the three into one web-search subagent so that it cannot repeat a topic another subagent already covered"
+      ],
+      "correct": [2],
+      "explanation": "Overlap and drift come from vague, overlapping delegation; telling each subagent its specific objective, its boundaries, what siblings cover and the output expected makes their work distinct. A shared cache saves repeated fetches but both agents still spend their time on the same topic. Dropping duplicates in synthesis treats the result after sixteen minutes are already lost. A single subagent avoids overlap by giving up parallelism and context isolation, which costs time against the 30-minute target.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents",
+        "https://code.claude.com/docs/en/sub-agents"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-14",
+      "domain": "context-management-reliability",
+      "objective": "Escalate ambiguity and policy gaps",
+      "type": "single",
+      "prompt": "A user writes: \"Research how the new data rule affects companies in our sector.\" There are three recent rules it could mean (a privacy regulation, an AI act provision and a data-localization law), and each needs a different set of subtopics. The coordinator picked the privacy regulation, and the user later said they meant data localization. What should the coordinator do in cases like this?",
+      "options": [
+        "Ask the user which rule and sector they mean before spawning any subagents, because the plan depends on the answer",
+        "Research all three rules in parallel and include all of them in the report, so that whichever was meant is covered",
+        "Pick the rule with the most recent effective date, since \"new\" in a request most likely refers to the latest one",
+        "Let each web-search subagent decide which rule fits the request best based on what its first searches turn up"
+      ],
+      "correct": [0],
+      "explanation": "When a request has several plausible readings that lead to different plans, the cheapest reliable move is to ask before spending the budget; sector is also unstated. Researching all three triples the work against a 30-minute target and buries the answer the user wanted. A recency heuristic is still a guess, and here it could be wrong. Pushing the choice down to subagents spreads the ambiguity across workers who may each pick differently.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+        "https://code.claude.com/docs/en/agent-sdk/user-input"
+      ]
+    },
+    {
+      "id": "ccar-f-s03-15",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Choose coordinator and subagent topologies",
+      "type": "single",
+      "prompt": "Cost per report is 3x budget. Usage data shows 70% of tokens come from eight web-search subagents that run queries and extract facts from pages, work that rarely needs deep reasoning. Quality review shows synthesis is where the strongest model matters. All agents currently inherit the coordinator's model. What is the BEST change?",
+      "options": [
+        "Move every agent, coordinator included, to the smallest model, since token cost is where the overspend comes from",
+        "Set model to haiku in the web-search AgentDefinition and leave synthesis and the coordinator on the main model",
+        "Cut the web-search subagents from eight to three, since they account for most of the tokens spent on each report",
+        "Send the web-search subagent calls through the Message Batches API to get its discount on the high-volume work"
+      ],
+      "correct": [1],
+      "explanation": "AgentDefinition accepts a per-subagent model, and the docs suggest Haiku for subagents doing simple jobs, so the high-volume retrieval work gets cheaper while synthesis keeps the strong model. Moving everything to the smallest model also downgrades synthesis, where quality was shown to depend on the model. Cutting subagents saves tokens by cutting coverage, which the reports require. Batches can take far longer than the 30-minute delivery target, so they do not fit an interactive pipeline.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/subagents",
+        "https://code.claude.com/docs/en/best-practices"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1382 @@
+{
+  "track": "ccdv-f",
+  "pages": [
+    {
+      "slug": "platform-about-claude-use-case-guides-overview",
+      "title": "Guides to common use cases",
+      "source": "https://platform.claude.com/docs/en/about-claude/use-case-guides/overview",
+      "domains": [
+        "applications-integration"
+      ],
+      "objectives": [
+        "Translate business needs into functional and infrastructure requirements"
+      ]
+    },
+    {
+      "slug": "platform-api-overview",
+      "title": "API overview",
+      "source": "https://platform.claude.com/docs/en/api/overview",
+      "domains": [
+        "applications-integration",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+        "Apply REST, JSON, async, version-control, review, and refactoring practices",
+        "Integrate SDK and transport fundamentals"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-working-with-messages",
+      "title": "Using the Messages API",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/working-with-messages",
+      "domains": [
+        "applications-integration",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+        "Apply REST, JSON, async, version-control, review, and refactoring practices",
+        "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-handling-stop-reasons",
+      "title": "Stop reasons and fallback",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+      "domains": [
+        "applications-integration",
+        "prompt-context-engineering",
+        "eval-testing-debugging"
+      ],
+      "objectives": [
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+        "Validate and defensively consume structured output",
+        "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-streaming",
+      "title": "Streaming messages",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/streaming",
+      "domains": [
+        "applications-integration",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+        "Integrate SDK and transport fundamentals"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-vision",
+      "title": "Vision",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/vision",
+      "domains": [
+        "applications-integration"
+      ],
+      "objectives": [
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-pdf-support",
+      "title": "PDF support",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/pdf-support",
+      "domains": [
+        "applications-integration"
+      ],
+      "objectives": [
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-files",
+      "title": "Files API",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/files",
+      "domains": [
+        "applications-integration"
+      ],
+      "objectives": [
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+        "Apply REST, JSON, async, version-control, review, and refactoring practices"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-citations",
+      "title": "Citations",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/citations",
+      "domains": [
+        "applications-integration"
+      ],
+      "objectives": [
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+        "Design instruction, schema, session, content-boundary, and plugin behavior"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-batch-processing",
+      "title": "Batch processing",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/batch-processing",
+      "domains": [
+        "applications-integration",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+        "Apply REST, JSON, async, version-control, review, and refactoring practices",
+        "Budget tokens and use prompt caching"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-claude-in-amazon-bedrock",
+      "title": "Claude in Amazon Bedrock (Opus 4.7 and later)",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock",
+      "domains": [
+        "applications-integration",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+        "Integrate SDK and transport fundamentals"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-claude-models-on-google-cloud-overview",
+      "title": "Claude Models on Google Cloud",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/overview",
+      "domains": [
+        "applications-integration",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers",
+        "Integrate SDK and transport fundamentals"
+      ]
+    },
+    {
+      "slug": "platform-api-versioning",
+      "title": "Versions",
+      "source": "https://platform.claude.com/docs/en/api/versioning",
+      "domains": [
+        "applications-integration"
+      ],
+      "objectives": [
+        "Apply system lifecycle practices",
+        "Manage CLAUDE.md, settings, model, prompt, and plugin versions"
+      ]
+    },
+    {
+      "slug": "platform-about-claude-model-deprecations",
+      "title": "Model deprecations",
+      "source": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+      "domains": [
+        "applications-integration",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Apply system lifecycle practices",
+        "Balance model quality, latency, cost, capability, and version changes"
+      ]
+    },
+    {
+      "slug": "platform-models-opus-5-5-migration-guide",
+      "title": "Claude Opus 5.5 migration guide",
+      "source": "https://platform.claude.com/docs/en/models/opus-5-5/migration-guide",
+      "domains": [
+        "applications-integration",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Apply system lifecycle practices",
+        "Balance model quality, latency, cost, capability, and version changes"
+      ]
+    },
+    {
+      "slug": "code-memory",
+      "title": "How Claude remembers your project",
+      "source": "https://code.claude.com/docs/en/memory",
+      "domains": [
+        "applications-integration",
+        "claude-code",
+        "prompt-context-engineering"
+      ],
+      "objectives": [
+        "Manage CLAUDE.md, settings, model, prompt, and plugin versions",
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings",
+        "Place clear instructions, examples, and constraints"
+      ]
+    },
+    {
+      "slug": "code-settings",
+      "title": "Settings files and precedence",
+      "source": "https://code.claude.com/docs/en/settings",
+      "domains": [
+        "applications-integration",
+        "claude-code",
+        "security-safety"
+      ],
+      "objectives": [
+        "Manage CLAUDE.md, settings, model, prompt, and plugin versions",
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings",
+        "Layer guardrails with least privilege"
+      ]
+    },
+    {
+      "slug": "code-plugins-overview",
+      "title": "Plugins overview",
+      "source": "https://code.claude.com/docs/en/plugins/overview",
+      "domains": [
+        "applications-integration"
+      ],
+      "objectives": [
+        "Design instruction, schema, session, content-boundary, and plugin behavior",
+        "Manage CLAUDE.md, settings, model, prompt, and plugin versions"
+      ]
+    },
+    {
+      "slug": "code-github-actions",
+      "title": "Claude Code GitHub Actions",
+      "source": "https://code.claude.com/docs/en/github-actions",
+      "domains": [
+        "applications-integration",
+        "security-safety"
+      ],
+      "objectives": [
+        "Apply REST, JSON, async, version-control, review, and refactoring practices",
+        "Protect identity, secrets, keys, and access approvals"
+      ]
+    },
+    {
+      "slug": "code-best-practices",
+      "title": "Best practices for Claude Code",
+      "source": "https://code.claude.com/docs/en/best-practices",
+      "domains": [
+        "applications-integration",
+        "claude-code"
+      ],
+      "objectives": [
+        "Apply REST, JSON, async, version-control, review, and refactoring practices",
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"
+      ]
+    },
+    {
+      "slug": "platform-about-claude-glossary",
+      "title": "Glossary",
+      "source": "https://platform.claude.com/docs/en/about-claude/glossary",
+      "domains": [
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes"
+      ]
+    },
+    {
+      "slug": "platform-models-overview",
+      "title": "Models overview",
+      "source": "https://platform.claude.com/docs/en/models/overview",
+      "domains": [
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Balance model quality, latency, cost, capability, and version changes"
+      ]
+    },
+    {
+      "slug": "platform-about-claude-models-choosing-a-model",
+      "title": "Choosing the right model",
+      "source": "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+      "domains": [
+        "model-selection-optimization",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Balance model quality, latency, cost, capability, and version changes",
+        "Translate business needs into functional and infrastructure requirements"
+      ]
+    },
+    {
+      "slug": "platform-about-claude-models-model-ids-and-versions",
+      "title": "Model IDs and versioning",
+      "source": "https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions",
+      "domains": [
+        "model-selection-optimization",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Balance model quality, latency, cost, capability, and version changes",
+        "Manage CLAUDE.md, settings, model, prompt, and plugin versions"
+      ]
+    },
+    {
+      "slug": "platform-about-claude-pricing",
+      "title": "Pricing",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "domains": [
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Balance model quality, latency, cost, capability, and version changes",
+        "Budget tokens and use prompt caching"
+      ]
+    },
+    {
+      "slug": "platform-about-claude-models-optimizing-for-cost-and-intelligence",
+      "title": "Optimizing for cost and intelligence",
+      "source": "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+      "domains": [
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Balance model quality, latency, cost, capability, and version changes",
+        "Budget tokens and use prompt caching"
+      ]
+    },
+    {
+      "slug": "platform-test-and-evaluate-strengthen-guardrails-reduce-latency",
+      "title": "Reducing latency",
+      "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-latency",
+      "domains": [
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Balance model quality, latency, cost, capability, and version changes"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-context-windows",
+      "title": "Context windows",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/context-windows",
+      "domains": [
+        "model-selection-optimization",
+        "prompt-context-engineering"
+      ],
+      "objectives": [
+        "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+        "Budget tokens and use prompt caching",
+        "Prevent context drift and bloat with pruning, compaction, and isolation"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-thinking",
+      "title": "Thinking",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/thinking",
+      "domains": [
+        "model-selection-optimization",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-extended-thinking",
+      "title": "Extended thinking",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/extended-thinking",
+      "domains": [
+        "model-selection-optimization",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-effort",
+      "title": "Effort",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/effort",
+      "domains": [
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes",
+        "Balance model quality, latency, cost, capability, and version changes"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-prompt-caching",
+      "title": "Prompt caching",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+      "domains": [
+        "model-selection-optimization",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Budget tokens and use prompt caching",
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-token-counting",
+      "title": "Token counting",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/token-counting",
+      "domains": [
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Budget tokens and use prompt caching"
+      ]
+    },
+    {
+      "slug": "platform-cli-sdks-libraries-overview",
+      "title": "SDKs, CLI, and libraries",
+      "source": "https://platform.claude.com/docs/en/cli-sdks-libraries/overview",
+      "domains": [
+        "model-selection-optimization",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Integrate SDK and transport fundamentals",
+        "Apply REST, JSON, async, version-control, review, and refactoring practices"
+      ]
+    },
+    {
+      "slug": "platform-api-rate-limits",
+      "title": "Rate limits",
+      "source": "https://platform.claude.com/docs/en/api/rate-limits",
+      "domains": [
+        "model-selection-optimization",
+        "eval-testing-debugging"
+      ],
+      "objectives": [
+        "Integrate SDK and transport fundamentals",
+        "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures"
+      ]
+    },
+    {
+      "slug": "code-model-config",
+      "title": "Model configuration",
+      "source": "https://code.claude.com/docs/en/model-config",
+      "domains": [
+        "applications-integration",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Manage CLAUDE.md, settings, model, prompt, and plugin versions",
+        "Balance model quality, latency, cost, capability, and version changes"
+      ]
+    },
+    {
+      "slug": "engineering-building-effective-agents",
+      "title": "Building effective agents",
+      "source": "https://www.anthropic.com/engineering/building-effective-agents",
+      "domains": [
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Choose workflows or agents from task constraints",
+        "Design manager and subagent hierarchies",
+        "Apply tool-loop, memory, context, and framework patterns"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-overview",
+      "title": "Agent SDK overview",
+      "source": "https://code.claude.com/docs/en/agent-sdk/overview",
+      "domains": [
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Build with the Claude Agent SDK, custom loops, managed agents, and hooks",
+        "Choose workflows or agents from task constraints"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-agent-loop",
+      "title": "How the agent loop works",
+      "source": "https://code.claude.com/docs/en/agent-sdk/agent-loop",
+      "domains": [
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Build with the Claude Agent SDK, custom loops, managed agents, and hooks",
+        "Apply tool-loop, memory, context, and framework patterns"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-subagents",
+      "title": "Subagents in the SDK",
+      "source": "https://code.claude.com/docs/en/agent-sdk/subagents",
+      "domains": [
+        "agents-workflows",
+        "prompt-context-engineering"
+      ],
+      "objectives": [
+        "Design manager and subagent hierarchies",
+        "Prevent context drift and bloat with pruning, compaction, and isolation"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-sessions",
+      "title": "Work with sessions",
+      "source": "https://code.claude.com/docs/en/agent-sdk/sessions",
+      "domains": [
+        "agents-workflows",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Apply tool-loop, memory, context, and framework patterns",
+        "Design instruction, schema, session, content-boundary, and plugin behavior"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-custom-tools",
+      "title": "Give Claude custom tools",
+      "source": "https://code.claude.com/docs/en/agent-sdk/custom-tools",
+      "domains": [
+        "agents-workflows",
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Build with the Claude Agent SDK, custom loops, managed agents, and hooks",
+        "Choose among built-in tools, custom tools, Skills, and MCP"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-hooks",
+      "title": "Intercept and control agent behavior with hooks",
+      "source": "https://code.claude.com/docs/en/agent-sdk/hooks",
+      "domains": [
+        "agents-workflows",
+        "security-safety"
+      ],
+      "objectives": [
+        "Build with the Claude Agent SDK, custom loops, managed agents, and hooks",
+        "Use hooks for deterministic safety controls"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-modifying-system-prompts",
+      "title": "Modifying system prompts",
+      "source": "https://code.claude.com/docs/en/agent-sdk/modifying-system-prompts",
+      "domains": [
+        "agents-workflows",
+        "prompt-context-engineering"
+      ],
+      "objectives": [
+        "Build with the Claude Agent SDK, custom loops, managed agents, and hooks",
+        "Place clear instructions, examples, and constraints"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-cost-tracking",
+      "title": "Track cost and usage",
+      "source": "https://code.claude.com/docs/en/agent-sdk/cost-tracking",
+      "domains": [
+        "agents-workflows",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Build with the Claude Agent SDK, custom loops, managed agents, and hooks",
+        "Budget tokens and use prompt caching"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-tool-runner",
+      "title": "Tool runner (SDK)",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-runner",
+      "domains": [
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Build with the Claude Agent SDK, custom loops, managed agents, and hooks",
+        "Apply tool-loop, memory, context, and framework patterns"
+      ]
+    },
+    {
+      "slug": "platform-managed-agents-overview",
+      "title": "Claude Managed Agents overview",
+      "source": "https://platform.claude.com/docs/en/managed-agents/overview",
+      "domains": [
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Build with the Claude Agent SDK, custom loops, managed agents, and hooks",
+        "Choose workflows or agents from task constraints"
+      ]
+    },
+    {
+      "slug": "platform-managed-agents-multiagent-orchestration",
+      "title": "Multiagent orchestration",
+      "source": "https://platform.claude.com/docs/en/managed-agents/multiagent-orchestration",
+      "domains": [
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Design manager and subagent hierarchies"
+      ]
+    },
+    {
+      "slug": "code-agent-teams",
+      "title": "Orchestrate teams of Claude Code sessions",
+      "source": "https://code.claude.com/docs/en/agent-teams",
+      "domains": [
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Design manager and subagent hierarchies"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-memory-tool",
+      "title": "Memory tool",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool",
+      "domains": [
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Apply tool-loop, memory, context, and framework patterns"
+      ]
+    },
+    {
+      "slug": "engineering-effective-context-engineering-for-ai-agents",
+      "title": "Effective context engineering for AI agents",
+      "source": "https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents",
+      "domains": [
+        "prompt-context-engineering",
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Prevent context drift and bloat with pruning, compaction, and isolation",
+        "Apply tool-loop, memory, context, and framework patterns",
+        "Design manager and subagent hierarchies"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-compaction",
+      "title": "Compaction overview",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/compaction",
+      "domains": [
+        "prompt-context-engineering"
+      ],
+      "objectives": [
+        "Prevent context drift and bloat with pruning, compaction, and isolation"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-context-editing",
+      "title": "Context editing",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+      "domains": [
+        "prompt-context-engineering",
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Prevent context drift and bloat with pruning, compaction, and isolation",
+        "Apply tool-loop, memory, context, and framework patterns"
+      ]
+    },
+    {
+      "slug": "code-context-window",
+      "title": "Explore the context window",
+      "source": "https://code.claude.com/docs/en/context-window",
+      "domains": [
+        "prompt-context-engineering",
+        "claude-code"
+      ],
+      "objectives": [
+        "Prevent context drift and bloat with pruning, compaction, and isolation",
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-prompt-engineering-overview",
+      "title": "Prompt engineering overview",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
+      "domains": [
+        "prompt-context-engineering"
+      ],
+      "objectives": [
+        "Sanitize input and iterate prompts",
+        "Place clear instructions, examples, and constraints"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-prompt-engineering-claude-prompting-best-practices",
+      "title": "Prompting best practices",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+      "domains": [
+        "prompt-context-engineering",
+        "applications-integration",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Place clear instructions, examples, and constraints",
+        "Design instruction, schema, session, content-boundary, and plugin behavior",
+        "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes"
+      ]
+    },
+    {
+      "slug": "platform-test-and-evaluate-develop-tests",
+      "title": "Define success criteria and build evaluations",
+      "source": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+      "domains": [
+        "prompt-context-engineering",
+        "eval-testing-debugging",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Sanitize input and iterate prompts",
+        "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures",
+        "Translate business needs into functional and infrastructure requirements",
+        "Apply system lifecycle practices"
+      ]
+    },
+    {
+      "slug": "platform-test-and-evaluate-strengthen-guardrails-increase-consistency",
+      "title": "Increase output consistency",
+      "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency",
+      "domains": [
+        "prompt-context-engineering",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Validate and defensively consume structured output",
+        "Explain tokens, sampling, context, non-determinism, thinking, effort, and prompting modes"
+      ]
+    },
+    {
+      "slug": "platform-test-and-evaluate-strengthen-guardrails-reduce-hallucinations",
+      "title": "Reduce hallucinations",
+      "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+      "domains": [
+        "prompt-context-engineering"
+      ],
+      "objectives": [
+        "Sanitize input and iterate prompts"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-structured-outputs",
+      "title": "Structured outputs",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+      "domains": [
+        "prompt-context-engineering",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Validate and defensively consume structured output",
+        "Design instruction, schema, session, content-boundary, and plugin behavior"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-structured-outputs",
+      "title": "Get structured output from agents",
+      "source": "https://code.claude.com/docs/en/agent-sdk/structured-outputs",
+      "domains": [
+        "prompt-context-engineering"
+      ],
+      "objectives": [
+        "Validate and defensively consume structured output"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-overview",
+      "title": "Tool use with Claude",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+      "domains": [
+        "tools-mcps",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Design descriptions, schemas, errors, approvals, and tool sets",
+        "Choose among built-in tools, custom tools, Skills, and MCP",
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-how-tool-use-works",
+      "title": "How tool use works",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-works",
+      "domains": [
+        "tools-mcps",
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Design descriptions, schemas, errors, approvals, and tool sets",
+        "Apply tool-loop, memory, context, and framework patterns"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-define-tools",
+      "title": "Define tools",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools",
+      "domains": [
+        "tools-mcps",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Design descriptions, schemas, errors, approvals, and tool sets",
+        "Design instruction, schema, session, content-boundary, and plugin behavior"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-handle-tool-calls",
+      "title": "Handle tool calls",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls",
+      "domains": [
+        "tools-mcps",
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Design descriptions, schemas, errors, approvals, and tool sets",
+        "Apply tool-loop, memory, context, and framework patterns"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-parallel-tool-use",
+      "title": "Parallel tool use",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/parallel-tool-use",
+      "domains": [
+        "tools-mcps",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Design descriptions, schemas, errors, approvals, and tool sets",
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-strict-tool-use",
+      "title": "Strict tool use",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/strict-tool-use",
+      "domains": [
+        "tools-mcps",
+        "prompt-context-engineering"
+      ],
+      "objectives": [
+        "Design descriptions, schemas, errors, approvals, and tool sets",
+        "Validate and defensively consume structured output"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-server-tools",
+      "title": "Server tools",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/server-tools",
+      "domains": [
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Choose among built-in tools, custom tools, Skills, and MCP"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-tool-search-tool",
+      "title": "Tool search tool",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+      "domains": [
+        "tools-mcps",
+        "prompt-context-engineering"
+      ],
+      "objectives": [
+        "Design descriptions, schemas, errors, approvals, and tool sets",
+        "Prevent context drift and bloat with pruning, compaction, and isolation"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-troubleshooting-tool-use",
+      "title": "Troubleshooting tool use",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/troubleshooting-tool-use",
+      "domains": [
+        "tools-mcps",
+        "eval-testing-debugging"
+      ],
+      "objectives": [
+        "Design descriptions, schemas, errors, approvals, and tool sets",
+        "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures"
+      ]
+    },
+    {
+      "slug": "engineering-writing-tools-for-agents",
+      "title": "Writing effective tools for agents — with agents",
+      "source": "https://www.anthropic.com/engineering/writing-tools-for-agents",
+      "domains": [
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Design descriptions, schemas, errors, approvals, and tool sets",
+        "Choose among built-in tools, custom tools, Skills, and MCP"
+      ]
+    },
+    {
+      "slug": "mcp-docs-2026-07-28-learn-architecture",
+      "title": "Architecture overview",
+      "source": "https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture",
+      "domains": [
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Author and deploy MCP tools, resources, and prompts across transports"
+      ]
+    },
+    {
+      "slug": "mcp-docs-2026-07-28-learn-server-concepts",
+      "title": "Understanding MCP servers",
+      "source": "https://modelcontextprotocol.io/docs/2026-07-28/learn/server-concepts",
+      "domains": [
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Author and deploy MCP tools, resources, and prompts across transports"
+      ]
+    },
+    {
+      "slug": "mcp-specification-2026-07-28-server-tools",
+      "title": "Tools",
+      "source": "https://modelcontextprotocol.io/specification/2026-07-28/server/tools",
+      "domains": [
+        "tools-mcps",
+        "security-safety"
+      ],
+      "objectives": [
+        "Author and deploy MCP tools, resources, and prompts across transports",
+        "Mitigate prompt injection, jailbreaks, data leakage, and unsafe input"
+      ]
+    },
+    {
+      "slug": "mcp-specification-2026-07-28-server-resources",
+      "title": "Resources",
+      "source": "https://modelcontextprotocol.io/specification/2026-07-28/server/resources",
+      "domains": [
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Author and deploy MCP tools, resources, and prompts across transports"
+      ]
+    },
+    {
+      "slug": "mcp-specification-2026-07-28-server-prompts",
+      "title": "Prompts",
+      "source": "https://modelcontextprotocol.io/specification/2026-07-28/server/prompts",
+      "domains": [
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Author and deploy MCP tools, resources, and prompts across transports"
+      ]
+    },
+    {
+      "slug": "mcp-specification-2026-07-28-basic-transports-index",
+      "title": "Overview",
+      "source": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/index",
+      "domains": [
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Author and deploy MCP tools, resources, and prompts across transports"
+      ]
+    },
+    {
+      "slug": "mcp-specification-2026-07-28-basic-transports-stdio",
+      "title": "stdio",
+      "source": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/stdio",
+      "domains": [
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Author and deploy MCP tools, resources, and prompts across transports"
+      ]
+    },
+    {
+      "slug": "mcp-specification-2026-07-28-basic-transports-streamable-http",
+      "title": "Streamable HTTP",
+      "source": "https://modelcontextprotocol.io/specification/2026-07-28/basic/transports/streamable-http",
+      "domains": [
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Author and deploy MCP tools, resources, and prompts across transports"
+      ]
+    },
+    {
+      "slug": "code-mcp",
+      "title": "Connect Claude Code to tools via MCP",
+      "source": "https://code.claude.com/docs/en/mcp",
+      "domains": [
+        "tools-mcps",
+        "claude-code"
+      ],
+      "objectives": [
+        "Author and deploy MCP tools, resources, and prompts across transports",
+        "Choose among built-in tools, custom tools, Skills, and MCP",
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-mcp",
+      "title": "Connect to external tools with MCP",
+      "source": "https://code.claude.com/docs/en/agent-sdk/mcp",
+      "domains": [
+        "tools-mcps",
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Author and deploy MCP tools, resources, and prompts across transports",
+        "Build with the Claude Agent SDK, custom loops, managed agents, and hooks"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-mcp-connector",
+      "title": "MCP connector",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/mcp-connector",
+      "domains": [
+        "tools-mcps",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Author and deploy MCP tools, resources, and prompts across transports",
+        "Use messages, tools, streaming, vision, thinking, caching, batch, and third-party providers"
+      ]
+    },
+    {
+      "slug": "code-features-overview",
+      "title": "Extend Claude Code",
+      "source": "https://code.claude.com/docs/en/features-overview",
+      "domains": [
+        "tools-mcps",
+        "claude-code"
+      ],
+      "objectives": [
+        "Choose among built-in tools, custom tools, Skills, and MCP",
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"
+      ]
+    },
+    {
+      "slug": "code-tools-reference",
+      "title": "Tools reference",
+      "source": "https://code.claude.com/docs/en/tools-reference",
+      "domains": [
+        "tools-mcps",
+        "claude-code"
+      ],
+      "objectives": [
+        "Choose among built-in tools, custom tools, Skills, and MCP",
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-agent-skills-overview",
+      "title": "Agent Skills",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
+      "domains": [
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Choose among built-in tools, custom tools, Skills, and MCP"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-agent-skills-best-practices",
+      "title": "Skill authoring best practices",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices",
+      "domains": [
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Choose among built-in tools, custom tools, Skills, and MCP",
+        "Design descriptions, schemas, errors, approvals, and tool sets"
+      ]
+    },
+    {
+      "slug": "platform-test-and-evaluate-strengthen-guardrails-mitigate-jailbreaks",
+      "title": "Mitigate jailbreaks and prompt injections",
+      "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks",
+      "domains": [
+        "security-safety",
+        "prompt-context-engineering",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Mitigate prompt injection, jailbreaks, data leakage, and unsafe input",
+        "Sanitize input and iterate prompts",
+        "Design instruction, schema, session, content-boundary, and plugin behavior"
+      ]
+    },
+    {
+      "slug": "platform-test-and-evaluate-strengthen-guardrails-reduce-prompt-leak",
+      "title": "Reduce prompt leak",
+      "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-prompt-leak",
+      "domains": [
+        "security-safety"
+      ],
+      "objectives": [
+        "Mitigate prompt injection, jailbreaks, data leakage, and unsafe input"
+      ]
+    },
+    {
+      "slug": "code-security",
+      "title": "Security",
+      "source": "https://code.claude.com/docs/en/security",
+      "domains": [
+        "security-safety"
+      ],
+      "objectives": [
+        "Mitigate prompt injection, jailbreaks, data leakage, and unsafe input",
+        "Layer guardrails with least privilege"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-secure-deployment",
+      "title": "Securely deploying AI agents",
+      "source": "https://code.claude.com/docs/en/agent-sdk/secure-deployment",
+      "domains": [
+        "security-safety"
+      ],
+      "objectives": [
+        "Mitigate prompt injection, jailbreaks, data leakage, and unsafe input",
+        "Layer guardrails with least privilege",
+        "Protect identity, secrets, keys, and access approvals"
+      ]
+    },
+    {
+      "slug": "code-permissions",
+      "title": "Configure permissions",
+      "source": "https://code.claude.com/docs/en/permissions",
+      "domains": [
+        "security-safety",
+        "claude-code"
+      ],
+      "objectives": [
+        "Layer guardrails with least privilege",
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"
+      ]
+    },
+    {
+      "slug": "code-permission-modes",
+      "title": "Choose a permission mode",
+      "source": "https://code.claude.com/docs/en/permission-modes",
+      "domains": [
+        "security-safety",
+        "claude-code"
+      ],
+      "objectives": [
+        "Layer guardrails with least privilege",
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"
+      ]
+    },
+    {
+      "slug": "code-sandboxing",
+      "title": "Configure the sandboxed Bash tool",
+      "source": "https://code.claude.com/docs/en/sandboxing",
+      "domains": [
+        "security-safety"
+      ],
+      "objectives": [
+        "Layer guardrails with least privilege"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-permissions",
+      "title": "Configure permissions",
+      "source": "https://code.claude.com/docs/en/agent-sdk/permissions",
+      "domains": [
+        "security-safety",
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Layer guardrails with least privilege",
+        "Design descriptions, schemas, errors, approvals, and tool sets"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-user-input",
+      "title": "Handle approvals and user input",
+      "source": "https://code.claude.com/docs/en/agent-sdk/user-input",
+      "domains": [
+        "security-safety",
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Protect identity, secrets, keys, and access approvals",
+        "Design descriptions, schemas, errors, approvals, and tool sets"
+      ]
+    },
+    {
+      "slug": "code-hooks-guide",
+      "title": "Automate actions with hooks",
+      "source": "https://code.claude.com/docs/en/hooks-guide",
+      "domains": [
+        "security-safety",
+        "agents-workflows",
+        "claude-code"
+      ],
+      "objectives": [
+        "Use hooks for deterministic safety controls",
+        "Build with the Claude Agent SDK, custom loops, managed agents, and hooks",
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"
+      ]
+    },
+    {
+      "slug": "code-hooks",
+      "title": "Hooks reference",
+      "source": "https://code.claude.com/docs/en/hooks",
+      "domains": [
+        "security-safety"
+      ],
+      "objectives": [
+        "Use hooks for deterministic safety controls"
+      ]
+    },
+    {
+      "slug": "platform-manage-claude-authentication",
+      "title": "Authentication",
+      "source": "https://platform.claude.com/docs/en/manage-claude/authentication",
+      "domains": [
+        "security-safety",
+        "model-selection-optimization"
+      ],
+      "objectives": [
+        "Protect identity, secrets, keys, and access approvals",
+        "Integrate SDK and transport fundamentals"
+      ]
+    },
+    {
+      "slug": "platform-manage-claude-workspaces",
+      "title": "Workspaces",
+      "source": "https://platform.claude.com/docs/en/manage-claude/workspaces",
+      "domains": [
+        "security-safety"
+      ],
+      "objectives": [
+        "Protect identity, secrets, keys, and access approvals"
+      ]
+    },
+    {
+      "slug": "mcp-specification-2026-07-28-basic-authorization-index",
+      "title": "Authorization",
+      "source": "https://modelcontextprotocol.io/specification/2026-07-28/basic/authorization/index",
+      "domains": [
+        "security-safety",
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Protect identity, secrets, keys, and access approvals",
+        "Author and deploy MCP tools, resources, and prompts across transports"
+      ]
+    },
+    {
+      "slug": "code-skills",
+      "title": "Extend Claude with skills",
+      "source": "https://code.claude.com/docs/en/skills",
+      "domains": [
+        "claude-code",
+        "tools-mcps"
+      ],
+      "objectives": [
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings",
+        "Choose among built-in tools, custom tools, Skills, and MCP"
+      ]
+    },
+    {
+      "slug": "code-commands",
+      "title": "Commands",
+      "source": "https://code.claude.com/docs/en/commands",
+      "domains": [
+        "claude-code"
+      ],
+      "objectives": [
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"
+      ]
+    },
+    {
+      "slug": "code-sub-agents",
+      "title": "Create custom subagents",
+      "source": "https://code.claude.com/docs/en/sub-agents",
+      "domains": [
+        "claude-code",
+        "agents-workflows",
+        "prompt-context-engineering"
+      ],
+      "objectives": [
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings",
+        "Design manager and subagent hierarchies",
+        "Prevent context drift and bloat with pruning, compaction, and isolation"
+      ]
+    },
+    {
+      "slug": "code-sessions",
+      "title": "Manage sessions",
+      "source": "https://code.claude.com/docs/en/sessions",
+      "domains": [
+        "claude-code",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings",
+        "Design instruction, schema, session, content-boundary, and plugin behavior"
+      ]
+    },
+    {
+      "slug": "code-headless",
+      "title": "Run Claude Code programmatically",
+      "source": "https://code.claude.com/docs/en/headless",
+      "domains": [
+        "claude-code"
+      ],
+      "objectives": [
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"
+      ]
+    },
+    {
+      "slug": "code-cli-reference",
+      "title": "CLI reference",
+      "source": "https://code.claude.com/docs/en/cli-reference",
+      "domains": [
+        "claude-code"
+      ],
+      "objectives": [
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-streaming-vs-single-mode",
+      "title": "Streaming Input",
+      "source": "https://code.claude.com/docs/en/agent-sdk/streaming-vs-single-mode",
+      "domains": [
+        "claude-code",
+        "agents-workflows"
+      ],
+      "objectives": [
+        "Operate Rules, Skills, Commands, Agents, memory, sessions, headless mode, streaming mode, auto-mode, CLAUDE.md, initialization, and settings",
+        "Build with the Claude Agent SDK, custom loops, managed agents, and hooks"
+      ]
+    },
+    {
+      "slug": "platform-api-errors",
+      "title": "Claude API errors",
+      "source": "https://platform.claude.com/docs/en/api/errors",
+      "domains": [
+        "eval-testing-debugging",
+        "applications-integration"
+      ],
+      "objectives": [
+        "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures",
+        "Apply REST, JSON, async, version-control, review, and refactoring practices"
+      ]
+    },
+    {
+      "slug": "code-errors",
+      "title": "Error reference",
+      "source": "https://code.claude.com/docs/en/errors",
+      "domains": [
+        "eval-testing-debugging"
+      ],
+      "objectives": [
+        "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-observability",
+      "title": "Observability with OpenTelemetry",
+      "source": "https://code.claude.com/docs/en/agent-sdk/observability",
+      "domains": [
+        "eval-testing-debugging"
+      ],
+      "objectives": [
+        "Classify errors, select recovery, analyze traces, and isolate integration failures from model failures"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,833 @@
+{
+  "track": "ccar-f",
+  "pages": [
+    {
+      "slug": "platform-agents-and-tools-tool-use-overview",
+      "title": "Tool use with Claude",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview",
+      "domains": [
+        "agentic-architecture-orchestration",
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Implement the tool-use lifecycle from stop reason to tool result",
+        "Manage tool distribution and tool choice"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-how-tool-use-works",
+      "title": "How tool use works",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/how-tool-use-works",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Implement the tool-use lifecycle from stop reason to tool result"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-handling-stop-reasons",
+      "title": "Stop reasons and fallback",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+      "domains": [
+        "agentic-architecture-orchestration",
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Implement the tool-use lifecycle from stop reason to tool result",
+        "Propagate structured errors and partial results"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-handle-tool-calls",
+      "title": "Handle tool calls",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls",
+      "domains": [
+        "agentic-architecture-orchestration",
+        "tool-design-mcp-integration",
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Implement the tool-use lifecycle from stop reason to tool result",
+        "Return structured and retry-aware MCP errors",
+        "Propagate structured errors and partial results"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-parallel-tool-use",
+      "title": "Parallel tool use",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/parallel-tool-use",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Implement the tool-use lifecycle from stop reason to tool result",
+        "Use Task, allowedTools, isolated context, parallelism, and forked sessions"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-build-a-tool-using-agent",
+      "title": "Tutorial: Build a tool-using agent",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/build-a-tool-using-agent",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Implement the tool-use lifecycle from stop reason to tool result"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-tool-runner",
+      "title": "Tool runner (SDK)",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-runner",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Implement the tool-use lifecycle from stop reason to tool result"
+      ]
+    },
+    {
+      "slug": "anthropic-research-building-effective-agents",
+      "title": "Building effective agents",
+      "source": "https://www.anthropic.com/research/building-effective-agents",
+      "domains": [
+        "agentic-architecture-orchestration",
+        "prompt-engineering-structured-output"
+      ],
+      "objectives": [
+        "Choose coordinator and subagent topologies",
+        "Enforce prerequisites, decompose concerns, and structure handoffs",
+        "Choose sequential or adaptive decomposition",
+        "Separate generator and independent reviewer passes"
+      ]
+    },
+    {
+      "slug": "anthropic-research-multi-agent-research-system",
+      "title": "How we built our multi-agent research system",
+      "source": "https://www.anthropic.com/research/multi-agent-research-system",
+      "domains": [
+        "agentic-architecture-orchestration",
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Choose coordinator and subagent topologies",
+        "Use Task, allowedTools, isolated context, parallelism, and forked sessions",
+        "Enforce prerequisites, decompose concerns, and structure handoffs",
+        "Choose sequential or adaptive decomposition",
+        "Use scratchpads, subagents, manifests, and compaction for large codebases",
+        "Track provenance, conflicts, dates, and content types"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-overview",
+      "title": "Agent SDK overview",
+      "source": "https://code.claude.com/docs/en/agent-sdk/overview",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Choose coordinator and subagent topologies"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-agent-loop",
+      "title": "How the agent loop works",
+      "source": "https://code.claude.com/docs/en/agent-sdk/agent-loop",
+      "domains": [
+        "agentic-architecture-orchestration",
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Implement the tool-use lifecycle from stop reason to tool result",
+        "Choose coordinator and subagent topologies",
+        "Use scratchpads, subagents, manifests, and compaction for large codebases"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-subagents",
+      "title": "Subagents in the SDK",
+      "source": "https://code.claude.com/docs/en/agent-sdk/subagents",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Choose coordinator and subagent topologies",
+        "Use Task, allowedTools, isolated context, parallelism, and forked sessions",
+        "Enforce prerequisites, decompose concerns, and structure handoffs"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-sessions",
+      "title": "Work with sessions",
+      "source": "https://code.claude.com/docs/en/agent-sdk/sessions",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Use Task, allowedTools, isolated context, parallelism, and forked sessions",
+        "Resume or fork without carrying stale context"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-permissions",
+      "title": "Configure permissions",
+      "source": "https://code.claude.com/docs/en/agent-sdk/permissions",
+      "domains": [
+        "agentic-architecture-orchestration",
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Use Task, allowedTools, isolated context, parallelism, and forked sessions",
+        "Enforce prerequisites, decompose concerns, and structure handoffs",
+        "Manage tool distribution and tool choice"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-hooks",
+      "title": "Intercept and control agent behavior with hooks",
+      "source": "https://code.claude.com/docs/en/agent-sdk/hooks",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Use hooks for deterministic controls and normalization",
+        "Enforce prerequisites, decompose concerns, and structure handoffs"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-todo-tracking",
+      "title": "Track todos",
+      "source": "https://code.claude.com/docs/en/agent-sdk/todo-tracking",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Choose sequential or adaptive decomposition"
+      ]
+    },
+    {
+      "slug": "code-sub-agents",
+      "title": "Create custom subagents",
+      "source": "https://code.claude.com/docs/en/sub-agents",
+      "domains": [
+        "agentic-architecture-orchestration",
+        "claude-code-configuration-workflows"
+      ],
+      "objectives": [
+        "Choose coordinator and subagent topologies",
+        "Use Task, allowedTools, isolated context, parallelism, and forked sessions",
+        "Choose plan mode, direct execution, or Explore"
+      ]
+    },
+    {
+      "slug": "code-agent-teams",
+      "title": "Orchestrate teams of Claude Code sessions",
+      "source": "https://code.claude.com/docs/en/agent-teams",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Choose coordinator and subagent topologies"
+      ]
+    },
+    {
+      "slug": "code-hooks-guide",
+      "title": "Automate actions with hooks",
+      "source": "https://code.claude.com/docs/en/hooks-guide",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Use hooks for deterministic controls and normalization"
+      ]
+    },
+    {
+      "slug": "code-hooks",
+      "title": "Hooks reference",
+      "source": "https://code.claude.com/docs/en/hooks",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Use hooks for deterministic controls and normalization",
+        "Enforce prerequisites, decompose concerns, and structure handoffs"
+      ]
+    },
+    {
+      "slug": "code-sessions",
+      "title": "Manage sessions",
+      "source": "https://code.claude.com/docs/en/sessions",
+      "domains": [
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Resume or fork without carrying stale context"
+      ]
+    },
+    {
+      "slug": "code-memory",
+      "title": "How Claude remembers your project",
+      "source": "https://code.claude.com/docs/en/memory",
+      "domains": [
+        "claude-code-configuration-workflows"
+      ],
+      "objectives": [
+        "Design CLAUDE.md hierarchy, imports, rules, and memory",
+        "Apply path-specific rules"
+      ]
+    },
+    {
+      "slug": "code-claude-directory",
+      "title": "Explore the .claude directory",
+      "source": "https://code.claude.com/docs/en/claude-directory",
+      "domains": [
+        "claude-code-configuration-workflows"
+      ],
+      "objectives": [
+        "Design CLAUDE.md hierarchy, imports, rules, and memory",
+        "Create project and user commands and Skills"
+      ]
+    },
+    {
+      "slug": "code-skills",
+      "title": "Extend Claude with skills",
+      "source": "https://code.claude.com/docs/en/skills",
+      "domains": [
+        "claude-code-configuration-workflows"
+      ],
+      "objectives": [
+        "Create project and user commands and Skills"
+      ]
+    },
+    {
+      "slug": "code-commands",
+      "title": "Commands",
+      "source": "https://code.claude.com/docs/en/commands",
+      "domains": [
+        "claude-code-configuration-workflows"
+      ],
+      "objectives": [
+        "Create project and user commands and Skills"
+      ]
+    },
+    {
+      "slug": "code-best-practices",
+      "title": "Best practices for Claude Code",
+      "source": "https://code.claude.com/docs/en/best-practices",
+      "domains": [
+        "claude-code-configuration-workflows"
+      ],
+      "objectives": [
+        "Choose plan mode, direct execution, or Explore",
+        "Use examples, test-driven iteration, and interviews"
+      ]
+    },
+    {
+      "slug": "code-common-workflows",
+      "title": "Common workflows",
+      "source": "https://code.claude.com/docs/en/common-workflows",
+      "domains": [
+        "claude-code-configuration-workflows",
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Choose plan mode, direct execution, or Explore",
+        "Use examples, test-driven iteration, and interviews",
+        "Resume or fork without carrying stale context"
+      ]
+    },
+    {
+      "slug": "code-permission-modes",
+      "title": "Choose a permission mode",
+      "source": "https://code.claude.com/docs/en/permission-modes",
+      "domains": [
+        "claude-code-configuration-workflows"
+      ],
+      "objectives": [
+        "Choose plan mode, direct execution, or Explore"
+      ]
+    },
+    {
+      "slug": "code-how-claude-code-works",
+      "title": "How Claude Code works",
+      "source": "https://code.claude.com/docs/en/how-claude-code-works",
+      "domains": [
+        "claude-code-configuration-workflows",
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Choose plan mode, direct execution, or Explore",
+        "Choose Claude Code file, shell, and search tools safely"
+      ]
+    },
+    {
+      "slug": "code-headless",
+      "title": "Run Claude Code programmatically",
+      "source": "https://code.claude.com/docs/en/headless",
+      "domains": [
+        "claude-code-configuration-workflows"
+      ],
+      "objectives": [
+        "Run headless CI with structured output and independent review"
+      ]
+    },
+    {
+      "slug": "code-cli-reference",
+      "title": "CLI reference",
+      "source": "https://code.claude.com/docs/en/cli-reference",
+      "domains": [
+        "claude-code-configuration-workflows",
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Run headless CI with structured output and independent review",
+        "Resume or fork without carrying stale context"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-structured-outputs",
+      "title": "Get structured output from agents",
+      "source": "https://code.claude.com/docs/en/agent-sdk/structured-outputs",
+      "domains": [
+        "claude-code-configuration-workflows",
+        "prompt-engineering-structured-output"
+      ],
+      "objectives": [
+        "Run headless CI with structured output and independent review",
+        "Enforce schemas with tool use and tool choice"
+      ]
+    },
+    {
+      "slug": "code-github-actions",
+      "title": "Claude Code GitHub Actions",
+      "source": "https://code.claude.com/docs/en/github-actions",
+      "domains": [
+        "claude-code-configuration-workflows"
+      ],
+      "objectives": [
+        "Run headless CI with structured output and independent review"
+      ]
+    },
+    {
+      "slug": "code-code-review",
+      "title": "Code Review",
+      "source": "https://code.claude.com/docs/en/code-review",
+      "domains": [
+        "claude-code-configuration-workflows",
+        "prompt-engineering-structured-output"
+      ],
+      "objectives": [
+        "Run headless CI with structured output and independent review",
+        "Separate generator and independent reviewer passes"
+      ]
+    },
+    {
+      "slug": "code-settings",
+      "title": "Settings files and precedence",
+      "source": "https://code.claude.com/docs/en/settings",
+      "domains": [
+        "claude-code-configuration-workflows",
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Design CLAUDE.md hierarchy, imports, rules, and memory",
+        "Scope MCP configuration and resources"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-prompt-engineering-claude-prompting-best-practices",
+      "title": "Prompting best practices",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+      "domains": [
+        "prompt-engineering-structured-output",
+        "agentic-architecture-orchestration",
+        "context-management-reliability",
+        "claude-code-configuration-workflows"
+      ],
+      "objectives": [
+        "State explicit evaluation criteria",
+        "Use few-shot examples for consistent judgment",
+        "Separate generator and independent reviewer passes",
+        "Choose sequential or adaptive decomposition",
+        "Place facts to reduce lost-in-the-middle failures",
+        "Use examples, test-driven iteration, and interviews"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-structured-outputs",
+      "title": "Structured outputs",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+      "domains": [
+        "prompt-engineering-structured-output"
+      ],
+      "objectives": [
+        "Enforce schemas with tool use and tool choice",
+        "Validate, retry, and feed back semantic errors"
+      ]
+    },
+    {
+      "slug": "platform-test-and-evaluate-strengthen-guardrails-increase-consistency",
+      "title": "Increase output consistency",
+      "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency",
+      "domains": [
+        "prompt-engineering-structured-output"
+      ],
+      "objectives": [
+        "Use few-shot examples for consistent judgment",
+        "Enforce schemas with tool use and tool choice"
+      ]
+    },
+    {
+      "slug": "platform-test-and-evaluate-develop-tests",
+      "title": "Define success criteria and build evaluations",
+      "source": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+      "domains": [
+        "prompt-engineering-structured-output"
+      ],
+      "objectives": [
+        "State explicit evaluation criteria",
+        "Separate generator and independent reviewer passes"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-batch-processing",
+      "title": "Batch processing",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/batch-processing",
+      "domains": [
+        "prompt-engineering-structured-output"
+      ],
+      "objectives": [
+        "Use batch processing for appropriate workloads"
+      ]
+    },
+    {
+      "slug": "platform-about-claude-use-case-guides-ticket-routing",
+      "title": "Ticket routing",
+      "source": "https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing",
+      "domains": [
+        "prompt-engineering-structured-output",
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "State explicit evaluation criteria",
+        "Use few-shot examples for consistent judgment",
+        "Calibrate confidence and human review"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-define-tools",
+      "title": "Define tools",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/define-tools",
+      "domains": [
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Write precise tool descriptions and boundaries",
+        "Manage tool distribution and tool choice"
+      ]
+    },
+    {
+      "slug": "anthropic-research-writing-tools-for-agents",
+      "title": "Writing effective tools for agents — with agents",
+      "source": "https://www.anthropic.com/research/writing-tools-for-agents",
+      "domains": [
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Write precise tool descriptions and boundaries",
+        "Return structured and retry-aware MCP errors",
+        "Manage tool distribution and tool choice"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-strict-tool-use",
+      "title": "Strict tool use",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/strict-tool-use",
+      "domains": [
+        "tool-design-mcp-integration",
+        "prompt-engineering-structured-output"
+      ],
+      "objectives": [
+        "Write precise tool descriptions and boundaries",
+        "Enforce schemas with tool use and tool choice"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-tool-search-tool",
+      "title": "Tool search tool",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+      "domains": [
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Manage tool distribution and tool choice"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-manage-tool-context",
+      "title": "Manage tool context",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/manage-tool-context",
+      "domains": [
+        "tool-design-mcp-integration",
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Manage tool distribution and tool choice",
+        "Use scratchpads, subagents, manifests, and compaction for large codebases"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-troubleshooting-tool-use",
+      "title": "Troubleshooting tool use",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/troubleshooting-tool-use",
+      "domains": [
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Write precise tool descriptions and boundaries",
+        "Return structured and retry-aware MCP errors"
+      ]
+    },
+    {
+      "slug": "mcp-specification-2026-07-28-server-tools",
+      "title": "Tools",
+      "source": "https://modelcontextprotocol.io/specification/2026-07-28/server/tools",
+      "domains": [
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Write precise tool descriptions and boundaries",
+        "Return structured and retry-aware MCP errors"
+      ]
+    },
+    {
+      "slug": "mcp-specification-2026-07-28-server-resources",
+      "title": "Resources",
+      "source": "https://modelcontextprotocol.io/specification/2026-07-28/server/resources",
+      "domains": [
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Scope MCP configuration and resources"
+      ]
+    },
+    {
+      "slug": "mcp-docs-2026-07-28-learn-server-concepts",
+      "title": "Understanding MCP servers",
+      "source": "https://modelcontextprotocol.io/docs/2026-07-28/learn/server-concepts",
+      "domains": [
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Scope MCP configuration and resources"
+      ]
+    },
+    {
+      "slug": "code-mcp",
+      "title": "Connect Claude Code to tools via MCP",
+      "source": "https://code.claude.com/docs/en/mcp",
+      "domains": [
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Scope MCP configuration and resources"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-mcp",
+      "title": "Connect to external tools with MCP",
+      "source": "https://code.claude.com/docs/en/agent-sdk/mcp",
+      "domains": [
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Scope MCP configuration and resources",
+        "Manage tool distribution and tool choice"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-custom-tools",
+      "title": "Give Claude custom tools",
+      "source": "https://code.claude.com/docs/en/agent-sdk/custom-tools",
+      "domains": [
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Write precise tool descriptions and boundaries",
+        "Return structured and retry-aware MCP errors"
+      ]
+    },
+    {
+      "slug": "code-tools-reference",
+      "title": "Tools reference",
+      "source": "https://code.claude.com/docs/en/tools-reference",
+      "domains": [
+        "tool-design-mcp-integration"
+      ],
+      "objectives": [
+        "Choose Claude Code file, shell, and search tools safely"
+      ]
+    },
+    {
+      "slug": "code-permissions",
+      "title": "Configure permissions",
+      "source": "https://code.claude.com/docs/en/permissions",
+      "domains": [
+        "tool-design-mcp-integration",
+        "agentic-architecture-orchestration"
+      ],
+      "objectives": [
+        "Choose Claude Code file, shell, and search tools safely",
+        "Use hooks for deterministic controls and normalization"
+      ]
+    },
+    {
+      "slug": "code-agent-sdk-user-input",
+      "title": "Handle approvals and user input",
+      "source": "https://code.claude.com/docs/en/agent-sdk/user-input",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Escalate ambiguity and policy gaps",
+        "Calibrate confidence and human review"
+      ]
+    },
+    {
+      "slug": "anthropic-research-effective-context-engineering-for-ai-agents",
+      "title": "Effective context engineering for AI agents",
+      "source": "https://www.anthropic.com/research/effective-context-engineering-for-ai-agents",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Place facts to reduce lost-in-the-middle failures",
+        "Use scratchpads, subagents, manifests, and compaction for large codebases"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-context-windows",
+      "title": "Context windows",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/context-windows",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Use scratchpads, subagents, manifests, and compaction for large codebases"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-compaction",
+      "title": "Compaction overview",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/compaction",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Use scratchpads, subagents, manifests, and compaction for large codebases"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-context-editing",
+      "title": "Context editing",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Use scratchpads, subagents, manifests, and compaction for large codebases"
+      ]
+    },
+    {
+      "slug": "platform-agents-and-tools-tool-use-memory-tool",
+      "title": "Memory tool",
+      "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Use scratchpads, subagents, manifests, and compaction for large codebases"
+      ]
+    },
+    {
+      "slug": "code-context-window",
+      "title": "Explore the context window",
+      "source": "https://code.claude.com/docs/en/context-window",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Use scratchpads, subagents, manifests, and compaction for large codebases"
+      ]
+    },
+    {
+      "slug": "code-large-codebases",
+      "title": "Set up Claude Code in a monorepo or large codebase",
+      "source": "https://code.claude.com/docs/en/large-codebases",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Use scratchpads, subagents, manifests, and compaction for large codebases"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-prompt-caching",
+      "title": "Prompt caching",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Place facts to reduce lost-in-the-middle failures"
+      ]
+    },
+    {
+      "slug": "platform-test-and-evaluate-strengthen-guardrails-reduce-hallucinations",
+      "title": "Reduce hallucinations",
+      "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Calibrate confidence and human review",
+        "Track provenance, conflicts, dates, and content types"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-citations",
+      "title": "Citations",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/citations",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Track provenance, conflicts, dates, and content types"
+      ]
+    },
+    {
+      "slug": "platform-build-with-claude-search-results",
+      "title": "Search results",
+      "source": "https://platform.claude.com/docs/en/build-with-claude/search-results",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Track provenance, conflicts, dates, and content types"
+      ]
+    },
+    {
+      "slug": "platform-about-claude-use-case-guides-customer-support-chat",
+      "title": "Customer support agent",
+      "source": "https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat",
+      "domains": [
+        "context-management-reliability"
+      ],
+      "objectives": [
+        "Escalate ambiguity and policy gaps",
+        "Calibrate confidence and human review"
+      ]
+    }
+  ]
+}

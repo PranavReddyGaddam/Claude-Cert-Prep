@@ -1,0 +1,290 @@
+{
+  "id": "02-claude-code-ci",
+  "title": "Claude Code for Continuous Integration",
+  "setup": "Your platform team runs Claude Code in GitHub Actions. On every pull request a `claude -p` review job posts inline comments and a test-generation job proposes unit tests for changed code; a separate nightly job audits the whole repository. The blocking PR check must finish within 10 minutes, the API key lives in a repository secret, and developers have started ignoring the bot because its comments are noisy.",
+  "questions": [
+    {
+      "id": "ccar-f-s02-01",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "State explicit evaluation criteria",
+      "type": "single",
+      "prompt": "The review prompt says: \"Review this diff thoroughly and flag anything that could be improved.\" Over two weeks developers dismissed 41% of the bot's comments, mostly naming preferences, speculative refactors and formatting that the linter already enforces. The real bugs it found are buried among them. What change addresses the cause MOST directly?",
+      "options": [
+        "Add \"Only report issues you are highly confident about\" to the prompt so that low-certainty comments are left out",
+        "Cap the review at the five longest comments per PR, since detailed comments tend to carry the substantive issues",
+        "List the issue categories to report and to skip, such as bugs and security in and style out, with severity levels",
+        "Switch the review job to a larger model, since stronger models make fewer speculative or low-value suggestions"
+      ],
+      "correct": [2],
+      "explanation": "The noise comes from vague criteria: \"anything that could be improved\" invites style and speculation. Stating which categories count, what to skip (formatting the linter owns) and how to grade severity tells the model what a finding is. A confidence instruction is still vague, and the dismissed comments were mostly confident opinions rather than uncertain bugs. Capping by length is an output filter that can drop a short real bug while keeping a long nit. A larger model applies the same open-ended instruction, so it still reports preferences because it was asked to.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+        "https://code.claude.com/docs/en/best-practices"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-02",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Use few-shot examples for consistent judgment",
+      "type": "single",
+      "prompt": "After criteria were added, the review labels each finding critical, major or minor. Audit of 200 findings shows the same pattern, an unchecked null from a repository lookup, labeled critical in some PRs and minor in others, and developers argue about which labels to trust. The written definitions of each level are already in the prompt. What is the BEST next step?",
+      "options": [
+        "Add a few worked findings per level showing the code, the label chosen and why, including near-boundary cases",
+        "Add an enum of critical, major and minor to the output schema so the job can only emit one of the allowed labels",
+        "Run the review twice per PR and keep a finding's label only when both runs agree, otherwise mark it as minor",
+        "Expand each level's written definition into a full paragraph with more adjectives describing what qualifies"
+      ],
+      "correct": [0],
+      "explanation": "When definitions exist but judgment still varies, a few labeled examples, especially boundary cases, show the model where the lines fall and make its grading consistent. An enum constrains the form of the label but not which label is chosen, and the labels were already valid values. Running twice and taking agreement doubles cost and silently downgrades disagreements instead of fixing the judgment. Longer prose definitions add more of what is already failing to pin the boundary down.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-03",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Separate generator and independent reviewer passes",
+      "type": "single",
+      "prompt": "A new auto-fix job lets Claude patch failing lint and type errors, then in the same session asks \"Now review your changes for bugs before we commit.\" The self-review passes 97% of its own patches, yet humans later revert 1 in 8 of them for behavior changes. What should the pipeline do instead?",
+      "options": [
+        "Keep the same session but give the review step a detailed checklist of behavior changes it must check one by one",
+        "Turn on extended thinking for the review step in that session so it reasons more carefully about its own patch",
+        "Run /compact before the review step so the session judges the patch from a summary instead of its full reasoning",
+        "Review the patch in a separate claude -p run that gets only the diff, the criteria and the tests, not the history"
+      ],
+      "correct": [3],
+      "explanation": "A reviewer that has not seen how the code was written does not inherit the generator's reasoning and assumptions, so a separate run given only the diff, criteria and tests is the independent pass the docs recommend. A checklist improves coverage but the same session still reads its own rationale and tends to confirm it. More thinking in the same session reasons further from the same biased starting point. Compacting keeps a summary of the generator's own justification in context, so the review is still not independent.",
+      "references": [
+        "https://code.claude.com/docs/en/best-practices",
+        "https://code.claude.com/docs/en/sub-agents"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-04",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Run headless CI with structured output and independent review",
+      "type": "single",
+      "prompt": "The review job currently prompts Claude to \"review the repository in light of this PR\" with read access to all 3,100 files. Median runtime is 14 minutes, over the 10-minute budget, and 30% of comments land on files the PR did not touch. Most PRs change fewer than 10 files. What should the job give Claude as its starting context?",
+      "options": [
+        "The whole repository again, with prompt caching on the file contents so the repeated reads cost less on each run",
+        "The PR diff plus the changed files, with read access so Claude can open callers or types when the change needs it",
+        "Only the diff hunks with three lines of context each, and no file access, so Claude cannot drift to other files",
+        "A summary of the repo architecture plus the diff, so Claude reasons about the change without opening any files"
+      ],
+      "correct": [1],
+      "explanation": "Scoping the review to the diff and changed files keeps runtime and comments on what the PR touches, while leaving read access lets Claude pull in a caller or type definition when a change needs that context. Caching lowers the cost of repeated tokens but does not stop comments on untouched files or bring runtime under budget. Bare hunks with no file access cut runtime but hide the surrounding code needed to judge many bugs. An architecture summary is coarse and still gives no way to check how the changed code is actually used.",
+      "references": [
+        "https://code.claude.com/docs/en/headless",
+        "https://code.claude.com/docs/en/code-review"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-05",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Choose sequential or adaptive decomposition",
+      "type": "single",
+      "prompt": "A PR touches 14 files: an API handler, its request schema, a client SDK and their tests. The single-pass review left detailed comments on the first four files, one-line comments on the rest, and missed that the handler now returns amount_minor while the client still reads amount. What review structure fixes BOTH problems?",
+      "options": [
+        "Raise the output limit for the review run so the single pass has room to comment in depth on all fourteen files",
+        "Split the review into one pass per file, each with full attention, and merge their findings into a single report",
+        "Run per-file passes for local issues, then an integration pass over the diff focused on cross-file contracts",
+        "Keep one pass and tell Claude to give each of the fourteen files equal depth and to check every interface too"
+      ],
+      "correct": [2],
+      "explanation": "Per-file passes give every file the same depth, and a separate integration pass looks specifically at how the files fit together, which is where the amount_minor mismatch lives. Raising the output limit treats truncation, but the shallow comments came from attention spread across one long pass, and it does not target cross-file issues. Per-file passes alone fix depth but no single pass sees both the handler and the client, so the contract break is still missed. An instruction to give equal depth asks the same overloaded pass to do more.",
+      "references": [
+        "https://code.claude.com/docs/en/sub-agents",
+        "https://code.claude.com/docs/en/large-codebases"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-06",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Enforce schemas with tool use and tool choice",
+      "type": "single",
+      "prompt": "The job needs to post each finding as an inline GitHub comment, which requires path, line, severity and body. A teammate proposes letting Claude post the comments itself by allowing Bash(gh api *) in the review run. Another proposes having the run return the findings as data and posting them from a later workflow step. Which design is BEST?",
+      "options": [
+        "Return findings with --output-format json and --json-schema, then post structured_output from a separate step",
+        "Allow Bash(gh api *) so Claude posts each comment as it goes, and read the review summary from the result field",
+        "Ask Claude to end its answer with a fenced JSON block of findings, then parse that block from the result field",
+        "Allow Bash(gh api *) and add a PostToolUse hook that logs every comment Claude posts so the team can audit it"
+      ],
+      "correct": [0],
+      "explanation": "A schema passed with --json-schema yields validated findings in structured_output, and a deterministic workflow step can post, deduplicate or drop them, keeping side effects out of the model's hands. Letting Claude call gh api directly gives the review run write access to the PR and no validation point before comments appear. A fenced JSON block is a formatting request with no validation, so malformed or missing fields still reach the poster. Logging with a hook records what was posted but does not validate or gate anything.",
+      "references": [
+        "https://code.claude.com/docs/en/headless",
+        "https://code.claude.com/docs/en/agent-sdk/structured-outputs"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-07",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Validate, retry, and feed back semantic errors",
+      "type": "single",
+      "prompt": "Every review output now passes the JSON Schema, yet GitHub rejects about 4% of inline comments with \"line must be part of the diff\": the findings are real but point at lines outside the changed hunks. The posting step currently drops those comments silently. What is the BEST fix?",
+      "options": [
+        "Add minimum and maximum values for line to the JSON Schema so that out-of-range line numbers are rejected early",
+        "Check each finding's path and line against the diff hunks and resend the misses with that error for a correction",
+        "Keep dropping the rejected comments, since 4% is small and every one of them points at an unchanged line anyway",
+        "Add a sentence to the prompt asking Claude to double-check that every line it cites appears in the PR's diff"
+      ],
+      "correct": [1],
+      "explanation": "The output is schema-valid but semantically wrong for this PR, so the fix is a check against the actual diff and a retry that tells the model exactly which findings failed and why, letting it re-anchor real issues to a changed line. A static min and max cannot express which lines are in this PR's hunks. Dropping them silently loses real findings. A prompt reminder may lower the rate but gives no check and no recovery when it still happens.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/structured-outputs",
+        "https://platform.claude.com/docs/en/build-with-claude/structured-outputs"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-08",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Use examples, test-driven iteration, and interviews",
+      "type": "single",
+      "prompt": "The test-generation job gives Claude the diff and asks for unit tests of the changed functions. Reviewers find that about 30% of generated cases repeat scenarios already covered in tests/, under different names and with different fixtures. The job runs before human review and must stay within its time budget. What change MOST directly reduces the duplicates?",
+      "options": [
+        "Deduplicate after generation by comparing new test names against existing names and dropping any exact matches",
+        "Run coverage after generation and delete any new test that adds no covered lines over the existing test suite",
+        "Ask for fewer tests per function, since a smaller number of cases leaves less room for repeating old scenarios",
+        "Give Claude the existing tests for the changed modules and ask it to add cases only for behavior they miss"
+      ],
+      "correct": [3],
+      "explanation": "Claude repeats existing scenarios because it never sees them; supplying the current tests for the touched modules lets it target only uncovered behavior, which fixes the cause before generation. Name matching misses duplicates that use different names and fixtures, which is exactly the pattern found. A coverage filter is a valid later check, but it runs the suite twice within a tight budget and can drop a useful case that asserts different behavior on already-covered lines. Asking for fewer tests shrinks output without telling Claude which scenarios exist.",
+      "references": [
+        "https://code.claude.com/docs/en/best-practices",
+        "https://code.claude.com/docs/en/common-workflows"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-09",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Use batch processing for appropriate workloads",
+      "type": "single",
+      "prompt": "Finance asks the team to cut Claude spend. A proposal moves both workloads to the Message Batches API for its 50% discount: the blocking PR review (about 300 requests a day, must finish in 10 minutes) and the nightly audit (about 3,000 per-file requests, results read at the 09:00 standup). Which plan fits the documented behavior of batches?",
+      "options": [
+        "Move both to batches, since most batches finish in under an hour and the PR check can poll until results arrive",
+        "Keep both on standard requests and rely on prompt caching instead, since batch latency makes it unfit for CI use",
+        "Move the nightly audit to batches and keep the blocking PR review on standard requests within its time limit",
+        "Move the PR review to batches with a 10-minute poll timeout and fall back to standard calls whenever it expires"
+      ],
+      "correct": [2],
+      "explanation": "Batches suit work that does not need an immediate answer: most finish within an hour but processing can take up to 24 hours, so an overnight audit fits and a 10-minute blocking check does not. Moving both relies on typical latency the API does not guarantee. Rejecting batches entirely leaves the nightly discount on the table. A batch with a fallback still pays full price whenever the batch is slow and adds a second code path, so it is complexity without a dependable saving.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-10",
+      "domain": "prompt-engineering-structured-output",
+      "objective": "Use batch processing for appropriate workloads",
+      "type": "single",
+      "prompt": "The nightly audit now submits 3,000 per-file requests as one Message Batch. The first morning's report attached findings for src/auth/session.ts to src/web/cart.tsx and vice versa. The script writes results to files by zipping the results list with the list of submitted file paths. What should change?",
+      "options": [
+        "Give each request a custom_id derived from its file path and match every result by that id, not by position",
+        "Submit the 3,000 requests in smaller ordered batches of 100 so each batch returns results in submission order",
+        "Ask Claude to echo the file path as the first line of every answer and parse that line to find the right file",
+        "Sort the results by their created_at timestamps before zipping them with the paths so the ordering lines up"
+      ],
+      "correct": [0],
+      "explanation": "Batch results can come back in any order, and the documented way to match a result to its request is the custom_id field, so a path-derived id makes the mapping exact. Smaller batches still return results in any order within each batch. Echoing the path relies on model output for bookkeeping that the API already provides reliably. Sorting by timestamp does not recover submission order, because requests are processed concurrently.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-11",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Run headless CI with structured output and independent review",
+      "type": "single",
+      "prompt": "Security reviews the PR workflow. It checks out the PR branch, exports the ANTHROPIC_API_KEY secret, and runs `claude -p \"review this PR\"` with no other flags. A red-team PR adds a .claude/settings.json hook that runs curl with environment values, plus a .mcp.json entry, and both execute during the review. What should the workflow change FIRST?",
+      "options": [
+        "Add a line to the base branch CLAUDE.md telling Claude to ignore any hooks and MCP servers that a PR introduces",
+        "Run with --bare and pass trusted settings and prompt text by flag, so the PR's hooks and .mcp.json are never read",
+        "Run with --permission-mode plan so the review can only read files and cannot execute anything the PR adds to it",
+        "Rely on the workspace trust prompt, which asks before running hooks or MCP servers from a folder not yet trusted"
+      ],
+      "correct": [1],
+      "explanation": "Without --bare, a -p run executes hooks from the project's .claude/settings.json and connects .mcp.json servers even in an untrusted folder, with no trust dialog; --bare skips that discovery, and the job supplies its own settings and instructions by flag. A CLAUDE.md line is model guidance and cannot stop hooks, which Claude Code runs itself. Plan mode governs what Claude's tools may do, not whether configured hooks and MCP servers load. The trust prompt does not appear in -p sessions at all.",
+      "references": [
+        "https://code.claude.com/docs/en/headless",
+        "https://code.claude.com/docs/en/mcp"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-12",
+      "domain": "claude-code-configuration-workflows",
+      "objective": "Run headless CI with structured output and independent review",
+      "type": "single",
+      "prompt": "On a 9,000-line generated-code PR the review job ran for 48 minutes before the Actions job-level timeout killed it, so no comments were posted and the API spend was lost. The team wants the run itself to stop at a known bound and still return what it found, rather than relying on the runner to kill it. What should they add?",
+      "options": [
+        "A sentence in the prompt asking Claude to keep the review short and to stop once it has covered the main changes",
+        "A lower timeout-minutes on the Actions job so the runner kills the review sooner and wastes less spend on big PRs",
+        "A switch to a smaller, faster model for the review job so that large PRs finish inside the existing time limit",
+        "The --max-turns and --max-budget-usd flags on the claude -p call, so the CLI itself stops the run at a fixed cap"
+      ],
+      "correct": [3],
+      "explanation": "--max-turns and --max-budget-usd are print-mode limits that Claude Code enforces itself, so the run ends at a known bound under the CLI's control instead of being killed from outside; the docs list them as the deterministic way to cap spend with -p. A prompt request is something Claude decides on, so it does not guarantee a bound. A shorter runner timeout still kills the process from outside and loses whatever was found. A smaller model shortens typical runs but sets no bound on an unusually large PR.",
+      "references": [
+        "https://code.claude.com/docs/en/cli-reference",
+        "https://code.claude.com/docs/en/best-practices"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-13",
+      "domain": "agentic-architecture-orchestration",
+      "objective": "Resume or fork without carrying stale context",
+      "type": "single",
+      "prompt": "Each push to a PR re-runs the review, and a PR with five pushes collected the same 12 comments five times. A teammate proposes saving each review's session_id and running the next review with --resume so Claude remembers what it already said. The file contents changed between pushes. What is the BEST way to stop the duplicates?",
+      "options": [
+        "Start a fresh review per push, pass in the previous run's findings, and report only new or still-unfixed issues",
+        "Resume the previous review session as proposed, since it already holds the earlier findings and file contents",
+        "Review only the newest commit's diff on each push, so issues found in earlier commits are never flagged again",
+        "Delete all of the bot's earlier comments before each run, so that only the latest full set stays on the PR"
+      ],
+      "correct": [0],
+      "explanation": "A fresh run reads the current code, and handing it the prior findings as data lets it report only what is new or still unresolved, so nothing is reposted. Resuming carries the earlier file reads into the new run, which is stale context once the files have changed, and Claude may reason from old versions. Reviewing only the latest commit avoids repeats but misses issues that only appear when commits combine, and stops re-flagging real problems nobody fixed. Deleting and reposting erases the discussion threads attached to earlier comments.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/sessions",
+        "https://code.claude.com/docs/en/code-review"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-14",
+      "domain": "context-management-reliability",
+      "objective": "Calibrate confidence and human review",
+      "type": "single",
+      "prompt": "Findings rated critical now fail the PR check. Over a month, 15% of blocking findings turned out to be false, and teams began force-merging past the check. A proposal asks Claude to attach a confidence score from 0 to 1 to each finding and block only above 0.8. What is the BETTER change?",
+      "options": [
+        "Adopt the 0.8 confidence threshold as proposed, since findings the model is unsure of are the likely false ones",
+        "Run the same review prompt three times and block only when all three runs report the same critical finding",
+        "Add a pass that tries to confirm each candidate against the code before it blocks, and send the rest to people",
+        "Downgrade every finding to a non-blocking comment, so that false positives can never block a merge again"
+      ],
+      "correct": [2],
+      "explanation": "A separate verification step that checks each candidate against the code filters false positives on evidence, and routing unconfirmed items to human judgment keeps people in the loop where the model is unsure. Self-reported confidence scores are not reliably calibrated, so a threshold on them can block wrong findings and pass real ones. Three runs of the same prompt share the same blind spots, triple the cost and threaten the time budget. Making everything non-blocking removes the false blocks but also removes the check's value for real critical bugs.",
+      "references": [
+        "https://code.claude.com/docs/en/code-review",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccar-f-s02-15",
+      "domain": "tool-design-mcp-integration",
+      "objective": "Manage tool distribution and tool choice",
+      "type": "single",
+      "prompt": "The review job runs with the default tool set. On one PR Claude \"fixed\" a failing assertion while reviewing, and the next workflow step ran the tests on the modified workspace, so a broken change passed CI. The review job should only read code and run `git diff`. What is the BEST control?",
+      "options": [
+        "Add \"Never edit files during a review\" to the review prompt and the base branch CLAUDE.md file read by the job",
+        "Pass --tools \"Read,Grep,Glob,Bash\" with --allowedTools \"Bash(git diff *)\" so editing tools are not available",
+        "Remove write permission from the job's GITHUB_TOKEN so that nothing Claude changes can be pushed to the branch",
+        "Pass --permission-mode acceptEdits but add a PostToolUse hook that logs each edit for later security reviews"
+      ],
+      "correct": [1],
+      "explanation": "--tools restricts which built-in tools exist in the session, so Edit and Write are simply unavailable, and --allowedTools pre-approves only git diff; any other Bash call needs approval, which a -p run denies. A prompt or CLAUDE.md line is guidance the model can override when it decides a fix is helpful. Removing token write access stops a push, but the damage here came from edits in the workspace that the next step tested, which a read-only token does not prevent. acceptEdits does the opposite of what is wanted, and logging records edits without stopping them.",
+      "references": [
+        "https://code.claude.com/docs/en/cli-reference",
+        "https://code.claude.com/docs/en/permission-modes"
+      ]
+    }
+  ]
+}
