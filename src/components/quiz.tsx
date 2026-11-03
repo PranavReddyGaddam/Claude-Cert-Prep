@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
-import { domainName, type Bank, type Question, type Scenario } from "@/lib/quiz-types"
+import { domainName, type Bank, type Domains, type Question, type Scenario } from "@/lib/quiz-types"
 import { scrollToTarget, usePin } from "@/components/smooth-scroll"
 import { type Attempt, EMPTY_ATTEMPTS, EMPTY_RECORD, KEYS, useStored } from "@/lib/store"
 
@@ -45,6 +45,19 @@ function shuffle<T>(arr: T[]) {
 function groupByScenario(list: Question[]) {
   const order = [...new Set(list.map((q) => q.scenario))]
   return order.flatMap((id) => list.filter((q) => q.scenario === id))
+}
+
+// Draw n questions with each domain's share set by its blueprint weight (largest remainder).
+function drawByWeight(pool: Question[], domains: Domains, n: number) {
+  const byDomain = new Map<string, Question[]>()
+  for (const q of pool) if (q.domain) byDomain.set(q.domain, [...(byDomain.get(q.domain) ?? []), q])
+  const ids = [...byDomain.keys()]
+  const total = ids.reduce((s, d) => s + (domains[d]?.weight ?? 0), 0) || 1
+  const exact = ids.map((d) => ({ d, x: (n * (domains[d]?.weight ?? 0)) / total }))
+  const quota = new Map(exact.map(({ d, x }) => [d, Math.floor(x)]))
+  let left = n - [...quota.values()].reduce((a, b) => a + b, 0)
+  for (const { d } of [...exact].sort((a, b) => (b.x % 1) - (a.x % 1))) if (left-- > 0) quota.set(d, quota.get(d)! + 1)
+  return ids.flatMap((d) => shuffle(byDomain.get(d)!).slice(0, quota.get(d)))
 }
 
 function isCorrect(q: Question, picked: number[] | undefined) {
@@ -131,6 +144,8 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
       )
       list = list.filter((q) => q.scenario && drawn.has(q.scenario))
     }
+    // A standalone-item exam draws its length from every domain, in blueprint proportion.
+    if (!qs && bank.drawWeighted && !missedOnly) list = drawByWeight(list, bank.domains, bank.drawWeighted)
     if (shuffled) list = shuffle(list)
     list = groupByScenario(list)
     setQuestions(list)
@@ -164,7 +179,7 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
   const elapsed = Math.floor((now - startedAt) / 1000)
   const limitSec =
     mode === "exam" && timed && bank.timeLimitMinutes
-      ? Math.round((bank.timeLimitMinutes * 60 * questions.length) / Math.max(1, bank.questions.length))
+      ? Math.round((bank.timeLimitMinutes * 60 * questions.length) / Math.max(1, bank.drawWeighted ?? bank.questions.length))
       : null
   const remaining = limitSec != null ? limitSec - elapsed : null
 
@@ -237,7 +252,9 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
     .slice(-5)
     .reverse()
   const filteredCount =
-    bank.pickScenarios && !missedOnly
+    bank.drawWeighted && !missedOnly
+      ? Math.min(bank.drawWeighted, pool.length)
+      : bank.pickScenarios && !missedOnly
       ? Math.round((pool.length / Math.max(1, bank.scenarios?.length ?? 1)) * bank.pickScenarios)
       : pool.filter((qq) => !domainFilter.length || (qq.domain && domainFilter.includes(qq.domain))).length
 
@@ -274,7 +291,7 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
               />
             </section>
 
-            {domains.length > 1 && !bank.pickScenarios && (
+            {domains.length > 1 && !bank.pickScenarios && !bank.drawWeighted && (
               <section>
                 <h2 className="mb-3 text-sm font-medium text-muted-foreground">
                   Domains {domainFilter.length ? `(${domainFilter.length})` : "(all)"}
@@ -318,7 +335,7 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
                     onChange={(e) => setTimed(e.target.checked)}
                     className="size-4 accent-foreground"
                   />
-                  Timer ({bank.timeLimitMinutes} min for the full set)
+                  Timer ({Math.round((bank.timeLimitMinutes * filteredCount) / Math.max(1, bank.drawWeighted ?? bank.questions.length))} min)
                 </label>
               )}
             </section>
@@ -467,6 +484,8 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
   const answeredCount = questions.filter((qq) => (answers[qq.id] ?? []).length).length
   const correctNow = q && isRevealed ? isCorrect(q, picked) : null
   const scenario = q?.scenario ? bank.scenarios?.find((s) => s.id === q.scenario) : undefined
+  // The real exam names no domain or objective; scenario questions and the simulation keep them for the review.
+  const hideTopic = !!q?.scenario || !!bank.drawWeighted
 
   return (
     <div ref={topRef} className="mx-auto max-w-3xl px-4 py-6 sm:px-8 lg:py-10">
@@ -499,7 +518,7 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
         <div>
           <div className="mb-4 flex flex-wrap items-center gap-2">
             {/* Scenario questions hide the domain, as the real exam does; it shows up in the review. */}
-            {q.domain && !q.scenario && <Badge variant="secondary">{domainName(bank.domains, q.domain)}</Badge>}
+            {q.domain && !hideTopic && <Badge variant="secondary">{domainName(bank.domains, q.domain)}</Badge>}
             {q.multi && <Badge variant="outline">Select {q.correct.length}</Badge>}
             {flags[q.id] && (
               <Badge variant="outline">
@@ -509,8 +528,8 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
           </div>
           {scenario && <ScenarioCard scenario={scenario} />}
           <Md className="font-heading text-xl leading-snug font-medium sm:text-[1.4rem]">{q.prompt}</Md>
-          {/* The objective would hint at the answer in a scenario question, so it waits for the review. */}
-          {q.objective && !q.scenario && <p className="mt-2 text-sm text-muted-foreground">{q.objective}</p>}
+          {/* The objective would hint at the answer, so in exam-style sets it waits for the review. */}
+          {q.objective && !hideTopic && <p className="mt-2 text-sm text-muted-foreground">{q.objective}</p>}
 
           <div className="mt-8 space-y-2.5">
             {q.options.map((opt, i) => {

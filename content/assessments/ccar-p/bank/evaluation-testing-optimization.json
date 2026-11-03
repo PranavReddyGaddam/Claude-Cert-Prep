@@ -1,0 +1,429 @@
+{
+  "id": "evaluation-testing-optimization",
+  "title": "Evaluation, Testing & Optimization",
+  "questions": [
+    {
+      "id": "ccar-p-ev-01",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Define evaluation metrics (accuracy, latency, cost, safety, security)",
+      "type": "single",
+      "prompt": "A customer-facing billing agent passes 85% of trials on each task in its eval suite, and the team reports a pass@3 score of 99% to leadership. The product requirement is that every customer who asks for the same thing gets a correct result, not that the agent eventually succeeds. Which metric should the team report instead?",
+      "options": [
+        "Keep pass@3, since it shows each task is solvable by the agent within a small, fixed attempt budget",
+        "Raise k to 10 under pass@k so the estimate rests on more trials and has lower run-to-run noise",
+        "Report pass^k over 3 trials, the chance all attempts succeed, which is about 61% at 85% per trial",
+        "Report the mean rubric score from an LLM judge, averaged across every trial of every task in the suite"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "pass^k measures the probability that all k trials succeed, which is the property a customer-facing agent needs: at 85% per trial, (0.85)^3 is about 61%, far below the 99% headline. pass@k measures the chance of at least one success in k attempts, so it suits tools where one success is enough; keeping it hides the inconsistency. Raising k under pass@k makes the number climb toward 100%, telling an even rosier and less relevant story. An averaged rubric score blends quality across trials and says nothing about whether every attempt succeeds.",
+      "references": [
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-02",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Define evaluation metrics (accuracy, latency, cost, safety, security)",
+      "type": "multiple",
+      "prompt": "A support agent can issue refunds of up to $100 through a process_refund tool. Leadership asks for eval metrics that show the agent resolves cases correctly and stays inside policy. The eval harness runs each case against a sandboxed copy of the ticketing and payments databases. Which TWO grading signals best measure what leadership asked for?",
+      "options": [
+        "A state check that the ticket is resolved and the refund record in the database matches the eligible amount",
+        "A check that the agent's final message tells the customer the refund was processed and the ticket closed",
+        "A check that the agent's tool calls match the reference trajectory step for step and in the same order",
+        "The share of runs that leave a refund above $100 or an ineligible refund in the payments database",
+        "The average number of output tokens per conversation, tracked per release as a proxy for agent efficiency"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "explanation": "The outcome is the final state of the environment, not what the agent says: a state check on the ticket and refund record measures correct resolution, and counting policy-violating refunds in the database measures the safety requirement directly. The agent's closing message is the transcript, and an agent can claim success it did not achieve. Grading an exact tool-call sequence is brittle because agents find valid paths the designer did not anticipate; grade what was produced. Output tokens are a cost metric worth tracking, but they say nothing about correctness or policy compliance.",
+      "references": [
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents",
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-03",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Define evaluation metrics (accuracy, latency, cost, safety, security)",
+      "type": "single",
+      "prompt": "A streaming chat assistant's dashboard tracks mean total response time, which has stayed flat for a month. The product requirement says users must see the reply begin within 1.5 seconds for 95% of requests, and support tickets about the app feeling slow are rising. Which metric should the team add to the dashboard to judge the requirement?",
+      "options": [
+        "The 95th-percentile time to first token on streamed responses, measured from when the request is sent",
+        "Mean time to last token across all requests, since it already includes the time before the first token",
+        "Mean output tokens per second, because faster generation means the visible reply starts sooner for users",
+        "The model's published baseline latency, compared each week against the assistant's own response times"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The requirement is about when the reply begins, at a percentile, so the matching metric is p95 time to first token (TTFT), which Anthropic’s latency guide highlights as particularly relevant for responsive streaming. Mean time to last token measures completion, and a mean hides the tail that the p95 target is about. Output tokens per second describes generation speed after the first token, not when it appears. A published baseline latency describes the model in general, not this application's prompts, infrastructure and traffic.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-latency",
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-04",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Design evaluation datasets and test frameworks using mixed methodologies",
+      "type": "single",
+      "prompt": "A team is two weeks into building an internal procurement agent. The lead proposes delaying any eval work until 500 hand-labeled cases exist, because a small set would not be statistically meaningful. Early prompt changes are still producing large, obvious swings in behavior. What is the better plan for the first eval dataset?",
+      "options": [
+        "Generate 500 synthetic cases with Claude from the spec now, then hand-label them before running any evals",
+        "Start with 20 to 50 unambiguous tasks drawn from real failures and manual checks, and grow the set over time",
+        "Wait for launch and build the dataset from production traffic, which is the only reliable source of real usage",
+        "Adopt a public agent benchmark as the first dataset, since its tasks are already labeled and widely trusted"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic's eval guidance says 20 to 50 simple tasks drawn from real failures is a strong start: early on, changes have large effect sizes, so small samples detect them, and evals get harder to build the longer you wait. Generating 500 synthetic cases first delays feedback and can create false confidence if they do not match real usage. Waiting for production makes debugging reactive and means reverse-engineering success criteria from a live system. A public benchmark does not encode this agent's requirements or edge cases.",
+      "references": [
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents",
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-05",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Design evaluation datasets and test frameworks using mixed methodologies",
+      "type": "single",
+      "prompt": "An assistant decides per query whether to call a web search tool. Its eval set contains only queries that need fresh information, and after several prompt revisions the pass rate rose from 70% to 96%. In production, search calls per conversation have tripled, and the assistant now searches for stable facts it could answer directly. What is the most likely flaw in the evaluation?",
+      "options": [
+        "The pass threshold is too lenient; raise it to 99% so only prompts with near-perfect search behavior ship",
+        "The grader is code-based; replace it with an LLM judge that rates how relevant each search query was",
+        "The eval runs too few trials per query; increase trials so the 96% figure is less affected by run-to-run noise",
+        "The set is one-sided; add queries where the assistant should answer without searching and grade both kinds"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "One-sided evals create one-sided optimization: a suite that only tests whether the agent searches when it should rewards an agent that searches for almost everything. Anthropic describes exactly this when building web search evals for Claude.ai, and the fix was a balanced set covering both should-search and should-not-search queries. A stricter threshold on the same one-sided set pushes harder in the wrong direction. Swapping the grader type does not add the missing class of cases. More trials reduce noise but cannot reveal behavior the dataset never tests.",
+      "references": [
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-06",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Design evaluation datasets and test frameworks using mixed methodologies",
+      "type": "multiple",
+      "prompt": "A research agent's reports are graded by one LLM judge prompt that reads the whole report and returns a 1 to 10 score covering accuracy, citation quality and completeness. Scores swing between runs, and reviewers often disagree with them. The team wants a grader it can trust at scale. Which TWO changes most improve the grader's reliability?",
+      "options": [
+        "Use the same model and system prompt as the agent for the judge, so it grades with the agent's exact context",
+        "Score each rubric dimension with its own isolated judge call and allow it to return Unknown when unsure",
+        "Collapse the rubric into a single pass or fail verdict so the judge has one simple decision to make each time",
+        "Replace the remaining code-based checks, such as exact matches on figures, with the judge for consistency",
+        "Calibrate the judge against subject-matter experts' grades on a sample and track where the two diverge"
+      ],
+      "correct": [
+        1,
+        4
+      ],
+      "explanation": "Anthropic recommends clear rubrics graded per dimension by isolated LLM judges, giving the judge a way out such as returning Unknown to avoid hallucinated grades, and calibrating model graders closely against human experts. Reusing the agent's model and prompt as the judge removes the independence a grader needs. A single pass or fail verdict hides the dimension that failed and throws away partial credit. Code-based checks are fast, cheap and objective where they apply, so the guidance is deterministic graders where possible and LLM graders where necessary, not replacing them.",
+      "references": [
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents",
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-07",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Design evaluation datasets and test frameworks using mixed methodologies",
+      "type": "single",
+      "prompt": "A new eval task asks an agent to write a reporting script. Across 50 trials on two frontier models, the pass rate is 0%. Transcripts show the agent writes a working script to scripts/report.py, while the test looks for /app/report.py, a path the task description never mentions. What should the team do?",
+      "options": [
+        "Fix the task so it states the expected path, and add a reference solution that passes every grader",
+        "Rerun the task on the largest available model, since two models failing suggests a capability gap",
+        "Replace the path check with an LLM judge that reads the transcript and decides whether the script works",
+        "Keep it as a capability task, since capability evals should start at a low pass rate to give a hill to climb"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A 0% pass rate across many trials with frontier models is most often a broken task, not an incapable agent. Everything the grader checks should be clear from the task description, and a reference solution proves the task is solvable and the graders are configured correctly. A larger model would still be graded against an unstated path. Swapping the deterministic check for an LLM judge works around the spec bug instead of fixing it, gives up the grader type Anthropic recommends wherever one fits, and leaves the task description ambiguous. Capability evals should start at a low pass rate, but that rate has to come from hard tasks an agent could pass, not from a test the agent cannot see.",
+      "references": [
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-08",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Conduct A/B testing and iterative improvements",
+      "type": "single",
+      "prompt": "A team has a prompt change for a consumer writing assistant that passes the full regression suite and scores higher on the offline capability eval. The business goal is higher weekly retention and task completion, and the product serves about 3,000 sessions a day. Before rolling the change out to everyone, what should the team do?",
+      "options": [
+        "Roll it out to 5% of users first, and promote it to everyone if error rates and latency stay flat for a week",
+        "Replace the regression suite with an A/B test from now on, since live outcomes are the only real signal",
+        "Run an A/B test on live traffic against completion and retention, reading transcripts to explain the result",
+        "Have expert raters blind-compare both prompts' outputs on sampled real requests, and ship if they prefer it"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Offline evals are the first line of defense, but they can create false confidence if they do not match real usage; A/B testing measures actual user outcomes such as retention and task completion once there is enough traffic, and transcript review supplies the why that A/B metrics lack. A 5% staged rollout watched only for errors and latency checks operational health, not whether the change moves retention or completion, and it has no control group to compare against (general practice, not from Anthropic documentation). Blind expert comparison suits calibrating graders or judging subjective quality, but rater preference is not the business outcome. Dropping the regression suite removes the fast, pre-release gate; the methods are layers, not substitutes.",
+      "references": [
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-09",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Conduct A/B testing and iterative improvements",
+      "type": "single",
+      "prompt": "While hill-climbing on a capability eval, a team's new prompt raises the capability score from 41% to 55%. The same change drops the regression suite, which has held at 99% across daily runs for months, to 93%. The team is under pressure to ship the capability gain this week. What is the right next step?",
+      "options": [
+        "Ship the change, because the capability gain of 14 points outweighs a 6-point loss on older tasks",
+        "Treat the drop as a regression and read the newly failing transcripts before deciding whether to ship",
+        "Ship behind a flag to 10% of traffic and watch complaints on the older task types before widening it",
+        "Rerun the regression suite several times to measure run-to-run variance before treating the drop as real"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Regression evals should sit near 100%, and a decline signals that something broke; they exist precisely so that hill-climbing on capability evals does not cause backsliding elsewhere. Reading the failing transcripts tells the team whether the agent made real mistakes or the graders rejected valid answers. Netting the two scores ignores that regression tasks are things users already rely on. A flagged rollout ships a known regression to real users and waits for sparse complaints to say what the transcripts can say today. Measuring variance sounds rigorous, but months of daily runs at 99% already establish the noise level, and a 6-point drop is far outside it; more runs delay the diagnosis without explaining it.",
+      "references": [
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-10",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Conduct A/B testing and iterative improvements",
+      "type": "single",
+      "prompt": "A team's capability suite has scored between 98% and 100% for two model generations. A newly released model scores one point higher, so the team concludes the upgrade is not worth testing further. Meanwhile, early users report the new model handles long, multi-step tasks far better. What best explains the gap, and what should the team do?",
+      "options": [
+        "The users are mistaken; the suite is the more objective measure, so the team should keep the current model",
+        "Each task has too few trials; increasing trials per task will reveal the improvement the users are seeing",
+        "The code-based graders lack nuance; replacing them with an LLM judge will surface the quality improvement",
+        "The suite is saturated; graduate it to regression use and build harder, longer-horizon capability tasks"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "An eval near 100% tracks regressions but gives no signal for improvement: at saturation, large capability gains appear as small score changes. Anthropic recommends graduating high-pass capability tasks into a regression suite and building harder capability tasks, as Qodo did with an agentic eval framework when one-shot evals missed gains on longer tasks. Trusting the saturated score over users ignores the measurement limit. More trials cannot raise a ceiling the tasks have already hit. Changing grader type does not add the missing hard tasks.",
+      "references": [
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-11",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Diagnose system issues (prompt failure, hallucinations, model mismatch)",
+      "type": "single",
+      "prompt": "A support assistant answers from a knowledge base. Last week the corpus was re-indexed with a new chunker that splits articles into larger sections and dropped the keyword index to simplify the stack; the model, prompts and latency are unchanged. Since then, questions quoting exact error codes like TS-999 often get answers built from the wrong article. What is the most likely cause?",
+      "options": [
+        "Retrieval: removing the lexical index lost exact-match hits on codes, so compare retrieved chunks before and after",
+        "The model alias moved to a newer snapshot during the week, so pin the model version and rerun the failures",
+        "The prompt lacks permission to say I don't know, so add that instruction to stop answers on weak context",
+        "The model is too small to reason over larger sections, so move the assistant to the next larger model tier"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The evidence points at what changed: the index. Embeddings capture meaning but can miss exact matches such as error codes, which is why Contextual Retrieval combines embeddings with BM25; dropping the keyword index removes that path. Comparing retrieved chunks for failing queries confirms it. The model, prompt and latency did not change, so a silently moved model is not supported by the evidence. An I don't know instruction is a compensating control that would mask the retrieval fault. A larger model cannot answer from the right article if retrieval never supplies it.",
+      "references": [
+        "https://www.anthropic.com/research/contextual-retrieval",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-12",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Diagnose system issues (prompt failure, hallucinations, model mismatch)",
+      "type": "single",
+      "prompt": "A team moved a contract-analysis service from Claude Opus 5 to Claude Opus 5.5, changing only the model ID. Requests have never set the effort parameter. On their eval set, simple extractions are unchanged but multi-step reasoning tasks lost several points, and responses use fewer tokens than before. What is the most likely cause?",
+      "options": [
+        "Opus 5.5 is weaker at legal reasoning than Opus 5, so the team should roll back and wait for a later model",
+        "The prompts lack step-by-step reasoning instructions, which Opus 5.5 needs more than Opus 5 did",
+        "Opus 5.5 defaults to medium effort where Opus 5 defaulted to high, so set effort explicitly after a sweep",
+        "The max_tokens limit is too low for the new model, so its responses are being cut off before they finish"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The effort page states that Opus 5.5 defaults to medium while Opus 5 and earlier Opus models default to high, so a request that omits effort runs one level lower than before; it recommends running an effort sweep on your own evals rather than carrying settings over. Fewer tokens and losses only on harder tasks fit that change. Concluding the model is weaker ignores what changed in the request. Adaptive thinking is always on in Opus 5.5, so reasoning instructions are not the missing piece. Truncation would show as max_tokens stop reasons, and the responses are shorter, not cut off.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/effort",
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-13",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Diagnose system issues (prompt failure, hallucinations, model mismatch)",
+      "type": "single",
+      "prompt": "A due-diligence tool summarizes 60,000-token supplier contracts. Reviewers find that about one summary in ten describes an indemnity or termination clause that does not exist in the contract. The prompt currently asks for a summary of key risks and nothing else. Which change best addresses the fabricated clauses?",
+      "options": [
+        "Move to a model with a larger context window so that the whole contract fits with more room to spare",
+        "Have Claude first extract word-for-word quotes, base the summary only on them, and say when none exist",
+        "Truncate each contract to its first 20,000 tokens, where the main obligations are usually written down",
+        "Add a keyword filter that removes any summary mentioning a clause type missing from a fixed checklist"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "For long documents (over 20k tokens), Anthropic's hallucination guide recommends extracting word-for-word quotes first and grounding the task in them, plus explicit permission to say the information is not there; citations can make each claim auditable. The 60,000-token contract already fits, so a larger window is the wrong knob. Truncating drops clauses the summary must cover, breaking the requirement. A keyword filter is a compensating control that cannot tell whether a named clause really appears in this contract.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-14",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Diagnose system issues (prompt failure, hallucinations, model mismatch)",
+      "type": "multiple",
+      "prompt": "An extraction pipeline on Claude Opus 5.5 returns JSON. After the team raised effort to high to improve accuracy, about 4% of responses fail JSON parsing. Logs show every failing response has stop_reason set to max_tokens, and max_tokens is set to 2,000. Which TWO changes address the cause?",
+      "options": [
+        "Raise max_tokens, since it is a hard cap on total output, thinking included, and higher effort uses more",
+        "Switch the pipeline to a larger model tier so that it writes valid JSON more reliably on the first try",
+        "Check stop_reason before parsing, and treat max_tokens as a truncated response to retry or continue",
+        "Add a stronger instruction to the system prompt that the response must always be complete, valid JSON",
+        "Lower effort back to its previous level and accept the accuracy loss as the price of valid JSON output"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "The stop reason says the responses hit the max_tokens limit, which on Opus 5.5 is a hard cap on thinking plus response text; raising effort spends more tokens, so the cap now truncates some outputs. Raising max_tokens removes the cause, and branching on stop_reason before parsing handles truncation as truncation rather than as a mystery parse error. A larger model does not change the cap. A prompt instruction cannot make a cut-off response complete. Lowering effort works only by giving up the accuracy the change was made for, which breaks the stated goal.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+        "https://platform.claude.com/docs/en/build-with-claude/effort",
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-15",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Optimize token usage, latency, and cost-performance trade-offs",
+      "type": "multiple",
+      "prompt": "Each night a team classifies about 200,000 support tickets; results are needed by 9 a.m. the next day. Every request starts with the same 6,000-token block of instructions and examples, followed by one ticket. The current synchronous pipeline is accurate but expensive. Which TWO changes cut cost without lowering accuracy?",
+      "options": [
+        "Move the job to the smallest model tier, accepting some accuracy loss in exchange for lower token prices",
+        "Shorten the shared instructions to about 1,000 tokens by deleting most of the examples from the prompt",
+        "Submit the job through the Message Batches API, billed at half price; most batches finish in an hour",
+        "Send requests with higher concurrency so the job finishes sooner and uses fewer hours of compute time",
+        "Put a prompt-cache breakpoint at the end of the shared block so later requests read it at a discount"
+      ],
+      "correct": [
+        2,
+        4
+      ],
+      "explanation": "The work can wait hours, so the Message Batches API applies: it offers a 50% discount on all usage, and most batches finish within an hour, while any not done in 24 hours expire. The 6,000-token shared prefix is a textbook caching case, with cache reads billed at a fraction of base input price, and batch and caching discounts stack (cache hits in batches are best-effort). Downsizing the model trades away accuracy, which the stem rules out. Deleting the examples risks the accuracy they provide. Concurrency changes wall-clock time, not the per-token price of the work.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/batch-processing",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-16",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Optimize token usage, latency, and cost-performance trade-offs",
+      "type": "single",
+      "prompt": "A chat product caches a 40,000-token system prompt. Usage data shows cache_read_input_tokens is zero on nearly every request and cache writes appear on all of them. A recent change added a line with the current timestamp and the user's queue position to the start of the system prompt. What should the team do?",
+      "options": [
+        "Switch the cache to the 1-hour TTL, so that entries live long enough for later requests to read them",
+        "Move the cache breakpoint onto the tool definitions only, since tools are less likely to change than text",
+        "Split the system prompt into two smaller blocks, each with its own breakpoint, so less is rewritten",
+        "Move the timestamp and queue-position line after the last breakpoint, at the end of the newest user turn"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Caching is a byte-exact prefix match in the order tools, system, messages, so anything that changes per request ahead of the stable prefix turns every request into a full cache write. Anthropic's cost guide describes exactly this: a short status line at the front of the system prompt made each request rewrite the cache, and moving it to the end of the newest user turn restored reads. A longer TTL does not help when the prefix differs on every request. Caching only the tools leaves the 40,000-token system prompt uncached. Splitting blocks still places the changing line before both breakpoints.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-17",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Optimize token usage, latency, and cost-performance trade-offs",
+      "type": "single",
+      "prompt": "A code-generation service runs every request at high effort, and each output is checked by a unit-test suite before it is used. Pass rates meet the target, but finance wants a large cost reduction. The team is considering switching to a cheaper model, cutting max_tokens, or changing how effort is applied. Which approach best fits this workload?",
+      "options": [
+        "Run requests at low effort and re-run only the ones that fail the tests at high effort",
+        "Switch every request to the cheapest model tier and accept whatever pass rate results",
+        "Cut max_tokens in half, so that every response is capped at a lower, predictable cost",
+        "Skip the unit-test check for small diffs, which removes test compute and cuts latency"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "When outputs can be checked automatically, Anthropic's cost guide recommends running at low effort and re-running failures at high effort; in its tests that cost about 40% less than running everything at high, at the same pass rate. It also advises comparing models on cost per completed task, not per token, so a cheaper model accepted blindly can cost more per solved task and breaks the quality target. Halving max_tokens causes truncated outputs and failed tests. Skipping the tests removes the verifier that makes the low-effort strategy safe.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+        "https://platform.claude.com/docs/en/build-with-claude/effort"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-18",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Monitor system performance using logging and observability tools",
+      "type": "single",
+      "prompt": "A multi-agent research product gets user reports that it is not finding obvious information. Logs keep only each final report and its token count, so the team cannot tell whether the cause is poor queries, poor source choices or tool failures. Privacy policy forbids engineers from reading individual conversation contents. What should the team add first?",
+      "options": [
+        "A thumbs-down button on reports, so users flag poor results and give engineers a list of bad sessions",
+        "Production tracing of agent decisions and tool calls, monitoring patterns without conversation contents",
+        "An LLM judge that scores every final report for completeness and posts low scores to a daily dashboard",
+        "A larger lead-agent model, since better planning would reduce the number of searches that go wrong"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic's multi-agent research write-up describes this symptom and the fix: full production tracing let the team diagnose why agents failed, and they monitored agent decision patterns and interaction structures without monitoring the contents of individual conversations. A thumbs-down button is sparse and self-selected, and it says nothing about which step failed. Scoring final reports detects bad outcomes but still cannot locate the failing step. A larger model is a guess that ignores that the problem is visibility, not capability.",
+      "references": [
+        "https://www.anthropic.com/research/multi-agent-research-system",
+        "https://www.anthropic.com/research/demystifying-evals-for-ai-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-19",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Monitor system performance using logging and observability tools",
+      "type": "single",
+      "prompt": "A team runs Agent SDK agents that read customer files. They want traces of each model request and tool call, plus token and cost metrics, in their company observability backend. That backend is not approved to store customer data such as prompt text, file contents or shell commands. How should they configure telemetry?",
+      "options": [
+        "Enable raw API body logging so traces are complete, then strip customer data in a collector processor",
+        "Leave telemetry off and pull organization totals from the Usage and Cost API into the backend each night",
+        "Set CLAUDE_CODE_ENABLE_TELEMETRY=1 with OTLP exporters, leaving the prompt and tool-detail flags unset",
+        "Log only the final assistant message for each session, since it summarizes what the agent actually did"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The Agent SDK exports traces, metrics and log events over OTLP once telemetry is enabled with an exporter, and prompt text, tool input details, tool content and raw API bodies are each behind separate opt-in variables that the docs say to leave unset unless the pipeline is approved to store that data. Turning on raw bodies and redacting later is a compensating control that still sends the data out. Usage and Cost API totals lack per-request and per-tool spans. Final messages miss tool calls and timings and may still contain customer data.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/observability",
+        "https://code.claude.com/docs/en/monitoring-usage"
+      ]
+    },
+    {
+      "id": "ccar-p-ev-20",
+      "domain": "evaluation-testing-optimization",
+      "objective": "Monitor system performance using logging and observability tools",
+      "type": "single",
+      "prompt": "Three product teams share one API key and the Default Workspace. Finance now wants a monthly cost breakdown per team and per model, and an alert when one team's spend spikes. Today the only per-team data comes from each team's own application logs, which use different formats. What is the most maintainable setup?",
+      "options": [
+        "Standardize the three teams' log formats and sum token counts from the logs into a shared spreadsheet",
+        "Set one spend limit on the Default Workspace and treat hitting it as the signal that some team overspent",
+        "Keep the shared key and ask each team to estimate its share of the bill from the count of its requests",
+        "Give each team its own workspace and keys, then query the Usage and Cost API grouped by workspace and model"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Workspaces separate projects, teams or environments under central billing, with keys scoped to each, and the Usage and Cost Analytics API reports historical usage and cost grouped by workspace, API key, model and other dimensions, in daily or finer buckets suitable for dashboards and alerts. Summing application logs is the fragile path the team already has. A single shared spend limit caps the total but cannot attribute spend to a team. Request counts ignore that tokens per request, and therefore cost, vary widely between workloads.",
+      "references": [
+        "https://platform.claude.com/docs/en/manage-claude/usage-cost-analytics-api",
+        "https://platform.claude.com/docs/en/manage-claude/workspaces"
+      ]
+    }
+  ]
+}

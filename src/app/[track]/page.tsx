@@ -111,7 +111,7 @@ async function TrackHome({ params }: { params: Params }) {
                       key={b}
                       href={`/${id}/quiz/${b}`}
                       title={title}
-                      meta={<BestScore bankId={x.key} fallback={`${x.questions.length} questions`} />}
+                      meta={<BestScore bankId={x.key} fallback={`${x.drawWeighted ?? x.questions.length} questions`} />}
                     />
                   )
                 )

@@ -73,7 +73,7 @@
       "options": [
         "Send a keep-alive request every 4 minutes for each open session, so the 5-minute lifetime keeps getting refreshed",
         "Add a second breakpoint at the end of the tools array, so the lookback window has a closer entry to fall back on",
-        "Use the 1-hour TTL on the prefix breakpoint, so one costlier write covers the turns of a typical session",
+        "Use the 1-hour TTL on the prefix breakpoint, so one costlier write covers all the turns of a typical session",
         "Move the chat turns to the Message Batches API, where prompt caching gets a higher hit rate across requests"
       ],
       "correct": [

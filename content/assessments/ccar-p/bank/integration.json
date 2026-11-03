@@ -1,0 +1,519 @@
+{
+  "id": "integration",
+  "title": "Integration",
+  "questions": [
+    {
+      "id": "ccar-p-in-01",
+      "domain": "integration",
+      "objective": "Evaluate tool/agent configuration for capability bloat",
+      "type": "single",
+      "prompt": "A read-only research assistant built on the Messages API connects through the MCP connector to a project-tracking server that exposes 46 tools, including bulk delete and permission-change tools. The assistant's documented job needs only four search and read tools. A security review flags the configuration before launch. Which change best addresses the finding?",
+      "options": [
+        "Enable tool search with defer_loading on all 46 tools, so only the handful each request needs ever enter Claude's context",
+        "Keep the full toolset and require a human confirmation step in the application before any write or delete call executes",
+        "Set default_config enabled to false on the toolset and enable only the four search and read tools the job actually needs",
+        "Add a system prompt rule telling Claude it is a read-only assistant that must never call any write or delete tools"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The finding is that capabilities exist which the job never needs, so the fix is to remove them: an allowlist (default_config enabled: false, then enable named tools) means the write and delete tools are not available to the model at all. The connector docs recommend denylisting write or destructive tools for read-only assistants; an allowlist is the stricter form of the same control, because any tool not named stays off, including tools the server adds later. Tool search only changes when definitions load; the destructive tools stay callable once discovered. A confirmation step is a compensating control around a capability that should not exist. A system-prompt rule is a soft instruction, not an enforced boundary.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/mcp-connector",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+        "https://www.anthropic.com/research/writing-tools-for-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-in-02",
+      "domain": "integration",
+      "objective": "Evaluate tool/agent configuration for capability bloat",
+      "type": "single",
+      "prompt": "An Agent SDK service summarizes customer-uploaded repositories and must never modify files or run arbitrary shell commands. The team configured allowedTools as Read, Glob and Grep and set permissionMode to bypassPermissions so the agent never stalls on a prompt. A tester then watches the agent run a Write call successfully. Which configuration change closes the gap?",
+      "options": [
+        "Keep allowedTools as configured and switch permissionMode to dontAsk, so any call not pre-approved is denied instead of approved",
+        "Keep bypassPermissions and add a canUseTool callback that rejects any Write, Edit or Bash request before it is allowed to execute",
+        "Keep bypassPermissions and export tool_decision events to the SIEM so every write attempt is flagged for later review by security",
+        "Keep bypassPermissions and add allowedTools entries for Write and Edit scoped to a temporary scratch directory inside the container"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "allowedTools only pre-approves the listed tools; unlisted tools fall through to the permission mode, and bypassPermissions approves them, which is why Write ran. The documented locked-down pattern is allowedTools plus dontAsk, where anything not pre-approved is denied without prompting (adding Write, Edit and Bash to disallowedTools would also remove them outright). A canUseTool callback is not consulted for calls bypassPermissions already approved, so it would silently never fire. Exporting tool_decision events is a compensating control that records the write after it happens. Scoping Write to a scratch directory still grants a capability the service must not have.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/permissions"
+      ]
+    },
+    {
+      "id": "ccar-p-in-03",
+      "domain": "integration",
+      "objective": "Evaluate tool/agent configuration for capability bloat",
+      "type": "multiple",
+      "prompt": "A CRM assistant has 38 tools, most of them thin wrappers over single REST endpoints such as get_account, list_invoices, list_cases and list_contacts. Traces show a typical question takes six chained calls, and each list tool returns every field of every record. Token use per answer is high and the model sometimes stops before finishing the chain. Which TWO changes address the cause rather than the symptom?",
+      "options": [
+        "Replace the common call chain with one workflow tool that gathers an account's recent, relevant records in a single call",
+        "Raise the effort level so the model plans the six-call chain more carefully and is less likely to stop partway through it",
+        "Add filtering, pagination and a concise or detailed response_format parameter so list tools return only what the task needs",
+        "Document the expected six-call sequence in the system prompt so the model follows the same order on every customer question",
+        "Enable tool search with defer_loading on the 38 tools, so only the definitions each question needs are loaded into context"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "The cause is tool design: endpoint-shaped tools force long chains, and unfiltered list tools flood context. Anthropic's tool-writing guidance recommends consolidating frequently chained, multi-step tasks into a single workflow tool and adding filtering, pagination, truncation and a response_format enum so responses stay token-efficient. Raising effort spends more tokens on the same bad interface. Scripting the call sequence in the prompt cements the six-call chain instead of removing it. Tool search trims definition tokens, but definitions are not where this cost comes from: the six-call chain and the full-record responses stay exactly as they were.",
+      "references": [
+        "https://www.anthropic.com/research/writing-tools-for-agents",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/manage-tool-context"
+      ]
+    },
+    {
+      "id": "ccar-p-in-04",
+      "domain": "integration",
+      "objective": "Analyze authentication and authorization requirements to identify security gaps",
+      "type": "single",
+      "prompt": "An internal MCP server wraps the company ticketing API. When a client connects, the server takes the user's OAuth access token from the request and forwards it unchanged to the ticketing API, which accepts tokens from the same identity provider. A reviewer notes the server never inspects the token's claims. What is the security gap, and what fixes it?",
+      "options": [
+        "Tokens can be replayed if intercepted, so the fix is to shorten access-token lifetime to a few minutes and enforce refresh rotation",
+        "The forwarding is not auditable, so the fix is to log every forwarded token and request path for the security team to review",
+        "Traffic between client and server may be readable, so the fix is to require TLS on the server endpoint and reject plain HTTP",
+        "This is token passthrough; the server must accept only tokens issued for itself and use its own credential for the ticketing API"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Accepting tokens without checking that they were issued to the MCP server (audience validation) and passing them downstream is the token passthrough anti-pattern, which the MCP authorization specification forbids: it lets tokens meant for other services be reused, bypasses downstream controls, and breaks accountability (a confused-deputy risk). The fix is audience validation plus a separate downstream credential. Shorter token lifetimes reduce the damage window but leave the flaw in place. Logging forwarded tokens is a compensating control and logs sensitive credentials. TLS protects the channel, which was not the issue the reviewer found.",
+      "references": [
+        "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices",
+        "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/authorization"
+      ]
+    },
+    {
+      "id": "ccar-p-in-05",
+      "domain": "integration",
+      "objective": "Analyze authentication and authorization requirements to identify security gaps",
+      "type": "single",
+      "prompt": "Five GitHub Actions repositories call the Claude API with one long-lived workspace API key stored as a repository secret. The key leaked once through a misconfigured job log. The platform team now requires no static Claude credentials in CI and wants each repository's calls attributable to its own non-human identity. Which design meets both requirements?",
+      "options": [
+        "Issue a separate API key per repository with a 30-day expiration, stored in the secrets manager and rotated before it expires",
+        "Register GitHub Actions as a federation issuer and add rules mapping each repository's OIDC subject to its own service account",
+        "Move the single shared key into a central secrets manager and have each workflow fetch it at runtime with short-lived access",
+        "Give each repository a personal API key belonging to its lead maintainer, so every call is tied to an accountable person"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Workload Identity Federation exchanges the short-lived OIDC token GitHub Actions already issues for a short-lived Anthropic access token bound to a service account, so there is no static secret to store or leak, and a rule per repository subject gives each one its own identity. Per-repository expiring keys are still static secrets; the docs say expiration limits a leak's lifetime but does not replace secret hygiene. A secrets manager protects the one shared key but keeps it static and shared, so attribution does not improve. Personal keys act as a single person and stop working when that person leaves, which the docs warn against for shared workloads.",
+      "references": [
+        "https://platform.claude.com/docs/en/manage-claude/workload-identity-federation",
+        "https://platform.claude.com/docs/en/manage-claude/authentication"
+      ]
+    },
+    {
+      "id": "ccar-p-in-06",
+      "domain": "integration",
+      "objective": "Analyze authentication and authorization requirements to identify security gaps",
+      "type": "single",
+      "prompt": "A multi-tenant agent runs in a container and reads untrusted customer documents. It calls a third-party enrichment API using a company API key held in a container environment variable. A red team showed that an injected instruction in a document can make the agent print its environment. Which change removes the exposure rather than masking it?",
+      "options": [
+        "Run a proxy outside the container that injects the key into allowlisted requests, so the agent never holds the credential",
+        "Add a PreToolUse hook that blocks shell commands containing env, printenv or the variable name before they are executed",
+        "Load the key from a secrets manager into the agent process's memory at startup, so it no longer appears in the environment",
+        "Rotate the enrichment API key every day so any key exfiltrated through a document is valid for at most a single day"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The Agent SDK secure-deployment guidance recommends placing credentials outside the agent's security boundary: a proxy injects the key into outgoing requests and can enforce an endpoint allowlist and log traffic, so a compromised agent has nothing to leak. A hook that pattern-matches command strings is a compensating control that other read paths (a script, a file read of /proc) can get around. Fetching the key from a secrets manager hides it from printenv, but the credential still sits inside the agent's boundary, where injected instructions running code in the container can read or misuse it. Daily rotation shortens the window but still hands the key to every injected document during that day.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/secure-deployment"
+      ]
+    },
+    {
+      "id": "ccar-p-in-07",
+      "domain": "integration",
+      "objective": "Evaluate accuracy-latency trade-offs and justify configuration decisions",
+      "type": "single",
+      "prompt": "A policy chatbot on Claude Opus 5.5 streams its answers. Every request starts with the same 40,000-token policy manual, which compliance requires in full, followed by a short user question; answers average about 150 tokens. Users complain about the wait before the first words appear. A teammate proposes enabling fast mode. What should you recommend instead?",
+      "options": [
+        "Enable fast mode as proposed, since it runs the same model with a faster inference setup and keeps answer quality unchanged",
+        "Stop streaming and return the complete answer in one response, so users see a finished reply instead of a slow trickle of text",
+        "Cache the policy-manual prefix with cache_control, since cached long prefixes improve time to first token on repeat requests",
+        "Trim the policy manual to the 10,000 tokens most often cited in past answers, so far less input is processed per request"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The complaint is time to first token, driven by processing a long, identical prefix on every call. Prompt caching that prefix is the documented lever for TTFT on long documents. Fast mode raises output tokens per second, and its docs say the gain is in OTPS, not TTFT; with 150-token answers it would cost premium pricing for little visible change. Dropping streaming makes the perceived wait longer, not shorter. Trimming the manual breaks the stated compliance requirement that the full manual be included.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/fast-mode",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-latency"
+      ]
+    },
+    {
+      "id": "ccar-p-in-08",
+      "domain": "integration",
+      "objective": "Evaluate accuracy-latency trade-offs and justify configuration decisions",
+      "type": "single",
+      "prompt": "A contract-analysis service moved from Claude Opus 5 to Claude Opus 5.5. The team changed only the model ID; requests never set effort. Afterward, median latency and cost fell, but eval scores on multi-clause reasoning dropped noticeably. Every response ends with stop_reason end_turn, and the prompts and documents are unchanged. What is the most likely cause, and what should the team do?",
+      "options": [
+        "The new model is weaker at legal reasoning than the old one, so roll back to Claude Opus 5 and pin that model ID permanently",
+        "Responses are being cut short by max_tokens, so raise max_tokens until the model has room to finish its multi-clause analysis",
+        "Sampling has become less deterministic, so lower temperature to zero to make the multi-clause reasoning steadier across runs",
+        "Opus 5.5 defaults to medium effort where Opus 5 defaulted to high, so set effort explicitly and run an effort sweep on evals"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The evidence points at effort: the only change is the model, requests omit effort, and lower latency and cost alongside lower depth is the signature of a lower effort level. The effort docs state that Opus 5.5 defaults to medium while Opus 5 and earlier Opus models default to high, so an omitted effort runs one level lower; the fix is to set it explicitly and sweep it on evals. Rolling back assumes the model is worse without testing the setting that changed. stop_reason end_turn on every response rules out max_tokens truncation. Temperature does not explain a correlated drop in latency, cost and depth.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/effort"
+      ]
+    },
+    {
+      "id": "ccar-p-in-09",
+      "domain": "integration",
+      "objective": "Evaluate accuracy-latency trade-offs and justify configuration decisions",
+      "type": "single",
+      "prompt": "A ticket-routing classifier returns one category label per ticket and has a tight p95 latency budget. On the team's eval set, Claude Haiku 5.5 scores 92 percent at low effort and 96 percent at high effort, but at high effort it misses the latency budget; Claude Sonnet 5.5 at low effort scores 96 percent within budget. The business requires at least 95 percent, and cost per ticket also matters. Which configuration is best justified?",
+      "options": [
+        "Haiku 5.5 at low effort, because it is the fastest and cheapest configuration and sits only a few points below the floor",
+        "Sonnet 5.5 at low effort, the cheapest measured configuration that clears both the accuracy floor and the latency budget",
+        "Haiku 5.5 at high effort with Priority Tier capacity, so its requests are served ahead of other traffic and its p95 falls",
+        "Opus 5.5 with fast mode, which raises output speed so the most capable model fits inside the latency budget for each label"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Pick the cheapest configuration that meets every stated requirement on your own evals. Haiku 5.5 at low effort is cheaper and faster, but 92 percent breaks the 95 percent floor. Haiku at high effort clears the floor but misses the latency budget, and Priority Tier cannot rescue it: commitments are no longer sold, service tiers are legacy, and Priority Tier does not support Haiku 5.5 or the other 5.5 models. Fast mode raises output tokens per second at premium pricing on Opus 5.5, which barely matters when the output is one label, and that configuration was never measured. Sonnet 5.5 at low effort is the only measured configuration that meets both constraints, at $2 input and $10 output per million tokens against $4 and $20 for Opus 5.5.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/effort",
+        "https://platform.claude.com/docs/en/build-with-claude/fast-mode",
+        "https://platform.claude.com/docs/en/api/service-tiers",
+        "https://platform.claude.com/docs/en/about-claude/pricing"
+      ]
+    },
+    {
+      "id": "ccar-p-in-10",
+      "domain": "integration",
+      "objective": "Analyze observability challenges and select monitoring strategies at scale",
+      "type": "single",
+      "prompt": "A support platform runs one Agent SDK deployment that acts for thousands of end users, all through a single service account credential. OpenTelemetry export works, but security cannot tell which end user triggered a given tool call, because every event carries the same identity. They need a per-user audit trail of tool calls in the SIEM. What should the team do?",
+      "options": [
+        "Set OTEL_LOG_RAW_API_BODIES so each exported event carries the full request, and the SIEM can parse user details from it",
+        "Query the Usage and Cost Analytics API grouped by actor each night and join the results to the SIEM's tool-call records",
+        "Pass each end user's identity as percent-encoded OTEL_RESOURCE_ATTRIBUTES on every query() call and forward tool events",
+        "Set OTEL_LOG_USER_PROMPTS so each prompt is exported with its text, which lets analysts work out who sent each request"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The built-in identity attributes describe the credential, not the end user, so the SDK docs recommend injecting end-user identity as resource attributes per query() call; tool_decision and tool_result events then form a per-user audit trail for the SIEM. Raw API bodies export the whole conversation, which over-collects sensitive data and still does not supply a reliable user ID. The analytics API's actor is the service account here, and it reports usage and cost, not individual tool calls. Prompt text does not identify a user and should only be exported where the pipeline is approved to store it.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/observability",
+        "https://code.claude.com/docs/en/monitoring-usage"
+      ]
+    },
+    {
+      "id": "ccar-p-in-11",
+      "domain": "integration",
+      "objective": "Analyze observability challenges and select monitoring strategies at scale",
+      "type": "multiple",
+      "prompt": "A batch job launches short-lived Agent SDK runs in containers that exit as soon as the task finishes. The OpenTelemetry collector receives token and cost metrics, but no spans appear, and log events from the final seconds of each run are often missing. Nothing in the application reports an export error. Which TWO changes address what the team is seeing?",
+      "options": [
+        "Set CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1 together with OTEL_TRACES_EXPORTER, since traces are off without the beta flag",
+        "Switch every exporter to console while debugging so the spans and events are printed directly in the container's output",
+        "Shorten the export intervals and let the CLI shut down cleanly so batched data is flushed before the container exits",
+        "Set OTEL_LOG_TOOL_CONTENT=1 so tool spans carry their output and the collector has enough data to build each trace",
+        "Raise the metrics export interval above 60 seconds so the collector is not overloaded by many short-lived job containers"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "Traces need CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1 plus a trace exporter; metrics and logs do not, which matches metrics arriving with no spans. The CLI batches telemetry (logs and traces every 5 seconds, metrics every 60 by default) and fails silently on export errors, so a process that exits early loses its last batch; shorter intervals and a clean shutdown fix that. The console exporter writes to stdout, which the SDK uses as its message channel, so the docs say not to use it. OTEL_LOG_TOOL_CONTENT adds content to spans that already exist; it does not enable tracing. A longer interval makes data loss at exit worse.",
+      "references": [
+        "https://code.claude.com/docs/en/agent-sdk/observability",
+        "https://code.claude.com/docs/en/monitoring-usage"
+      ]
+    },
+    {
+      "id": "ccar-p-in-12",
+      "domain": "integration",
+      "objective": "Analyze observability challenges and select monitoring strategies at scale",
+      "type": "single",
+      "prompt": "Finance wants a daily report of Claude API spend broken down by team. Teams map to 12 workspaces, and traffic comes from production services, batch jobs and a few scripts in several languages. An engineer proposes adding code to every service that reads the usage block from each response and writes it to the data warehouse. What is the better approach?",
+      "options": [
+        "Pull the Usage and Cost Analytics API with group_by workspace and a 1d time bucket, using a dedicated admin credential",
+        "Enable Claude Code OpenTelemetry metrics in each service and sum the exported cost counters per team in the warehouse",
+        "Set monthly spend limits on each workspace and read finance's report off the alert thresholds as each one is crossed",
+        "Proceed with the per-response parsing plan, since summing usage blocks is the only way to see cost at team granularity"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The Usage and Cost Analytics API reports historical usage and USD cost for the whole organization, grouped by workspace, API key, model or actor, and split into daily buckets; it covers every caller without touching application code, and the docs recommend a dedicated, rotated admin credential for the collector. Claude Code OpenTelemetry metrics cover only Claude Code and Agent SDK runs, not plain API services. Spend limits are controls that cap spending, not a reporting source. Per-response parsing must be built and kept correct in every service and language, and any caller that skips it falls out of the report.",
+      "references": [
+        "https://platform.claude.com/docs/en/manage-claude/usage-cost-analytics-api",
+        "https://platform.claude.com/docs/en/manage-claude/workspaces"
+      ]
+    },
+    {
+      "id": "ccar-p-in-13",
+      "domain": "integration",
+      "objective": "Design a RAG pipeline with appropriate chunking and indexing strategies",
+      "type": "single",
+      "prompt": "A team is building Q&A over an internal handbook of about 300 pages, roughly 120,000 tokens, that changes once a quarter. Answers often need facts from several sections at once. The team is small and wants the least infrastructure to maintain. An architect proposes chunking, a vector database and a reranker. What should you recommend?",
+      "options": [
+        "Chunk at a few hundred tokens with hybrid embeddings and BM25, since chunked retrieval scales better as the handbook grows",
+        "Apply contextual retrieval with a reranker over the chunks, since that combination gave the lowest retrieval failure rate",
+        "Route each question to one subagent per handbook section and merge their answers, so no single call holds the whole text",
+        "Put the whole handbook in the prompt and cache it, since a knowledge base under 200,000 tokens may not need RAG at all"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Anthropic's contextual retrieval post notes that a knowledge base under about 200,000 tokens can go straight into the prompt, and prompt caching makes repeated use faster and cheaper. That fits a small, slowly changing handbook, cross-section questions and a team that wants little to maintain. Hybrid chunked retrieval and contextual retrieval with reranking are strong for corpora that do not fit, but here they add pipelines, indexes and recall failure modes for no stated gain. Per-section subagents split the very cross-section context the answers need and add orchestration cost.",
+      "references": [
+        "https://www.anthropic.com/research/contextual-retrieval",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+      ]
+    },
+    {
+      "id": "ccar-p-in-14",
+      "domain": "integration",
+      "objective": "Design a RAG pipeline with appropriate chunking and indexing strategies",
+      "type": "single",
+      "prompt": "A RAG system indexes quarterly filings from dozens of companies, chunked at about 800 tokens, and each filing reports results for several business segments. Questions such as which segment's revenue grew in a given quarter often fail. Inspection shows the right chunk says only that 'segment revenue grew 3 percent', naming no company, period or segment. Embedding model and generator are fine on other datasets. Which indexing change targets this failure?",
+      "options": [
+        "Prepend the same short summary of each filing to all of its chunks, so every chunk names the company and the filing period",
+        "Have Claude write chunk-specific context from the full filing and prepend it before embedding and building the BM25 index",
+        "Index each filing as a single large chunk, so the company name and the reporting period always sit beside every figure",
+        "Swap the generator for a larger Claude model, so it can infer the missing company and period from the retrieved fragment"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The chunks lost their context when they were split, which is the problem contextual retrieval addresses: Claude writes a short, chunk-specific context from the whole document, and that text is prepended before both embedding and BM25 indexing (prompt caching keeps the per-chunk calls cheap). A filing-level summary would name the company and period, but every segment chunk in that filing would carry the same text, so nothing tells the retriever which segment grew 3 percent; Anthropic tested generic document summaries added to chunks and saw very limited gains. Whole-filing chunks overload the context and blur relevance. A larger generator cannot use a chunk that retrieval never returned, and the retrieval step is where the failure was observed.",
+      "references": [
+        "https://www.anthropic.com/research/contextual-retrieval"
+      ]
+    },
+    {
+      "id": "ccar-p-in-15",
+      "domain": "integration",
+      "objective": "Design a RAG pipeline with appropriate chunking and indexing strategies",
+      "type": "single",
+      "prompt": "Last week's release changed three things in a documentation assistant: the docs were re-indexed from heading-based splits into fixed 800-token windows with no overlap, the generator moved to a newer Claude model, and the answer prompt was reworded. Since then answer quality has fallen and recall@20 on the retrieval eval set dropped from 0.94 to 0.81. The embedding model, top-K and documents are unchanged. What should the team do first?",
+      "options": [
+        "Treat the new chunking as the cause: restore structure-aware splits or add overlap, re-index and re-run the recall eval",
+        "Raise top-K from 20 to 60 so the relevant passages are more likely to appear somewhere in the retrieved chunk set",
+        "Roll back the generator to the previous model, since it is the largest change in the release and answer quality fell with it",
+        "Revert the reworded answer prompt first, since it is the cheapest change to undo and prompt edits often explain quality drops"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Recall@20 measures whether retrieval returns the relevant chunks before the generator or the answer prompt ever runs, so only a change upstream of retrieval can move it, and of the three changes only the chunking sits there. Anthropic's notes on contextual retrieval list chunk size, boundary and overlap as choices that affect retrieval performance. Rolling back the generator or reverting the prompt follows what changed rather than what the metric shows: neither can lower a retrieval score, though both are worth re-checking once recall is restored. Raising top-K compensates by adding more and noisier chunks; Anthropic notes that more chunks help only up to a limit because extra information can distract the model.",
+      "references": [
+        "https://www.anthropic.com/research/contextual-retrieval"
+      ]
+    },
+    {
+      "id": "ccar-p-in-16",
+      "domain": "integration",
+      "objective": "Apply retrieval strategies matched to data shape and query pattern",
+      "type": "single",
+      "prompt": "A technical-support assistant retrieves from 40,000 troubleshooting articles using dense embeddings only. Users often paste exact strings such as error code TS-999 or part number AX-4471-B, and for those queries the top results are generic articles about error codes; the right article often does not appear even in the top 100 candidates. Conceptual questions retrieve well. Which change best fits this query pattern?",
+      "options": [
+        "Move to a larger embedding dimension so the vectors capture fine-grained differences between similar codes and parts",
+        "Add a reranker over the embedding results so the article for the exact code is promoted to the top of the list",
+        "Add a BM25 lexical index alongside the embeddings and merge both result lists with rank fusion before generation",
+        "Have Claude rewrite each query into a natural-language description of the problem before it is embedded for search"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Embeddings capture meaning but can miss exact matches; BM25 matches precise strings such as identifiers, which is Anthropic's own TS-999 example. Hybrid retrieval with rank fusion keeps semantic recall for conceptual questions and adds exact-match recall for codes. More dimensions are still a semantic representation and do not guarantee lexical matching. A reranker can only reorder what retrieval returned, and the right article is often missing even from the top 100 candidates, so there is nothing for it to promote. Rewriting queries into prose removes the very identifier that should drive the match.",
+      "references": [
+        "https://www.anthropic.com/research/contextual-retrieval",
+        "https://platform.claude.com/docs/en/build-with-claude/embeddings"
+      ]
+    },
+    {
+      "id": "ccar-p-in-17",
+      "domain": "integration",
+      "objective": "Apply retrieval strategies matched to data shape and query pattern",
+      "type": "multiple",
+      "prompt": "An internal assistant answers from knowledge-base articles returned by the team's own search tool. Each article has an ID such as kb://article-1234. Product wants every claim linked to a valid article, and today the request uses output_config.format with a strict JSON schema for the answer. Which TWO changes give reliable, API-checked citations to the team's articles?",
+      "options": [
+        "Return each hit from the search tool as a search_result block with source set to the kb:// ID, a title, and citations enabled",
+        "Tell Claude in the system prompt to put the kb:// ID in brackets after each claim and check the IDs with a regex afterward",
+        "Drop output_config.format, since citations cannot be combined with structured outputs, and render the cited text blocks",
+        "Enable citations only on the top three search results to save input tokens and leave lower-ranked results uncited",
+        "Convert each article to a PDF document block so automatic sentence chunking gives finer-grained citation locations"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "search_result blocks let your own tool's results be cited like web results, with each citation carrying the source and title you supplied, and the API guarantees the pointers are valid. Citations are incompatible with structured outputs, so the strict output_config.format must go; the cited text blocks become the structure the UI renders. Prompted bracket IDs are not API-checked and can be invented or misplaced. All search results in a request must use the same citations setting, so partial enabling is not allowed. Plain text is already sentence-chunked, so converting to PDF adds overhead without any gain.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/search-results",
+        "https://platform.claude.com/docs/en/build-with-claude/citations"
+      ]
+    },
+    {
+      "id": "ccar-p-in-18",
+      "domain": "integration",
+      "objective": "Apply retrieval strategies matched to data shape and query pattern",
+      "type": "single",
+      "prompt": "An analytics assistant answers questions such as total refunds by region last quarter. The team exported each row of a 2-million-row orders table as a text sentence, embedded the rows, and retrieves the top 50 for each question. Totals in the answers are often wrong even when the retrieved rows are relevant. Which retrieval strategy fits this data shape and query pattern?",
+      "options": [
+        "Raise top-K until every matching row is retrieved, so the model has all the rows it needs to compute the exact total",
+        "Add contextual retrieval to each row's text so the region and the quarter are explicit in every embedded row sentence",
+        "Move the generator to a larger Claude model that is more reliable at adding up long lists of numbers in its context",
+        "Give the agent a query tool over the orders table so it runs aggregate queries and gets back only the computed totals"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Aggregations over structured data are a poor fit for top-K semantic retrieval: no fixed set of similar rows contains the answer. Anthropic's context-engineering guidance describes agents that write targeted queries and keep large data objects out of context; a query tool returns the computed aggregate. Raising top-K toward thousands of rows floods context and still risks missing rows. Contextual text makes rows easier to find but does not make similarity search return a complete set for a sum. A larger model does arithmetic over an incomplete sample; the inputs are the problem.",
+      "references": [
+        "https://www.anthropic.com/research/effective-context-engineering-for-ai-agents",
+        "https://www.anthropic.com/research/contextual-retrieval"
+      ]
+    },
+    {
+      "id": "ccar-p-in-19",
+      "domain": "integration",
+      "objective": "Evaluate connection protocols and select the appropriate integration mechanism (MCP, API/CLI, agent-to-agent)",
+      "type": "single",
+      "prompt": "A team's Messages API application needs a vendor's MCP server that exposes only tools. Developers run it locally over stdio today. For production they want Claude to call those tools without writing or operating an MCP client in their own service. Which plan works?",
+      "options": [
+        "Point the MCP connector's mcp_servers entry at the stdio launch command, so the API starts the server process when needed",
+        "Host the server as a remote Streamable HTTP endpoint with auth, and attach it via mcp_servers plus a matching mcp_toolset",
+        "Rewrite each vendor tool by hand as a custom tool definition, and proxy every tool call to the vendor's server yourself",
+        "Move the workload to Claude Code CLI on a server, since only Claude Code can connect to stdio-based MCP servers at all"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The MCP connector lets the Messages API call a remote MCP server's tools with no client code, but the server must be publicly exposed over HTTP (Streamable HTTP or SSE); local stdio servers cannot be connected directly, and only tool calls are supported, which suits a tools-only server. Pointing the connector at a stdio command is unsupported. Hand-written wrappers work, but they duplicate the schemas and require the client-side plumbing the team wanted to avoid, and they drift whenever the vendor changes a tool. Claude Code is not the only client that can use stdio, and the CLI is built for interactive use rather than a production service.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/mcp-connector",
+        "https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture"
+      ]
+    },
+    {
+      "id": "ccar-p-in-20",
+      "domain": "integration",
+      "objective": "Evaluate connection protocols and select the appropriate integration mechanism (MCP, API/CLI, agent-to-agent)",
+      "type": "single",
+      "prompt": "A company needs an agent that runs for hours on a nightly schedule, uses a sandbox to execute code, and keeps working state across steps. The team would like to avoid building its own agent loop and sandbox. However, the workload is covered by the organization's Zero Data Retention agreement, which must apply. Which mechanism fits?",
+      "options": [
+        "Claude Managed Agents with a scheduled deployment, since it provides the hosted loop, sandbox and cron runs the team needs",
+        "Claude Managed Agents with a self-hosted sandbox, since keeping execution on company infrastructure satisfies the ZDR terms",
+        "The Agent SDK run on the company's own scheduled infrastructure, which keeps the built-in loop and tools without hosted sessions",
+        "The Claude Code CLI kept running in an interactive terminal on a VM, triggered nightly by an operator who starts the job"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Managed Agents fits long-running, scheduled, sandboxed work, but it is stateful by design and stores history and sandbox state server-side, so it is not currently eligible for Zero Data Retention; the docs say this applies to self-hosted sandboxes too. That rules out both Managed Agents options despite the convenience. The Agent SDK gives the same agent loop, built-in tools and permissions in a process the company operates, so it can run on the company's scheduler under its own data controls. The interactive CLI is built for day-to-day terminal use; headless runs are possible, but an operator-started terminal session is not a production scheduling mechanism.",
+      "references": [
+        "https://platform.claude.com/docs/en/managed-agents/overview",
+        "https://code.claude.com/docs/en/agent-sdk/overview"
+      ]
+    },
+    {
+      "id": "ccar-p-in-21",
+      "domain": "integration",
+      "objective": "Evaluate connection protocols and select the appropriate integration mechanism (MCP, API/CLI, agent-to-agent)",
+      "type": "multiple",
+      "prompt": "An agent attaches each two-hour sales-meeting transcript from a document store to the matching CRM record. With direct tool calls, the full transcript passes through the model's context on the way in and again on the way out, about 50,000 extra tokens per meeting, and the transcripts contain customer PII the model does not need to see. Which TWO changes fit this integration best?",
+      "options": [
+        "Let the agent write code that calls both MCP servers from a sandbox, so the transcript moves between tools without entering context",
+        "Move to a model with a larger context window so the transcript passes through both tool calls without hitting context limits",
+        "Have the harness tokenize PII as data flows between tools and untokenize it on the way into the CRM, out of the model's view",
+        "Summarize each transcript with a small, fast model first and attach that summary to the CRM record instead of the full text",
+        "Add a human approval step before each CRM write so a reviewer confirms that no PII is exposed in the attached transcript"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "Code execution with MCP (or programmatic tool calling) keeps intermediate results in the execution environment, so the transcript moves from one tool to the other without passing through context. The same post describes the harness tokenizing PII so real values flow between systems while the model sees only placeholders. A bigger context window still pays for and exposes the 50,000 tokens. Summarizing breaks the requirement to attach the full transcript. A human approval step is a compensating control that adds review load while the PII still flows through the model. Note that code execution needs a properly sandboxed environment.",
+      "references": [
+        "https://www.anthropic.com/research/code-execution-with-mcp",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling"
+      ]
+    },
+    {
+      "id": "ccar-p-in-22",
+      "domain": "integration",
+      "objective": "Evaluate progressive discovery vs. monolithic context strategy",
+      "type": "single",
+      "prompt": "An operations agent on the Messages API already runs with the code execution tool. Its system prompt holds 12 procedure guides of about 4,000 tokens each, plus reference tables, almost 60,000 tokens in all. Logs show a typical request uses one guide, and evals show the agent sometimes follows steps from the wrong procedure. The guides must stay complete and unedited. Which change fits best?",
+      "options": [
+        "Package each guide as an Agent Skill, so only short metadata stays loaded and a guide's body loads when it is triggered",
+        "Summarize each guide to a few hundred tokens with a smaller model, so the whole set fits in a far shorter system prompt",
+        "Cache the full system prompt with prompt caching, so the 60,000 tokens become cheap to resend on every single request",
+        "Move to a model with a larger context window, so all 12 guides and their tables fit easily with plenty of room left"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Skills use progressive disclosure: about 100 tokens of metadata per Skill are always loaded, the SKILL.md body loads only when triggered, and bundled reference files cost nothing until read. That keeps the guides complete while only the relevant one competes for attention, which addresses the wrong-procedure errors. The code execution tool that Skills need on the API is already in place, and 12 Skills fit within the limit of 20 per request. Summarizing breaks the requirement that guides stay complete. Caching cuts the cost of resending the prefix but leaves all 60,000 tokens in context, so the confusion remains. A bigger window does not stop context rot; irrelevant tokens still dilute attention.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
+        "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise",
+        "https://www.anthropic.com/research/effective-context-engineering-for-ai-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-in-23",
+      "domain": "integration",
+      "objective": "Evaluate progressive discovery vs. monolithic context strategy",
+      "type": "single",
+      "prompt": "A billing assistant has six tools, and traces show almost every request uses all six. The definitions total about 1,500 tokens and are already cached. A platform team proposes enabling tool search with defer_loading on every tool except the search tool, to standardize on progressive discovery across all agents. Latency is the assistant's top constraint. What should you recommend?",
+      "options": [
+        "Adopt the proposal, since tool search keeps definitions out of context and keeps tool selection accuracy high for any toolset",
+        "Adopt the proposal and switch to the BM25 variant, since natural-language queries find the right tool in fewer search steps",
+        "Defer only the three least-used tools, so the assistant still gets most of the context savings that tool search offers",
+        "Keep all six tools loaded up front, since a small toolset used on every request gains little and pays for an extra search step"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The tool search docs say standard tool calling fits better with fewer than 10 tools, when every tool is used in every request, or when definitions are small (under 100 tokens in total). The first two hold here: six tools, all used on almost every request. The third does not, since the definitions run to about 1,500 tokens, but those tokens are already cached, so keeping them loaded costs little. Tool search adds a search step before a deferred tool can be used, which works against the latency constraint. Choosing BM25 over regex does not remove that step. Deferring tools that nearly every request uses guarantees searches on most requests to save a few hundred cached tokens. Progressive discovery pays off when definitions take a large share of context, which is not the case here.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/manage-tool-context",
+        "https://modelcontextprotocol.io/docs/2026-07-28/develop/clients/client-best-practices"
+      ]
+    },
+    {
+      "id": "ccar-p-in-24",
+      "domain": "integration",
+      "objective": "Evaluate progressive discovery vs. monolithic context strategy",
+      "type": "single",
+      "prompt": "A custom MCP host switched from loading every tool up front to progressive discovery. When a search finds new tools, the host rebuilds the tools array and sorts it alphabetically before each request. Since the change, prompt-cache hit rates are near zero and input-token spend is higher than before, although context per request is smaller. What should the team change?",
+      "options": [
+        "Switch the cache TTL from 5 minutes to 1 hour so cached tool prefixes survive the gaps between turns in long conversations",
+        "Append newly found tools after the cache breakpoint without re-sorting, or route calls through one stable call_tool tool",
+        "Revert to loading every tool up front, since progressive discovery cannot be combined with prompt caching in practice",
+        "Put cache_control on each deferred tool definition so every discovered tool is cached on its own as soon as it loads"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Changing the tools array changes the cached prefix, so re-sorting it every turn invalidates the cache; the MCP client guidance warns that this miss can cost more than the definitions saved, and recommends appending discovered tools after the breakpoint or using a single stable call_tool meta-tool. Anthropic's native tool search does this by appending tool_reference blocks inline, leaving the prefix untouched. A longer TTL does not help when the prefix changes on every request. Reverting is a blunt fix that gives up the context savings. cache_control on a defer_loading tool returns a 400 error.",
+      "references": [
+        "https://modelcontextprotocol.io/docs/2026-07-28/develop/clients/client-best-practices",
+        "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool"
+      ]
+    }
+  ]
+}

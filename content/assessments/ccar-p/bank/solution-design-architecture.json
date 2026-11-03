@@ -1,0 +1,464 @@
+{
+  "id": "solution-design-architecture",
+  "title": "Solution Design & Architecture",
+  "questions": [
+    {
+      "id": "ccar-p-sd-01",
+      "domain": "solution-design-architecture",
+      "objective": "Translate business problems into Claude-based AI solutions",
+      "type": "single",
+      "prompt": "A regional insurer routes support tickets into 14 queues with keyword rules that misroute ambiguous tickets. It has about 60 labeled tickets, queue definitions change every quarter, and team leads want to see why each ticket went where it did. Which solution fits these constraints best?",
+      "options": [
+        "A supervised text classifier trained on the 60 labeled tickets, with Claude added later only if the trained model's accuracy falls short of the target",
+        "A Claude agent with tools for every queue system that routes each ticket and then works it to resolution, so routing errors are corrected downstream",
+        "A Claude classifier given queue definitions and a few labeled examples, with a short rationale and label in separate tags, scored on held-out tickets",
+        "The existing keyword rules kept as the primary router, with Claude called only for tickets that the rules flag as matching no queue at all"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The ticket-routing guide lists the signals that favor an LLM over traditional ML: little labeled data (a few dozen examples can work), classes that change without relabeling, and a need for interpretable reasoning. Asking for a short rationale and the label in separate XML tags, as the guide's prompt does with reasoning and intent tags, lets code extract the label while leads read the rationale, and held-out tickets measure it. A trained classifier on 60 examples ignores the stated data limit and must be retrained every quarter. An agent that also resolves tickets adds cost and risk the problem never asked for. Keeping the rules as primary leaves the real failure in place: ambiguous tickets are misrouted, not flagged as unmatched, so the fallback never sees them.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-02",
+      "domain": "solution-design-architecture",
+      "objective": "Translate business problems into Claude-based AI solutions",
+      "type": "single",
+      "prompt": "A COO asks you to 'use Claude to cut support costs' and wants a build plan next week. No one has yet said what a good outcome looks like or which parts of a support conversation Claude would handle. What should you do first?",
+      "options": [
+        "Agree measurable targets with the support team, such as deflection and escalation accuracy, and list the tasks Claude must do in a conversation",
+        "Prototype on real transcripts with the most capable model, then choose what to measure once you see which kinds of conversation it handles well",
+        "Set a per-conversation token budget first, since cost is the stated goal, and design the prompts and retrieval so every conversation fits inside it",
+        "Adopt a 95 percent deflection target as the business case so the scope is fixed, then pick the model and pattern that can reach that number"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Anthropic's support-agent guide starts with defining success criteria with the support team (comprehension and escalation accuracy, deflection rate, CSAT) and breaking the interaction into distinct tasks, so each task can be prompted and tested. The develop-tests page asks for criteria that are specific, measurable and achievable. Prototyping first and measuring later inverts that order and lets the demo define success. A token budget optimizes one cost lever before anyone knows which tasks are in scope. A fixed 95 percent deflection target is not achievable on evidence: the guide suggests 70 to 80 percent as a typical aim, depending on the complexity of inquiries.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat",
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-03",
+      "domain": "solution-design-architecture",
+      "objective": "Translate business problems into Claude-based AI solutions",
+      "type": "multiple",
+      "prompt": "An operations leader brings five candidate automation problems to a design review. You want to spend the Claude budget only where language understanding is the hard part and deterministic code would struggle. Which TWO problems should go to Claude?",
+      "options": [
+        "Reconciling each night's bank-feed rows against ledger entries that share the same reference number and amount",
+        "Sorting free-text warranty claims written in 30 languages into the company's defect categories",
+        "Blocking every refund above $500 until a manager approves it in the finance system's workflow",
+        "Drafting first replies to customer emails, grounded in knowledge base articles retrieved for each one",
+        "Flagging card transactions more than three standard deviations above each customer's 90-day average spend"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Classifying unstructured, multilingual text by meaning and drafting grounded replies are language problems: the ticket-routing guide notes Claude classifies across languages without separate models and applies rules defined by conditions rather than keywords, and the support guide covers grounded drafting with retrieval. The other three are deterministic. Reconciliation on matching reference numbers and amounts is a join, the refund threshold is a business rule that must hold every time and belongs in code, and a three-sigma spending flag is a statistical calculation over structured numbers, even though it sounds like an AI task. Sending those to an LLM adds cost, latency and a chance of error to work that code does perfectly.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing",
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-04",
+      "domain": "solution-design-architecture",
+      "objective": "Translate business problems into Claude-based AI solutions",
+      "type": "single",
+      "prompt": "An insurance assistant must answer product questions from a 3,000-page policy library and also tell customers their current claim status and balance. The team plans to embed both the library and nightly snapshots of every customer account in one vector index. What should you change?",
+      "options": [
+        "Keep the single index and re-embed the account snapshots every hour, so the balance the assistant retrieves is never more than an hour out of date",
+        "Load the whole policy library and the customer's account record into every request, using a long-context model so nothing needs to be retrieved at all",
+        "Keep the single index but add a metadata filter on customer ID, so each search returns only the asking customer's own account snapshot",
+        "Keep retrieval for the policy library, and fetch claim status and balances through tool calls to the live account systems when the customer asks"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The support-agent guide is explicit that embedding-based RAG is not sufficient for real-time data such as account balances or policy details, and that tool use should look them up live. Retrieval stays the right fit for the large, static library, where the guide notes RAG reduces cost, latency and context-limit problems. Hourly re-embedding narrows the staleness window but keeps the wrong mechanism and adds an indexing pipeline. Loading the whole library into every call is the costly, slow design the guide warns against, and still does not make the account data live. A customer-ID filter controls whose snapshot comes back, not how old it is: the balance is still last night's.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-05",
+      "domain": "solution-design-architecture",
+      "objective": "Design end-to-end architectures (input → processing → output → feedback loops)",
+      "type": "single",
+      "prompt": "A contract-extraction pipeline sends Claude's extracted fields to a review screen, where lawyers correct about 15 percent of them. The corrections are written only to the contract record. Six prompt releases later, the correction rate has not moved. Which change closes the gap?",
+      "options": [
+        "Move extraction to a larger model tier, since a correction rate that stays flat across six releases suggests the current model has hit its ceiling",
+        "Store each correction with its input as a labeled case in the evaluation set, and require new prompt versions to beat the current one on that set",
+        "Add a confidence score to every field and auto-accept fields above a threshold, so lawyers spend their review time only on uncertain fields",
+        "Log every prompt, response and correction to the audit store, so the team can trace exactly which release produced each corrected field"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The pipeline has input, processing and output but no feedback loop: the corrections are the best labeled data the team will ever get and they never reach the evaluation set. Anthropic's develop-tests guidance and the evaluation advice in the multi-agent research post both rest on measuring changes against representative cases; feeding corrections back makes each release measurable against real failures. A larger model is a knob chosen without evidence; nothing shows the model is the limit rather than the prompt. Auto-accepting confident fields changes reviewer workload, not extraction quality, and may let errors through. Audit logging adds traceability but is not a loop: nobody uses the data to gate releases.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+        "https://www.anthropic.com/research/multi-agent-research-system"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-06",
+      "domain": "solution-design-architecture",
+      "objective": "Design end-to-end architectures (input → processing → output → feedback loops)",
+      "type": "single",
+      "prompt": "A due-diligence agent runs nightly for about 40 minutes and makes roughly 200 tool calls. When its worker host is preempted or a data provider's API fails near the end of a run, the job restarts from the beginning, doubling cost and missing the 7 a.m. deadline. What is the best architectural fix?",
+      "options": [
+        "Raise the job's timeout and restart it automatically as soon as it fails, so a full rerun begins sooner and has more time to finish before the deadline",
+        "Switch the agent to a faster model so the full run takes less time, leaving enough headroom for one complete restart before the 7 a.m. deadline",
+        "Checkpoint the agent's state durably and resume from the last checkpoint, retrying the failed tool and telling the agent when a tool is down",
+        "Wrap every tool call in retry logic with exponential backoff, so a failing provider call is retried in place instead of ending the whole run"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Anthropic's multi-agent research post describes this failure: agents are stateful and errors compound, and restarting from the beginning is expensive, so they built systems that resume from where the agent was, combined with retry logic, regular checkpoints and letting the agent know a tool is failing so it can adapt. A faster restart still repeats all completed work and still doubles cost. A faster model is the wrong knob; the cost comes from lost progress, not model speed, and a second outage breaks the plan again. Retry logic alone handles a brief provider error, but a preempted host loses the agent's in-memory state and the run still starts over, which is why the post pairs retries with durable checkpoints.",
+      "references": [
+        "https://www.anthropic.com/research/multi-agent-research-system"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-07",
+      "domain": "solution-design-architecture",
+      "objective": "Design end-to-end architectures (input → processing → output → feedback loops)",
+      "type": "single",
+      "prompt": "A platform runs agent sessions that last several hours. A release changed the argument schema of one internal tool, and sessions that had started before the deploy began failing mid-run, while new sessions worked. The model version and prompts were unchanged. How should releases be done from now on?",
+      "options": [
+        "Run the old and new versions side by side, sending new sessions to the new version while sessions already in flight finish on the old one",
+        "Pin the model snapshot in every session configuration so a model update cannot change tool-calling behavior while a long session is running",
+        "Add automatic retries when a tool call fails schema validation, so in-flight sessions recover after the deploy without operator involvement",
+        "Drain every running session and deploy only in a weekly maintenance window, when no long-running agent sessions are allowed to be active"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The evidence says what changed: the tool schema, under sessions that were mid-run. The model and prompts did not change. Anthropic's multi-agent research post notes that agents may be anywhere in their process when you deploy, and describes rainbow deployments that shift traffic gradually from old to new versions while both keep running. Pinning the model addresses a cause the stem rules out. Retrying a call against a schema the old session does not know keeps failing, because the mismatch is not transient. A weekly drain window works but blocks releases and interrupts users, a blunt fix where running two versions solves it without either cost.",
+      "references": [
+        "https://www.anthropic.com/research/multi-agent-research-system"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-08",
+      "domain": "solution-design-architecture",
+      "objective": "Design end-to-end architectures (input → processing → output → feedback loops)",
+      "type": "multiple",
+      "prompt": "A support assistant retrieves policy passages and generates an answer, and the response goes straight to the customer. Reviewers find answers that state policy terms not present in any retrieved passage, and the team has no way to tell whether answers actually resolved the customer's issue. Which TWO additions address these problems?",
+      "options": [
+        "Have Claude cite the retrieved passages behind each claim and check, before sending, that every policy statement is backed by a citation",
+        "Raise max_tokens on the generation call so answers have enough room to include the full text of every policy section they rely on",
+        "Route every turn to the largest available model, since larger models are less likely to state policy terms that were never retrieved",
+        "Append a footer to each answer telling customers to verify policy terms against their documents before acting on what the assistant said",
+        "Track resolution, escalation accuracy and CSAT per conversation, and add failed conversations to the evaluation set for the next release"
+      ],
+      "correct": [
+        0,
+        4
+      ],
+      "explanation": "The first problem is ungrounded output: Anthropic's guardrail guidance for support chat is to ground responses in provided information with citations and fact-checking, so requiring a citation per claim fixes it at the output stage. The second is a missing feedback loop: the support guide's success criteria include resolution, escalation accuracy and CSAT, and feeding failures into evaluation turns them into improvements. More output tokens do nothing about invented terms and add cost. A bigger model is the wrong knob; the evidence points at grounding, and no model guarantees it. A footer is a compensating control that leaves the hallucinations in place.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-09",
+      "domain": "solution-design-architecture",
+      "objective": "Select appropriate architectural patterns (workflow, agentic, augmented LLM)",
+      "type": "single",
+      "prompt": "A marketing team generates a product announcement, checks it contains the approved brand terms, then translates it into six fixed languages. The team built an autonomous agent that decides these steps itself; runs vary in order and cost, and the brand check is sometimes skipped. Which design fits best?",
+      "options": [
+        "An orchestrator-workers design in which a central model decides for each announcement which languages are needed and delegates them",
+        "A lead agent with one subagent per language and a critic subagent that reviews every translation before the lead assembles the results",
+        "The existing agent with a maximum-iteration stop condition and an instruction in its system prompt stating that the brand check is required",
+        "A prompt chain of fixed steps (draft, brand-term check in code, translation), where a draft that fails the check never reaches translation"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Anthropic's 'Building effective agents' recommends prompt chaining when a task decomposes cleanly into fixed subtasks, with programmatic gates on intermediate steps; it even cites generating marketing copy and then translating it. A gate in code guarantees the brand check runs. Orchestrator-workers fits when subtasks cannot be predicted, but here the six languages are known. A multi-agent lead with subagents and a critic multiplies tokens for a fixed path. Keeping the agent with a stop condition and a prompt instruction is a compensating control: it still leaves step order to the model, so the check can still be skipped.",
+      "references": [
+        "https://www.anthropic.com/research/building-effective-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-10",
+      "domain": "solution-design-architecture",
+      "objective": "Select appropriate architectural patterns (workflow, agentic, augmented LLM)",
+      "type": "single",
+      "prompt": "A support assistant uses one prompt for every request. After the team tuned it to handle refund disputes well, accuracy on technical troubleshooting questions dropped, and simple FAQ questions cost as much as complex ones. Which pattern addresses both problems?",
+      "options": [
+        "One longer system prompt with a separate section for refunds, troubleshooting and FAQs, so each category gets its own instructions in a single call",
+        "Routing: classify each request first, then send it to a prompt and tools built for its category, with simple FAQ traffic going to a smaller model",
+        "Parallel voting: run every request through three copies of the current prompt and return the answer that the majority of the copies agree on",
+        "An autonomous agent holding every tool and the instructions for all three categories, left to decide on its own how to handle each request"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The routing workflow in 'Building effective agents' exists for this: without it, optimizing for one kind of input can hurt performance on others, and routing lets easy, common questions go to smaller, cheaper models while hard ones go to more capable ones. A longer single prompt is the setup that caused the regression, since all categories still share one call. Voting improves confidence on one task but triples cost and does not separate the categories. An agent with every tool and instruction is the same single-prompt problem with more autonomy, cost and unpredictability added.",
+      "references": [
+        "https://www.anthropic.com/research/building-effective-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-11",
+      "domain": "solution-design-architecture",
+      "objective": "Select appropriate architectural patterns (workflow, agentic, augmented LLM)",
+      "type": "single",
+      "prompt": "An HR team wants an assistant that answers employees' single questions from a 400-page handbook, with a citation to the section used. An engineer proposes a planner agent that breaks each question into steps, searches repeatedly and critiques its own draft before answering. What should you recommend first?",
+      "options": [
+        "A single Claude call with retrieval over the handbook and a few example answers, measured on real employee questions before adding agentic steps",
+        "The planner agent with a strict iteration limit, so it can search as often as it needs but never run for longer than a fixed number of turns",
+        "An evaluator-optimizer loop on every answer, so a second call critiques each draft for accuracy before the employee ever sees the final reply",
+        "An orchestrator that sends each question to workers that each search one handbook chapter, then merges their findings into one cited answer"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Anthropic's guidance is to find the simplest solution and add complexity only when it demonstrably improves outcomes; for many applications, optimizing a single LLM call with retrieval and in-context examples is enough. That augmented-LLM design meets the citation requirement at the lowest cost and latency. An iteration limit on the planner caps the downside but keeps complexity no one has shown is needed. An evaluator loop on every answer doubles calls before there is evidence that drafts need refining. Fanning out across chapters adds cost and coordination for single questions that retrieval already answers.",
+      "references": [
+        "https://www.anthropic.com/research/building-effective-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-12",
+      "domain": "solution-design-architecture",
+      "objective": "Select appropriate architectural patterns (workflow, agentic, augmented LLM)",
+      "type": "multiple",
+      "prompt": "A team is deciding whether to add an evaluator-optimizer loop, in which a second Claude call critiques a draft and the first revises it, to a document-generation feature. Which TWO conditions are the strongest signs that the loop will pay for its extra latency and cost?",
+      "options": [
+        "The feature has a 1-second p95 latency budget, so drafts must be good on the first attempt more often than now",
+        "The outputs are short labels from a fixed list that an exact-match check already grades with full accuracy",
+        "The quality criteria are explicit, and a reviewing model can give concrete critiques a writer could act on",
+        "Most first drafts already pass the acceptance check, with only a few failing on minor wording problems",
+        "Drafts measurably improve when a human editor's written feedback is passed back to the model for a revision"
+      ],
+      "correct": [
+        2,
+        4
+      ],
+      "explanation": "'Building effective agents' gives two signs of good fit for evaluator-optimizer: responses demonstrably improve when a human articulates feedback, and an LLM can provide such feedback; it also needs clear evaluation criteria and measurable value from iteration. A 1-second latency budget argues against adding sequential calls. Fixed labels graded by exact match have clear criteria but nothing to refine; a better prompt or examples is the lever there. When most drafts already pass, the loop adds a second call to every request for little gain, which is cost without measurable value.",
+      "references": [
+        "https://www.anthropic.com/research/building-effective-agents"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-13",
+      "domain": "solution-design-architecture",
+      "objective": "Design multi-agent systems and orchestration strategies",
+      "type": "single",
+      "prompt": "A market-intelligence system's lead agent splits each request into subagent tasks written as one line, such as 'look into competitor pricing'. Traces show two subagents fetching the same pricing pages while the enterprise contract terms the user asked about go uncovered, and token use runs well above estimates. What should change first?",
+      "options": [
+        "Add effort-scaling rules to the lead's prompt, so it spawns fewer subagents and makes fewer tool calls for simpler requests",
+        "Add a deduplication step after the subagents finish that removes overlapping findings before the lead agent writes its final answer",
+        "Rewrite the lead's task descriptions so each subagent gets an objective, an output format, tools and sources, and clear boundaries",
+        "Let the subagents message each other freely while they work, so they can notice overlapping searches and agree on a split among themselves"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "One-line tasks are the cause. Anthropic's multi-agent research post reports that short, vague delegation led subagents to misread tasks or repeat each other's searches, and that each subagent needs an objective, an output format, guidance on tools and sources, and clear task boundaries; without them agents duplicate work and leave gaps. Effort-scaling rules are a real principle from the same post, but they fix overinvestment in simple queries; fewer subagents with the same vague tasks still overlap and still miss the contract terms. Deduplicating afterward is a compensating control that hides wasted work and leaves the gap. Free peer messaging adds coordination overhead; agents distracting each other with excessive updates was one of the post's early failure modes.",
+      "references": [
+        "https://www.anthropic.com/research/multi-agent-research-system"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-14",
+      "domain": "solution-design-architecture",
+      "objective": "Design multi-agent systems and orchestration strategies",
+      "type": "single",
+      "prompt": "A multi-agent research product spawns 8 to 12 subagents even for simple factual lookups, and its token cost per query has tripled. Complex comparative questions, which are a large share of revenue, perform well and must not regress. What is the best change?",
+      "options": [
+        "Set a hard limit of three subagents on every query, so simple lookups can no longer fan out and per-query cost returns to its earlier level",
+        "Add scaling rules to the lead's prompt that match subagent count and tool calls to query complexity, with simple lookups using one agent",
+        "Send every query to a single agent with no subagents, since the single-agent design was cheaper per query before the multi-agent rollout",
+        "Move all subagents to the smallest model, so each one costs less while the lead keeps spawning as many subagents as it judges necessary"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The post on Anthropic's research system describes agents struggling to judge effort and the fix: scaling rules embedded in the prompt, such as one agent with a few tool calls for fact-finding, a few subagents for comparisons, and more than ten for complex research. That removes overinvestment on simple queries while keeping depth where it pays. A global cap of three is a blunt fix that breaks the complex queries the stem says must not regress. Removing subagents entirely does the same. Downsizing every subagent leaves the overinvestment in place and may hurt the queries that work today.",
+      "references": [
+        "https://www.anthropic.com/research/multi-agent-research-system"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-15",
+      "domain": "solution-design-architecture",
+      "objective": "Design multi-agent systems and orchestration strategies",
+      "type": "multiple",
+      "prompt": "An agent on Claude Managed Agents must audit 300 repositories against the same checklist and combine the findings. It never needs to follow up with an individual auditor, and the main thread should keep reporting progress to the user while the audit runs. Which TWO choices fit?",
+      "options": [
+        "Have the agent start a dynamic workflow run that runs many agents in phases in the background and combines their results",
+        "Delegate to 300 subagent threads at once, so the agent can send any of them a follow-up message after each one reports",
+        "Let each subagent delegate again to per-directory subagents, so the work spreads across more parallel context windows",
+        "Set a session budget, since every agent in a workflow run uses tokens and the budget caps the session's spend, runs included",
+        "Configure an advisor model for the session, so the advisor carries out the audit while the primary thread talks to the user"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "explanation": "The Managed Agents orchestration page recommends dynamic workflows for most work that needs many agents, such as audits, migrations and cross-checking; the server runs the workflow in the background, which frees the main thread to talk to the user. Because every agent in a run uses tokens, the page says to set a session budget. Subagent delegation suits follow-ups, which the stem rules out, and a session can have at most 25 child threads at a time, so 300 at once is not possible. Delegation is one level deep, so subagents cannot spawn their own. An advisor only gives guidance at key moments; the primary thread still does the work. The feature is in beta.",
+      "references": [
+        "https://platform.claude.com/docs/en/managed-agents/multiagent-orchestration"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-16",
+      "domain": "solution-design-architecture",
+      "objective": "Design multi-agent systems and orchestration strategies",
+      "type": "single",
+      "prompt": "In a multi-agent reporting system, specialist subagents write long code samples and data tables, and the lead agent pastes them into the final report. Reviewers find tables truncated and code subtly altered, and the lead's context fills quickly. What is the best fix?",
+      "options": [
+        "Give the lead agent a larger context window and a higher max_tokens, so it can hold every subagent's full output and copy it without loss",
+        "Instruct subagents to compress their outputs into shorter summaries, so the lead has far fewer tokens to carry and copy into the report",
+        "Have the lead regenerate each artifact from the subagents' notes with a more capable model, so the final versions are written in one voice",
+        "Have subagents save outputs to external storage and return short references, so the report pulls each artifact from storage unchanged"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Anthropic's multi-agent research post recommends letting subagents write to a filesystem or other external store and pass lightweight references back, to avoid a 'game of telephone' that loses fidelity and to cut the token cost of copying large outputs through the coordinator. Its examples are code, reports and data visualizations. A larger context is the wrong knob; the loss comes from passing artifacts through a model, not from space. Compressing outputs is a blunt fix that drops the content the report needs. Regenerating from notes with another model adds a second chance to alter the artifacts and more cost.",
+      "references": [
+        "https://www.anthropic.com/research/multi-agent-research-system"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-17",
+      "domain": "solution-design-architecture",
+      "objective": "Apply decomposition techniques for complex problem solving",
+      "type": "single",
+      "prompt": "A team splits a tightly coupled refactor of one payment module across five parallel subagents, each editing a different part. Their changes conflict, interfaces drift, and the merge takes longer than doing the work in one pass. What should the architect recommend?",
+      "options": [
+        "Run the refactor in one agent that holds the shared context, and keep subagents for independent, read-heavy work such as finding call sites",
+        "Add a sixth subagent whose only job is to merge the other five agents' edits and resolve every conflict once they have all finished their parts",
+        "Pass every subagent the full parent conversation history, so each one sees the decisions the others made before it starts editing its own part",
+        "Move all five subagents to a more capable model, since better reasoning should keep their edits consistent with each other without extra steps"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Anthropic's research post notes that domains where agents must share the same context or have many dependencies between them are a poor fit for multi-agent systems today, and that most coding tasks have fewer truly parallel parts than research. Decomposition should follow the dependency structure: coupled edits stay in one context, and independent exploration can be delegated, where the SDK's subagents return only a summary. A merge subagent is a compensating control that cleans up conflicts the design creates. Copying the full history into each subagent throws away context isolation and multiplies tokens, and still does not coordinate live edits. A stronger model is the wrong knob for a structural problem.",
+      "references": [
+        "https://www.anthropic.com/research/multi-agent-research-system",
+        "https://code.claude.com/docs/en/agent-sdk/subagents"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-18",
+      "domain": "solution-design-architecture",
+      "objective": "Apply decomposition techniques for complex problem solving",
+      "type": "single",
+      "prompt": "A ticket classifier now has 42 intent categories. The single prompt carries definitions and examples for all of them, has become hard to maintain, and accuracy keeps falling as categories are added. The team can accept a little more latency but not a large cost increase. Which decomposition fits?",
+      "options": [
+        "Keep one prompt but add more labeled examples for every category, since adding examples is the most effective way to raise accuracy",
+        "Keep one prompt and move it to the most capable model, so the larger model can tell apart all 42 categories in a single classification call",
+        "A taxonomy of broad parent categories, each with its own classifier for child intents, run as a cascade on the fastest model to limit latency",
+        "An agent that looks up category definitions with a tool as needed, so the prompt no longer has to hold every definition at the same time"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The ticket-routing guide recommends a taxonomic hierarchy for cases with 20 or more intent categories: organize intents as a tree with a classifier at each level so each prompt is targeted. It notes the cost in latency and recommends the fastest model, Haiku, for this design. Adding examples to one prompt makes the unwieldy prompt worse, which the guide names as the reason to split. The most capable model raises cost, which the stem rules out, without fixing maintainability. An agent with lookups adds turns, cost and variability to a classification task.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-19",
+      "domain": "solution-design-architecture",
+      "objective": "Apply decomposition techniques for complex problem solving",
+      "type": "single",
+      "prompt": "An agent runs a multi-day data migration in phases. After its conversation is compacted, it loses track of which phases are done and repeats completed work, and once it restarted a finished phase from scratch. Which approach best fixes this?",
+      "options": [
+        "Move the agent to a model with a larger context window, so the migration plan and its history no longer need to be compacted at all",
+        "Turn off compaction for this agent, so nothing is ever removed from the conversation and the full history of completed phases remains visible",
+        "Write the migration plan into the system prompt at start-up, so the plan is always present in the context no matter what compaction removes",
+        "Keep the plan and a summary of each finished phase in external memory, re-read them at each phase, and use fresh subagents per phase"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Anthropic's context-engineering post names structured note-taking and sub-agent architectures as the techniques for long-horizon work, and the research system saved its plan to memory because context beyond its limit would be truncated; agents there summarize completed phases into external memory and hand off to fresh subagents. A larger window delays the problem; the post warns that windows of all sizes suffer context pollution. Turning off compaction lets the run hit the hard limit. A static plan in the system prompt survives compaction but cannot record which phases are finished, which is what the agent lost.",
+      "references": [
+        "https://www.anthropic.com/research/effective-context-engineering-for-ai-agents",
+        "https://www.anthropic.com/research/multi-agent-research-system"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-20",
+      "domain": "solution-design-architecture",
+      "objective": "Align solutions to business value pillars (efficiency, transformation, productivity, cost, performance SLAs)",
+      "type": "single",
+      "prompt": "A retailer must rewrite 2 million product descriptions with Sonnet, the model that passed its quality evaluation. Each request shares a 6,000-token style guide. Results are needed within two days, and cost is the sponsor's main concern. Which design best serves that goal?",
+      "options": [
+        "Move the job to the smallest Haiku model, which costs far less per token, and accept the lower quality it showed on the evaluation set",
+        "Send the requests through the Message Batches API in several batches, with the shared style guide cached so the two discounts stack",
+        "Stream every response so tokens are delivered as they are generated, which lowers the time each request holds capacity and so its cost",
+        "Request Priority Tier for the job so it is never slowed by overloaded errors and finishes as early as possible inside the two-day window"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The batch-processing page says the Message Batches API cuts cost by 50 percent for work that does not need an immediate response, with most batches finishing in under an hour and a 24-hour expiry, well inside two days. Each batch holds up to 100,000 requests or 256 MB, so 2 million requests need several batches. The pricing page says prompt caching multipliers stack with the batch discount, which suits the shared style guide. Downsizing to Haiku breaks the stated quality requirement. Streaming changes how output is delivered, not what it costs. Priority Tier is legacy, no longer sold, and buys availability, not savings.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/batch-processing",
+        "https://platform.claude.com/docs/en/about-claude/pricing",
+        "https://platform.claude.com/docs/en/api/service-tiers"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-21",
+      "domain": "solution-design-architecture",
+      "objective": "Align solutions to business value pillars (efficiency, transformation, productivity, cost, performance SLAs)",
+      "type": "single",
+      "prompt": "A support chat must show the first words of a reply within 2 seconds at p95. Complex multi-step conversations passed evaluation only on the larger model, which takes 6 to 9 seconds to finish a full reply. A team member proposes switching to the smallest model to meet the target. What should you recommend?",
+      "options": [
+        "Switch every conversation to the smallest model, since it is the fastest option and the latency target applies to all replies equally",
+        "Remove the examples and policy text from the system prompt, so each request has fewer input tokens and the full reply finishes sooner",
+        "Stream the larger model's replies so text appears as it is generated, and measure the 2-second target as time to first visible words",
+        "Buy Priority Tier capacity for the chat so its requests are served ahead of other traffic and full replies complete within 2 seconds"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The target is about first visible words, not full replies. Anthropic's support-chat guide recommends streaming to reduce perceived response time and notes that streaming can make it possible to use more advanced models with higher base latencies. Switching to the smallest model is a blunt fix that breaks the quality requirement the stem says only the larger model meets. Stripping examples and policy text cuts what the quality depends on. Priority Tier is legacy and not sold to new customers, it does not support the 5.5 models, and it reduces overloaded errors rather than making a 6-second generation finish in 2.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat",
+        "https://platform.claude.com/docs/en/api/service-tiers"
+      ]
+    },
+    {
+      "id": "ccar-p-sd-22",
+      "domain": "solution-design-architecture",
+      "objective": "Align solutions to business value pillars (efficiency, transformation, productivity, cost, performance SLAs)",
+      "type": "single",
+      "prompt": "A sponsor funds a Claude ticket router under the efficiency pillar: fewer misrouted tickets and a lower cost per ticket than today's rules-based router. You must define the success criteria the pilot will be judged on. Which pair of criteria fits best?",
+      "options": [
+        "Routing accuracy on a labeled test set against a set threshold, plus cost per classification compared with the current router as a baseline",
+        "Total tokens the router consumes each month, plus the share of tickets that Claude routes without any human ever touching the ticket",
+        "Classification consistency of at least 95 percent on repeated standardized inputs, plus median routing latency per ticket against a target",
+        "Number of tickets Claude processes per day, plus the percentage of the support team who say in a survey that they like the new router"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The ticket-routing guide's evaluation measures accuracy and cost per classification against explicit thresholds, and the develop-tests page asks for specific, measurable criteria tied to the goal. Both chosen criteria map directly onto the sponsor's pillar: fewer misroutes and a lower unit cost than the current router. Monthly token totals track spend but not value per ticket, and touchless routing says nothing about whether routes were right. Consistency and latency are standard routing metrics in the same guide, but a router can be consistently wrong, and neither number shows fewer misroutes or a lower cost. Throughput and staff sentiment are useful signals but do not show fewer misroutes or a lower unit cost.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing",
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    }
+  ]
+}

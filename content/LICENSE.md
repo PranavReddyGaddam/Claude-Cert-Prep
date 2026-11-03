@@ -6,8 +6,10 @@ The study material in this folder comes from three places. Each part keeps its o
 
 Copyright (c) 2026 Pranav Reddy Gaddam
 
-- `architect-notes/`: the Architect notes
+- `architect-notes/`: the Architect Foundations notes
+- `architect-pro-notes/`: the Architect Professional notes
 - `assessments/*/scenarios/`: the scenario-based practice questions
+- `assessments/*/bank/`: the standalone practice questions
 
 These are licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
 License](https://creativecommons.org/licenses/by-nc-sa/4.0/). You may share and adapt them for non-commercial

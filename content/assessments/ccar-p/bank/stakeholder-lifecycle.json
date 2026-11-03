@@ -1,0 +1,386 @@
+{
+  "id": "stakeholder-lifecycle",
+  "title": "Stakeholder Communication & Lifecycle Management",
+  "questions": [
+    {
+      "id": "ccar-p-sl-01",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Conduct structured discovery and requirement gathering",
+      "type": "single",
+      "prompt": "A VP of support asks an architect to 'use Claude to fix ticket routing' and wants a demo in two weeks. Nobody has written down how tickets are routed today, and nobody has defined what better routing would mean. What should the architect do first?",
+      "options": [
+        "Build a demo on the most capable model with a generic routing prompt, then use stakeholder reactions to define requirements",
+        "Draft a routing prompt from the current category list and test it on a few dozen labeled tickets before the demo",
+        "Map how agents route today, with SLA rules, automation, edge cases and priorities, and agree measurable success criteria",
+        "Agree a target routing accuracy with the VP now, then build the two-week demo to beat it on recent tickets"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Anthropic's ticket-routing guide starts by understanding the current support approach: how SLAs are assigned, which automated rules exist and where they fail, how edge cases are handled and how tickets are prioritized. It then has you define measurable success criteria with the support team. Without these, no demo can show that routing got better. A demo-first approach lets reactions stand in for requirements. Drafting a prompt and testing it on a few dozen labeled tickets is a sound later step, but done first it encodes only the official categories and misses the SLA rules, automation and edge-case handling that decide where tickets really go. An accuracy target agreed with the VP alone has no baseline from today's routing and no SLA or priority dimension, so beating it may not mean routing improved.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing",
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-02",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Conduct structured discovery and requirement gathering",
+      "type": "single",
+      "prompt": "During discovery for a claims-triage assistant, the business owner's only stated requirement is 'it has to be accurate and safe.' The architect needs a requirement the team can test against before launch. Which rewrite is the most usable?",
+      "options": [
+        "On 2,000 held-out recent claims: at least 92% correct triage, under 0.1% of outputs filter-flagged, and p95 latency under 3 s",
+        "Triage accuracy should match the senior adjusters, as judged by the team lead in a monthly review of the assistant's decisions",
+        "At least 92% correct triage on 2,000 held-out recent claims before launch, with safety reviewed case by case later",
+        "Under 0.1% filter-flagged outputs and p95 latency under 3 s on live traffic, with accuracy tracked by adjuster overrides"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Anthropic's evals guide says good success criteria are specific, measurable, achievable and relevant, and that most use cases need several dimensions. Its own example pairs a held-out set with a score threshold, a toxicity rate and a latency percentile. The first option has all of these. 'Match the senior adjusters as judged by the team lead' names no metric, no sample and no threshold, so two reviewers could disagree. The 92%-on-held-out-claims rewrite is measurable, but it drops the safety dimension the owner named and leaves it to case-by-case judgment after launch. Measuring safety and latency on live traffic, with accuracy inferred from overrides, cannot be tested before launch, and override rate is a proxy that depends on adjusters noticing errors.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-03",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Conduct structured discovery and requirement gathering",
+      "type": "multiple",
+      "prompt": "An insurer is deciding whether to classify incoming emails with Claude or with a traditional ML classifier. Discovery produced five findings. Which TWO findings most favor Claude, according to Anthropic's ticket-routing guidance?",
+      "options": [
+        "The insurer holds several million labeled emails, and its category list has not changed in six years and is not expected to",
+        "Product lines and categories are reorganized most quarters, and relabeling a training set after each change has been slow",
+        "Each email must be classified on the mail gateway in under 10 ms with no network call, on hardware the team already owns",
+        "Emails arrive in nine languages, and the team does not want to build and maintain a separate model for each language",
+        "Every category is defined by an exact keyword in the subject line, and the current rules already match those keywords reliably"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "The ticket-routing guide lists indicators for choosing an LLM over traditional ML. Two of them are categories that change over time (Claude adapts to new or redefined classes without extensive relabeling) and multilingual input without separate models per language. A large labeled history with a stable taxonomy is the situation where traditional ML does well, so that finding points the other way. A sub-10 ms, no-network, on-gateway constraint rules out any hosted API call. Exact keyword rules that already work are pattern matching, which is deterministic and cheap, and the guide's case for Claude rests on semantic understanding rather than keywords.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-04",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Conduct structured discovery and requirement gathering",
+      "type": "single",
+      "prompt": "A routing pilot met its accuracy target on the eval set, but in production frontline agents manually re-route about 30% of tickets from enterprise accounts. Interviews reveal an unwritten rule: accounts above a revenue tier always go to a senior queue. Discovery had interviewed only product managers and the support director. Which discovery practice would most likely have caught the rule before launch?",
+      "options": [
+        "Sending a written survey to every support agent, asking each to list the routing categories they use every day",
+        "Monitoring production re-route rates from launch day, so any gap would surface within the first week of general availability",
+        "Running a larger eval set labeled by the same product managers, so rarer patterns had more chance to show up in testing",
+        "Interviewing and shadowing frontline agents and reviewing past manual re-routes, to see how edge cases and priority work"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Tacit rules live with the people who run the process, and override history records them. The ticket-routing guide's discovery questions ask how edge cases and ambiguous tickets are handled, how the team prioritizes, and where existing rules fail. Only frontline agents and their re-route records could answer those. A survey reaches the right people but asks the wrong question: a list of categories does not surface an unwritten priority rule that staff apply without thinking of it as a category. Monitoring re-routes would expose the gap, but only after launch, which is the failure the stem describes. A bigger eval set labeled by the same product managers repeats their blind spot, because the labels would not encode the rule either. (The stakeholder-practice part is general practice, not from Anthropic documentation.)",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing",
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-05",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Communicate architectural decisions and trade-offs",
+      "type": "single",
+      "prompt": "For a document-drafting assistant, the CFO wants the cheapest option and the product lead wants the best quality. The architect has run Claude Haiku 5.5, Sonnet 5.5 and Opus 5.5 at two effort levels each on the agreed eval set. How should the trade-off be presented for a decision?",
+      "options": [
+        "Show each model's list price per million input and output tokens beside its eval score, so the cheapest option is obvious",
+        "Show cost per completed task and eval score for each option, recommend one, and state what the other options trade away",
+        "Recommend the most capable model by default, since quality is harder to measure than cost and errors are harder to undo",
+        "Defer the choice until after launch, and let production traffic and user feedback decide which model the assistant uses"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic's cost guidance says to compare models on cost per completed task, not per token. A cheaper model that needs more tokens or more attempts can cost more per finished draft, so a list-price table points the CFO at the wrong answer. Presenting options against both stakeholders' criteria, with a clear recommendation and its costs, lets them decide on evidence. Defaulting to the top model ignores the CFO's constraint and the measurements already in hand. Deferring to production makes no decision and ships an unevaluated configuration. (The stakeholder-practice part is general practice, not from Anthropic documentation.)",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+        "https://platform.claude.com/docs/en/models/overview"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-06",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Communicate architectural decisions and trade-offs",
+      "type": "single",
+      "prompt": "A year ago a team chose the Message Batches API for a nightly product-enrichment job. A new product manager now asks why it is not real-time and suspects the choice was a mistake. The original engineers have left. Which artifact would have answered the question best?",
+      "options": [
+        "An architecture decision record stating the context, the options weighed, the choice, its consequences and when to revisit",
+        "A cost comparison of batch and real-time spend at the job's volume, attached to the original budget approval",
+        "The recording of the design meeting where the team discussed batch and real-time processing before choosing the batch path",
+        "A design document in the team wiki describing the pipeline's components, data flow, retries and failure handling"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The question is why, and only a decision record captures the why in a durable, findable form. Here it would note that no user was waiting, results were needed by morning, and batch processing costs 50% less, with most batches done within an hour and a 24-hour limit. It would also record the alternatives and the trigger for revisiting, such as a need for same-hour freshness. A cost comparison records one input to the decision, but not the freshness need, the other trade-offs or when to revisit. A design document describes what was built and how it fails, not why batch beat real-time. A meeting recording is long, hard to search and may never state the final reasoning. (The stakeholder-practice part is general practice, not from Anthropic documentation.)",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-07",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Communicate architectural decisions and trade-offs",
+      "type": "single",
+      "prompt": "An executive sponsor asks the architect to guarantee in writing that a contract-summary assistant will never state anything that is not in the contract. The summaries feed lawyers' review of high-value deals. What is the most defensible response?",
+      "options": [
+        "Agree to the guarantee once every claim must cite a direct quote, since quote grounding rules out unsupported text",
+        "Commit to zero unsupported statements on the eval set, and hold the launch until a full eval run reaches that bar",
+        "Explain that no setting removes the risk, then commit to a measured eval rate, quote-grounded citations and lawyer review",
+        "Agree, and add a footer to each summary stating that it was produced by AI and may contain errors that the reader must check"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Anthropic's hallucination guide says even the most advanced models can sometimes produce incorrect statements. It recommends grounding answers in direct quotes, citing a source for each claim, retracting claims without support, and letting the model say it does not know. The honest commitment is a measured rate on a defined eval set, plus those controls and human review where the stakes are high. The guide is explicit that these techniques significantly reduce hallucinations but do not eliminate them, so a guarantee resting on quote grounding promises more than the control delivers. A zero-error eval target is not achievable; it either blocks launch indefinitely or is met by a lucky run that says little about production. A disclaimer footer is a compensating control attached to a promise that still cannot be kept. (The stakeholder-practice part is general practice, not from Anthropic documentation.)",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-08",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Manage stakeholder feedback loops and expectation alignment (including SLAs)",
+      "type": "single",
+      "prompt": "A sales team wants to promise enterprise customers 99.9% availability for a Claude-based feature, and proposes backing the promise by buying an Anthropic Priority Tier commitment for Claude Opus 5.5. The architect checks the service tiers page. What should the architect tell them?",
+      "options": [
+        "Buy a 12-month Priority Tier commitment for Claude Opus 5.5, since a longer term gives the strongest backing for the promise",
+        "Set service_tier to auto on every request, since that routes traffic to Priority Tier first and so protects the 99.9% figure",
+        "Make the promise as proposed, since the standard tier is best-effort and only rarely returns overloaded errors under peak load",
+        "Priority Tier is no longer sold, targeted 99.5% and excludes Opus 5.5; raise capacity with sales and promise after measuring"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The service tiers page marks tiers as legacy and says Priority Tier commitments are no longer available for purchase; for guaranteed capacity it says to contact sales. Existing commitments target 99.5% uptime, below the proposed promise, and Opus 5.5 is on the list of models Priority Tier does not support. A 12-month commitment cannot be bought. Setting service_tier to auto only uses Priority capacity that an organization already holds. Standard tier is best-effort, which is exactly why it cannot back a 99.9% contractual figure without measurement and fallback design.",
+      "references": [
+        "https://platform.claude.com/docs/en/api/service-tiers",
+        "https://platform.claude.com/docs/en/api/rate-limits"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-09",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Manage stakeholder feedback loops and expectation alignment (including SLAs)",
+      "type": "multiple",
+      "prompt": "Three weeks after an HR policy assistant launched, managers complain that 'answers got worse.' The model ID and prompt are unchanged; the policy index was rebuilt last week after a document migration. The sponsor wants a plan by Friday. Which TWO actions best close the loop with evidence?",
+      "options": [
+        "Replay the complaint cases and the eval set against both the current index and the pre-migration index, and report the gap",
+        "Ask Anthropic to roll back the model weights, since behavior changing under an unchanged ID suggests an unannounced update",
+        "Turn sampled thumbs-down conversations into new eval cases, and agree a fixed review cadence with the sponsor for results",
+        "Rebuild the index from the migrated documents with larger chunks, then ask the managers whether answers improved",
+        "Add a prompt instruction to answer only from retrieved policy text and say so when nothing relevant was found"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "What changed is the index, and model and prompt did not, so the evidence points at retrieval. Replaying the same cases against both indexes isolates the cause and gives the sponsor a measured answer. Turning real complaints into eval cases, reviewed on an agreed cadence, makes the feedback loop permanent. Model IDs are pinned snapshots whose weights Anthropic does not update, so a weight rollback is not a real option. Rebuilding with larger chunks targets the right component but changes it again without measuring what the migration broke, and managers' impressions are not a comparison. A grounding instruction is a reasonable control, but it changes the prompt, the one thing held constant, and it neither finds nor fixes the documents the migration lost or mangled. (The stakeholder-practice part is general practice, not from Anthropic documentation.)",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions",
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-10",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Manage stakeholder feedback loops and expectation alignment (including SLAs)",
+      "type": "single",
+      "prompt": "A service agreement says users must see a response within 3 seconds. Monitoring shows full completion at about 9 seconds for typical answers, while time to first token is about 1.2 seconds; the UI waits for the whole response before showing anything. Answers must keep their full length. What should the architect propose?",
+      "options": [
+        "Cap max_tokens so typical answers finish within 3 seconds, and add a 'show more' link that requests the rest of the answer",
+        "Stream responses to the UI and agree with stakeholders that the 3-second target is measured as time to first visible token",
+        "Move the feature to the fastest model tier so complete answers return in under 3 seconds, whatever the effect on quality",
+        "Negotiate the target up to 10 seconds end to end, since the measured completion time already falls inside that new bound"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The latency guide defines time to first token as the metric that matters with streaming, and says streaming greatly improves perceived responsiveness because users see output as it arrives. TTFT is already 1.2 seconds, so streaming meets 'see a response within 3 seconds' without cutting content. Writing the measurement definition into the agreement keeps everyone aligned on the same number. A max_tokens cap breaks the full-length requirement. A tier change chosen 'whatever the effect on quality' is a blunt fix nobody evaluated. Renegotiating to 10 seconds accepts a worse experience when a cheap fix exists.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-latency"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-11",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Manage stakeholder feedback loops and expectation alignment (including SLAs)",
+      "type": "single",
+      "prompt": "Finance asks that each of five product teams sharing one Claude API organization have a hard monthly budget, so one team's runaway agent cannot consume the others' share. The teams also want to know what their users will see if they hit the cap. What should the architect set up?",
+      "options": [
+        "A workspace per team with its own spend limit, and tell teams that requests then return an error until it resets or is raised",
+        "Rely on the organization's tier spend cap, which pauses usage once reached, and divide the cap's dollar value across teams",
+        "Review the Console usage export weekly and email any team whose spending is trending above its share of the monthly budget",
+        "Set a lower input-tokens-per-minute limit for each team's workspace, so no team can spend faster than its share of budget"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The rate limits page supports custom spend and rate limits per workspace. When a spend limit you set is reached, requests return a 400 invalid_request_error that says when access resumes, and raising or removing the limit restores it sooner. That gives each team a hard cap and a behavior to tell its users about. The tier spend cap is organization-wide, so one team reaching it pauses everyone, which is the failure Finance wants to prevent. A weekly report catches overspend after it happens. A per-minute token limit caps throughput, not the monthly total.",
+      "references": [
+        "https://platform.claude.com/docs/en/api/rate-limits"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-12",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Document architectures and provide implementation guidance",
+      "type": "single",
+      "prompt": "An agent team hands its support assistant to a platform operations group. The handoff pack has architecture diagrams, the prompt files, the tool list and the dashboards. Two weeks later, ops cannot tell whether a prompt tweak they made caused a quality drop. What was most important to include in the handoff?",
+      "options": [
+        "A runbook with alert thresholds, on-call escalation paths and rollback steps for every component of the assistant",
+        "A full export of the pilot's conversation transcripts, so operators can read how the assistant behaved before the handoff",
+        "The eval suite with its baseline scores and release thresholds, so each change is scored against one bar before shipping",
+        "A changelog of every past prompt edit with its date, author and rationale, so operators can see what changed and why"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The question ops cannot answer is whether a change is a regression, and only an eval suite with a recorded baseline and an agreed pass bar answers it. Anthropic's evals guide treats defining success criteria and testing against them as the core of iterating on prompts. A runbook tells ops how to respond to alerts and roll back, but not whether a change lowered quality, so they would not know when to use it. A prompt changelog records what changed, which ops already know here; it cannot say whether the change helped or hurt. Transcripts show past behavior but give no repeatable score to compare against. (The stakeholder-practice part is general practice, not from Anthropic documentation.)",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-13",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Document architectures and provide implementation guidance",
+      "type": "single",
+      "prompt": "A Claude Enterprise customer's security team needs an ongoing, programmatic feed of organization activity, including chat and file content, for its audit archive. The draft implementation guide tells them to download the audit log CSV from organization settings each month. What should the guide recommend instead?",
+      "options": [
+        "The Claude Enterprise Analytics API on a daily schedule, since it reports usage per user and so covers who did what",
+        "The Compliance API, since the audit log export has a capped lookback, is CSV only, and omits chat, file and project content",
+        "Inference hooks on the security team's own server, since they see each governed prompt before inference and can keep a copy",
+        "Keep the monthly CSV export but run it from a scheduled script, so the download happens automatically and is never missed"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The Compliance API page compares the options directly. The audit log export is significantly narrower than the Compliance API: it has a capped lookback window, offers CSV download only, and gives no access to chat, file or project content. The page says to standardize on the Compliance API for ongoing programmatic use. The analytics APIs return aggregated usage and cost figures for FinOps, not per-event records. Inference hooks act inline to deny prompts in real time, while the Compliance API returns richer after-the-fact data such as settings and full files. Scripting the CSV keeps every one of its limits.",
+      "references": [
+        "https://platform.claude.com/docs/en/manage-claude/compliance-api"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-14",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Document architectures and provide implementation guidance",
+      "type": "single",
+      "prompt": "An implementation guide for app teams says: 'Use claude-sonnet-5-5 rather than a dated snapshot so you automatically get model improvements; pin a dated ID if you need stability.' A reviewer flags the line as wrong. What should the corrected guidance say?",
+      "options": [
+        "Use the alias claude-sonnet-5-5 in development and its dated snapshot ID in production, so production behavior never moves",
+        "The ID is an evergreen pointer, so pair it with an eval run after each Anthropic release to catch any change in behavior",
+        "Switch to the Bedrock-style ID with the -v1 suffix, since that form is the only one that guarantees a fixed model snapshot",
+        "claude-sonnet-5-5 is itself a pinned snapshot with no dated form; upgrades come only by changing the ID and re-running evals"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Anthropic's model ID page calls it a common misconception that dateless IDs are evergreen pointers. From the 4.6 generation on, the dateless ID is the canonical ID of one fixed snapshot, and updated versions ship under new IDs. There is no dated form of claude-sonnet-5-5 to pin, so the 'alias plus dated ID' advice cannot be followed. Bedrock IDs dropped the -v1 suffix starting with Claude Sonnet 4.6, and the suffix never set pinning anyway. The page does note that serving-infrastructure updates can cause minor behavior differences, which is a reason to keep evals running, not a sign the ID moves.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions",
+        "https://platform.claude.com/docs/en/models/overview"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-15",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Support lifecycle phases (discovery, design, handoff, monitoring, iteration)",
+      "type": "multiple",
+      "prompt": "It is early November 2026. A claims service still calls claude-sonnet-4-5-20250929 from several applications, and the owners are unsure which API keys are involved. Which TWO actions should the architect prioritize?",
+      "options": [
+        "Run the eval suite now against claude-sonnet-5-5, the listed replacement, and migrate before the November 30, 2026 retirement",
+        "Wait for Anthropic's retirement notice before acting, since at least 60 days' warning is given before any model is retired",
+        "Change the calls to the claude-sonnet-4-5 alias, which keeps working after the dated snapshot is retired from the Claude API",
+        "Export the Console usage report to find every API key still calling the deprecated model, and prioritize those owners first",
+        "Buy a Priority Tier commitment for Sonnet 4.5, so that the service keeps reserved access to the model after its retirement"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "explanation": "The deprecations page shows claude-sonnet-4-5-20250929 deprecated on September 30, 2026, retiring November 30, 2026, with claude-sonnet-5-5 as the recommended replacement. It advises testing replacements well before retirement, and requests to retired models fail. The same page describes the Usage export in Console, broken down by API key and model, for finding remaining callers. The notice was already sent on September 30, so waiting just uses up the remaining weeks. The alias resolves to that same dated snapshot and does not outlive it. Priority Tier is no longer sold and does not keep a retired model available.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+        "https://platform.claude.com/docs/en/api/service-tiers"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-16",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Support lifecycle phases (discovery, design, handoff, monitoring, iteration)",
+      "type": "single",
+      "prompt": "A routing assistant passed its pilot on a curated eval set of clean, English, single-message tickets. After general availability, live accuracy is 8 points lower; sampling shows 20% of real tickets are non-English and many are long multi-message threads. Model, prompt and code are unchanged since the pilot. What is the right lifecycle response?",
+      "options": [
+        "Add a small slice of sampled non-English and long-thread tickets to the curated set, and keep the pilot baseline",
+        "Route non-English tickets to human agents via a language check until the eval set is extended to cover them",
+        "Rebuild the eval set from sampled live traffic, with its languages and long threads, re-baseline, and gate changes on it",
+        "Add prompt instructions for non-English and long threads, and ship them once the curated eval set still passes as before"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Nothing in the system changed. What differs is the input distribution, and the eval set never represented it. Anthropic's evals guide says evals should mirror the real-world task distribution, including edge cases such as overly long inputs. Rebuilding the set from live samples measures the real gap and gives every later change a valid gate. A small extra slice leaves the set unrepresentative of a 20% non-English share, and keeping the pilot baseline compares new scores with a number measured on different inputs. Sending non-English tickets to humans is a compensating control that adds staffing load, leaves the long-thread failures untouched and still yields no valid measure. Prompt changes may help, but checking them against the curated set cannot show whether they closed the gap.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+        "https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-17",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Support lifecycle phases (discovery, design, handoff, monitoring, iteration)",
+      "type": "single",
+      "prompt": "Anthropic releases a new model, and an engineer proposes switching the production model ID that afternoon because 'newer models are always at least as good.' The service runs at a tuned effort level with a well-maintained eval suite. What process should the architect require?",
+      "options": [
+        "Rerun only the eval cases that fail on the current model with a fresh effort sweep, then switch if most of them pass",
+        "Run the eval suite on the new model with a fresh effort sweep, canary a slice of traffic, then promote if it holds the bar",
+        "Wait until the current model is deprecated before evaluating anything, since a working service should not be changed early",
+        "Run the eval suite on the new model at the current tuned effort, then canary a slice of traffic and promote it if it holds"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic's model guidance says to benchmark with your own prompts and data before changing models. The effort page repeatedly says to run a fresh effort sweep rather than carry settings over, because defaults and level calibration differ between models. The cost guide's finding that newer models usually solved at least as many tasks is labeled directional, not a guarantee. A canary limits the blast radius while production evidence accumulates. Rerunning only today's failures shows whether the new model fixes known weaknesses, but not whether it breaks the cases that pass now, which is what the full suite is for. Waiting for deprecation leaves less time for testing, which the deprecations page advises against. The full suite plus canary at the carried-over effort has the right shape but judges the new model at a setting calibrated for another model, which the effort page warns against.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+        "https://platform.claude.com/docs/en/build-with-claude/effort",
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+        "https://platform.claude.com/docs/en/about-claude/model-deprecations"
+      ]
+    },
+    {
+      "id": "ccar-p-sl-18",
+      "domain": "stakeholder-lifecycle",
+      "objective": "Support lifecycle phases (discovery, design, handoff, monitoring, iteration)",
+      "type": "single",
+      "prompt": "Monitoring flags small differences in output formatting from an extraction service. The model ID, prompt, parameters and retrieval are unchanged, and latency and token counts are steady. A downstream parser that relies on exact phrasing has started failing occasionally. What is the most likely explanation and response?",
+      "options": [
+        "A serving-infrastructure update around fixed weights; confirm with an eval replay and move the parser to a structured schema",
+        "Anthropic updated the weights behind the model ID; pin the dated snapshot form of the same ID to lock the earlier behavior in",
+        "The model's context window was reduced; shorten the extraction prompt so the full output fits inside the smaller window",
+        "The organization moved to a lower rate-limit tier; request a higher tier so requests are served on the original capacity"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The model ID page says weights are fixed for a given ID, but the serving infrastructure around the model (request router, safety classifiers, sampling logic) can change. If you see unexpected behavior differences on a stable ID, an infrastructure update is the most likely cause. A parser that depends on exact phrasing is fragile; structured outputs constrain the response to a schema so small wording shifts cannot break it. Anthropic does not update the weights of an existing ID, and current IDs have no dated form. Steady token counts rule out truncation, and an existing model ID's configuration does not change. Rate-limit tiers affect throughput and 429s, not formatting.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions",
+        "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+        "https://platform.claude.com/docs/en/models/overview"
+      ]
+    }
+  ]
+}

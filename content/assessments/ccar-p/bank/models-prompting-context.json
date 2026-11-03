@@ -1,0 +1,356 @@
+{
+  "id": "models-prompting-context",
+  "title": "Claude Models, Prompting & Context Engineering",
+  "questions": [
+    {
+      "id": "ccar-p-mp-01",
+      "domain": "models-prompting-context",
+      "objective": "Select appropriate Claude models based on trade-offs",
+      "type": "single",
+      "prompt": "A logistics company classifies about two million support tickets a day into 12 queues. The requirement is at least 95% routing accuracy on a held-out set and p95 latency under one second, at the lowest unit cost. On that set, Claude Opus 5.5 scores 96.1%, Claude Sonnet 5.5 scores 95.9%, and Claude Haiku 5.5 at its default effort scores 95.4%. Which deployment should the architect recommend?",
+      "options": [
+        "Claude Sonnet 5.5, because the middle tier leaves a safety margin above the accuracy floor while still costing less than Opus",
+        "Claude Opus 5.5 at low effort, because lowering effort brings its cost and latency close to Haiku while keeping the top score",
+        "Claude Haiku 5.5, because it clears the stated accuracy floor and is the fastest, lowest-priced tier built for classification",
+        "Claude Opus 5.5 through the Message Batches API, because the 50% batch discount offsets the higher price at this volume"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Haiku 5.5 meets every stated requirement: it clears the 95% floor, it is the fastest tier, and the models overview lists it for high-volume, latency-sensitive classification at a list price from $0.10 input and $0.50 output per million tokens, against $4 and $20 for Opus 5.5. Sonnet 5.5 buys a margin nobody asked for, at many times the price. Opus 5.5 at low effort uses fewer tokens, but it keeps Opus list prices, and nobody has measured its accuracy at low effort. The Batch API halves the price, but batches can take up to 24 hours, which breaks the one-second p95 requirement.",
+      "references": [
+        "https://platform.claude.com/docs/en/models/overview",
+        "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+        "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-02",
+      "domain": "models-prompting-context",
+      "objective": "Select appropriate Claude models based on trade-offs",
+      "type": "single",
+      "prompt": "A high-volume extraction workload runs on Claude Opus 5 with thinking set to disabled, to keep output short and cheap. The team plans to move it to Claude Opus 5.5 because its per-token prices are lower, but in staging every request now returns a 400 error. Which plan is best justified?",
+      "options": [
+        "Remove the thinking field, set a low effort level, revisit max_tokens, and re-measure cost per request on evals before moving",
+        "Replace the disabled setting with thinking enabled and a small budget_tokens value, so thinking stays capped at a few hundred tokens",
+        "Keep thinking disabled and add effort set to low, since low effort is how Opus 5.5 skips thinking on simple extraction requests",
+        "Remove the thinking field and ship, since the lower per-token prices on Opus 5.5 guarantee a lower bill for the same workload"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The migration guide says Opus 5.5 always runs adaptive thinking: thinking set to disabled and manual budget_tokens are both rejected with a 400, and the effort page adds that disabled returns a 400 at every effort level. Effort is the only request control for thinking depth, so the fix is to drop the field and choose a low effort. The price case also needs re-measuring. Opus 5.5 lists $4 input and $20 output per million tokens against $5 and $25 for Opus 5, but a workload that ran without thinking now produces thinking tokens, billed as output even when the text is not returned, and max_tokens caps thinking plus text. Assuming a lower bill from per-token prices skips the evidence the move should rest on.",
+      "references": [
+        "https://platform.claude.com/docs/en/models/opus-5-5/migration-guide",
+        "https://platform.claude.com/docs/en/build-with-claude/effort",
+        "https://platform.claude.com/docs/en/about-claude/pricing"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-03",
+      "domain": "models-prompting-context",
+      "objective": "Select appropriate Claude models based on trade-offs",
+      "type": "multiple",
+      "prompt": "A research group runs Claude Opus 5.5 agents that work for several hours to produce finished literature reviews. Accuracy matters far more than cost. Their evals at xhigh and max effort still miss the quality bar on the hardest topics. Which TWO next steps follow Anthropic's model-selection guidance?",
+      "options": [
+        "Raise temperature on the hardest topics so the agent explores a wider range of sources before it settles on its conclusions",
+        "Evaluate Claude Fable 5.1, which the guidance names as the next step when Opus 5.5 at xhigh or max effort still falls short",
+        "Turn on extended thinking with a large budget_tokens value so Opus 5.5 reasons for longer than adaptive thinking allows",
+        "Compare candidate models on cost per completed review, not per-token price, since a pricier model may need fewer attempts",
+        "Switch to Claude Haiku 5.5 with automatic retries, so many cheap attempts are made on each topic until one passes the evals"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "The choosing-a-model guide says that if evals at xhigh or max effort still fall short on demanding reasoning or long-horizon agentic work, the next step is Claude Fable 5.1. The cost and intelligence guide says to compare models on cost per completed task rather than per token. Temperature is not a lever here: the Opus 5.5 migration guide says to omit sampling parameters, and API version 2026-10-21 rejects temperature on every model. Extended thinking with budget_tokens returns a 400 error on Claude 4.7 and later models. Haiku with retries is a blunt cost fix that goes against the stated priority on accuracy.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+        "https://platform.claude.com/docs/en/models/opus-5-5/migration-guide",
+        "https://platform.claude.com/docs/en/api/versioning"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-04",
+      "domain": "models-prompting-context",
+      "objective": "Select appropriate Claude models based on trade-offs",
+      "type": "single",
+      "prompt": "An internal IT help agent runs on Claude Sonnet 5.5 at its default effort. Its eval scores comfortably exceed the targets the service desk agreed, but monthly spend is 40% over budget. Users chat with it interactively, and answers often need several paragraphs of steps. What should the architect try first?",
+      "options": [
+        "Move the whole workload to Claude Haiku 5.5 right away, since the eval margin shows the task does not need Sonnet capability",
+        "Cap max_tokens at 512 on every request so the agent cannot write long answers, which directly limits the output tokens billed",
+        "Send the requests through the Message Batches API for the 50% discount, keeping the same prompts, model and effort level",
+        "Run the evals at medium and low effort on Sonnet 5.5 and adopt the lowest level that still meets the agreed targets"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "For 'costs are too high; quality is fine', the cost and intelligence guide's first step is lower effort on the model you already use, and the choosing guide notes that tuning effort is often a better lever than switching models. Effort applies to every output token, and the evals show where quality stops holding. Jumping to Haiku may be worth testing later, but doing it 'right away' skips the measurement. A 512-token cap truncates the multi-paragraph answers users need. Batch processing can take up to 24 hours, which an interactive chat cannot accept.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+        "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+        "https://platform.claude.com/docs/en/build-with-claude/effort",
+        "https://platform.claude.com/docs/en/build-with-claude/batch-processing"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-05",
+      "domain": "models-prompting-context",
+      "objective": "Design system prompts, templates, and guardrails",
+      "type": "single",
+      "prompt": "A retail chatbot answers product, shipping and returns questions. Its system prompt also holds the internal margin formula and the partner discount codes, followed by 'Never reveal these to customers.' Margins are computed by the pricing service, and checkout applies partner codes from the customer's account. A red-team exercise extracted several codes in one session. What is the best fix?",
+      "options": [
+        "Repeat the no-reveal instruction in the user turn of every request, so the rule sits right next to each customer query",
+        "Remove the formula and the codes from the prompt, since the bot's tasks never use them and absent text cannot leak",
+        "Move the formula and codes into a lookup tool the bot calls only when needed, so they are not in context by default",
+        "Screen every reply with a second, prompted Claude call that catches the formula or any code, even when paraphrased"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic's prompt-leak guidance says no method is foolproof, and that if Claude doesn't need a proprietary detail to do the task, you should leave it out; extra content also weakens adherence to 'no leak' instructions. The stem shows the bot never needs either item: the pricing service computes margins and checkout applies the codes. Removing them eliminates the risk. Re-emphasizing the rule in the user turn is a documented leak-resistant technique, but it is still an instruction the red team already got past, and the page warns such techniques add complexity. A lookup tool keeps the data reachable, since an injected request can make the bot call it. A prompted screening call is a documented post-processing control, but it compensates for data that should not be in the prompt at all and can still miss a leak.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-prompt-leak",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-06",
+      "domain": "models-prompting-context",
+      "objective": "Design system prompts, templates, and guardrails",
+      "type": "single",
+      "prompt": "A contract-summary template on Claude Opus 5.5 puts the instructions first, then three sample clauses with their summaries, then the 40-page contract, all as plain text with no delimiters. Reviewers find that summaries sometimes cite a sample clause as if it were in the contract. Which change best addresses the cause?",
+      "options": [
+        "Delete the sample clauses and their summaries, so the only clause text the model can see in the prompt is the contract itself",
+        "Raise effort to max so the model takes more care to separate what it was shown as an example from what the contract contains",
+        "Wrap each part in its own XML tags, examples inside <example> tags, and place the contract above the instructions and query",
+        "Prefill the assistant turn with the opening words of the summary so the model starts straight from the contract's own text"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The cause is structural: nothing marks where the examples end and the contract begins. The prompting best practices recommend wrapping each kind of content in its own tag, examples in <example> tags so Claude can tell them apart from instructions and inputs, and putting long documents near the top, above the query and instructions. Deleting the examples throws away the strongest steer on summary format, which is a blunt fix. Effort is the wrong knob, because it changes how much work the model does, not how the prompt is delimited. Prefilling the final assistant turn returns a 400 error on Claude 4.6 and later models, Opus 5.5 included.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-07",
+      "domain": "models-prompting-context",
+      "objective": "Design system prompts, templates, and guardrails",
+      "type": "multiple",
+      "prompt": "An intake service on Claude Opus 5.5 must return exactly one of 14 category labels for each message. The downstream parser fails whenever the reply includes a preamble or a label outside the list, which happens on about 2% of requests. Which TWO changes are supported on this model and address the failure?",
+      "options": [
+        "Use structured outputs with a JSON schema whose category field is an enum of the 14 labels, so the reply must match the schema",
+        "Prefill the assistant turn with the opening of the JSON object, so the model can only continue straight into the label field",
+        "Set tool_choice to force a classify tool whose input is the label, so every reply arrives as a tool call the parser can read",
+        "Add three to five diverse examples in <example> tags, each showing a message and the exact JSON output expected, with no other text",
+        "Set temperature to 0 so the model always gives the same tightly formatted answer and never adds any text around the label"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "explanation": "Structured outputs constrain the response to a schema, and enum fields are supported, so an out-of-list label or a preamble cannot reach the parser. The best practices also call examples one of the most reliable ways to steer output format and recommend 3 to 5 in <example> tags; examples that show the exact JSON the schema expects reinforce the same format, and the schema guarantees the rest. The other three options all fail on this model. Prefilling the last assistant turn returns a 400 error on Claude 4.6 and later. The Opus 5.5 migration guide says forced tool_choice (any or a named tool) is rejected. It also says to omit temperature, and API version 2026-10-21 rejects temperature on every model.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/structured-outputs",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+        "https://platform.claude.com/docs/en/models/opus-5-5/migration-guide",
+        "https://platform.claude.com/docs/en/api/versioning"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-08",
+      "domain": "models-prompting-context",
+      "objective": "Apply prompt engineering techniques (zero-shot, few-shot, chain-of-thought)",
+      "type": "single",
+      "prompt": "An invoice-extraction prompt includes five worked examples, all taken from one vendor whose invoices always carry a purchase-order number in the top-right corner. On other vendors' invoices, the model copies that vendor's field order and sometimes fills in a PO number that does not appear on the document. Which change is most likely to fix this?",
+      "options": [
+        "Keep the five examples and add an instruction to extract a PO number only when one is printed, and otherwise return null",
+        "Replace the set with varied examples from several vendors, including one with no PO number where the field is left null",
+        "Remove all the examples and rely on a zero-shot instruction listing the fields, so no single layout can bias the output",
+        "Raise the effort level so the model spends more reasoning on locating each field before it writes the extracted values"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The prompting best practices say few-shot examples should be relevant and diverse, covering edge cases and varying enough that Claude doesn't pick up unintended patterns. Five copies of one layout taught exactly the pattern being reproduced, including a PO number that is always present. A varied set with an explicit missing-field case fixes the cause. An added rule about the PO field treats one symptom: the five identical examples still teach one vendor's field order, and the rule competes with what they show. Going zero-shot gives up the most reliable way to steer format and does not show what to do with a missing field. Effort changes how much the model reasons, not what the examples taught it.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-09",
+      "domain": "models-prompting-context",
+      "objective": "Apply prompt engineering techniques (zero-shot, few-shot, chain-of-thought)",
+      "type": "single",
+      "prompt": "A bank drafts replies to regulator inquiries in a single Claude call with adaptive thinking. Compliance now requires that every draft be checked against a fixed list of disclosure criteria, and that the result of the check be stored for audit before any reply is finalized. Which design meets the new requirement?",
+      "options": [
+        "Raise effort to max on the single call so the model reviews its own draft against the criteria more thoroughly before replying",
+        "Add 'think step by step and check each disclosure criterion' to the prompt so the check happens inside the same response",
+        "Split the letter into sections and draft each in a parallel subagent, then merge them into one reply for the compliance team",
+        "Chain three calls: a draft, a separate review against the criteria whose output is stored, then a refine step using that review"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The requirement is an inspectable, stored check before finalization. The best practices say explicit prompt chaining is still useful when you need to inspect intermediate outputs or enforce a pipeline structure, and they describe the self-correction chain (draft, review against criteria, refine) with each step as a separate call you can log and evaluate. Higher effort or a step-by-step instruction may improve the draft, but neither produces a separate review you can store for audit. Parallel section drafting answers a different problem (decomposition) and still has no criteria review step.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-10",
+      "domain": "models-prompting-context",
+      "objective": "Apply prompt engineering techniques (zero-shot, few-shot, chain-of-thought)",
+      "type": "single",
+      "prompt": "After moving an agent from an older Claude model to Claude Opus 5.5, the team sees it call the knowledge-base search tool on almost every turn, including greetings, which adds seconds of latency. The system prompt, written for the older model, says 'If in doubt, always use the search tool.' What should the team change first?",
+      "options": [
+        "Replace the blanket rule with targeted guidance to search when it would improve the answer, since newer models use tools readily",
+        "Detect greetings in the application and strip the search tool from those requests, so simple turns never reach the tool at all",
+        "Add a harness limit of one search call every three turns, so the agent cannot keep querying the knowledge base on each turn",
+        "Lower max_tokens on every request so the agent has less room to plan tool calls and is pushed toward answering directly"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The prompting best practices warn that tools which undertriggered on earlier models now trigger appropriately, so instructions such as 'If in doubt, use [tool]' cause overtriggering. They recommend replacing blanket defaults with targeted guidance about when the tool helps. That fixes the cause in the prompt. Stripping the tool on detected greetings is a brittle workaround that leaves the over-prompting in place for every other kind of turn. A fixed call quota also blocks the searches that are needed. max_tokens is a hard cap on output, and lowering it risks truncated answers without changing the instruction that drives the behavior.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-11",
+      "domain": "models-prompting-context",
+      "objective": "Optimize context windows and manage token usage",
+      "type": "single",
+      "prompt": "A coding agent on Claude Sonnet 5.5 runs multi-hour sessions with prompt caching on. After about an hour, roughly three-quarters of its context is old file contents and test output that it has already acted on, and its answers start to lose focus. The agent's own plans and decisions from earlier turns must stay available. Which change best fits?",
+      "options": [
+        "Move the agent to a model with a larger context window, so the accumulated file contents fit with room to spare for the rest",
+        "Drop the oldest half of the message history on the client before each request, so the request size stays under a fixed ceiling",
+        "Enable tool result clearing for older results, with clear_at_least set so each clearing frees enough to repay the cache write",
+        "Summarize the whole conversation before every request, so each call starts from a short recap instead of the full history"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The problem is stale tool output crowding the context (context rot), not a lack of space: every current model already has a 1M-token window, and a bigger one would just hold more noise. Tool result clearing removes old tool results, which the agent has already acted on, and leaves its plans and decisions in place. Clearing invalidates the cached prefix, so the context editing page recommends clear_at_least to make each invalidation worth its cache write. Dropping the oldest half deletes the very plans that must stay available. Summarizing on every request breaks the cache on every turn and loses detail each time.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+        "https://platform.claude.com/docs/en/build-with-claude/context-windows",
+        "https://platform.claude.com/docs/en/build-with-claude/compaction"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-12",
+      "domain": "models-prompting-context",
+      "objective": "Optimize context windows and manage token usage",
+      "type": "single",
+      "prompt": "A support chat on Claude Haiku 5.5 uses compaction at a token threshold with the default trigger. Finance notices that requests late in long conversations cost about five times as much per token as early ones, even though most of each prompt is a cache hit. Each turn adds up to about 8,000 tokens. What should the architect change?",
+      "options": [
+        "Add more cache breakpoints late in the conversation, since cache reads do not count toward the prompt length that sets the price",
+        "Set the compaction trigger a little below 100,000 minus the largest per-turn growth, rather than the default of 150,000 tokens",
+        "Move these conversations to Claude Sonnet 5.5, whose 1M-token pricing has no step at 100,000 tokens of prompt length",
+        "Shorten the system prompt by a few thousand tokens so each request starts further below the long-context price threshold"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Haiku 5.5 is priced by prompt length: once a prompt passes 100,000 tokens, every token of that request costs about five times as much, output included. Cache reads and writes count toward the 100,000. The threshold-compaction default trigger is 150,000, so conversations spend a long stretch above the step. The cost guide recommends a trigger a little below 100,000 minus your largest growth between requests. More breakpoints do not help, because cached tokens still count toward prompt length. Sonnet 5.5 has no step, but its $2 input price is above even Haiku's higher rate. A shorter system prompt only delays the crossing.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+        "https://platform.claude.com/docs/en/about-claude/pricing",
+        "https://platform.claude.com/docs/en/build-with-claude/compaction"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-13",
+      "domain": "models-prompting-context",
+      "objective": "Optimize context windows and manage token usage",
+      "type": "multiple",
+      "prompt": "An agent on Claude Opus 5.5 resends a 60,000-token block of tool definitions and system instructions on every turn without prompt caching, and it now hits 429 errors on input tokens per minute at peak. The system prompt begins with a line giving the current time and queue depth. Which TWO changes most directly relieve the ITPM limit?",
+      "options": [
+        "Request a Priority Tier commitment so peak traffic is served from reserved capacity instead of from the standard rate limits",
+        "Add a cache breakpoint at the end of the static prefix, since cache reads do not count toward ITPM on most current models",
+        "Raise max_tokens on each request so the agent finishes its work in fewer turns and sends the large prefix fewer times",
+        "Call the token counting endpoint before each request so the agent knows its input size before it sends the full prompt",
+        "Move the time and queue-depth line from the top of the system prompt into the newest user turn, after the cached prefix"
+      ],
+      "correct": [
+        1,
+        4
+      ],
+      "explanation": "On most current models, only uncached input tokens and cache writes count toward ITPM; cache reads do not. Caching the static prefix therefore takes most of each request out of the limit. That only works if the prefix is byte-identical across requests, and a changing time line at the front makes every request a full cache write, which still counts. So it has to move after the breakpoint, into the newest user turn. Priority Tier commitments are no longer sold and do not cover Opus 5.5. max_tokens limits output, not input. Token counting returns an estimate and does not reduce what is sent.",
+      "references": [
+        "https://platform.claude.com/docs/en/api/rate-limits",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+        "https://platform.claude.com/docs/en/api/service-tiers"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-14",
+      "domain": "models-prompting-context",
+      "objective": "Implement prompt reuse strategies (caching, modular prompts, Skills)",
+      "type": "single",
+      "prompt": "A document-QA service on Claude Sonnet 5.5 sends a 30,000-token static policy corpus followed by one block holding a request timestamp and the user's question, with cache_control on that last block. Usage shows a large cache_creation_input_tokens value and zero cache_read_input_tokens on every request. What is the fix?",
+      "options": [
+        "Move cache_control to the last policy block, the final block whose content is identical from one request to the next",
+        "Switch the breakpoint to the 1-hour TTL so that the cached entry survives long enough to be read by the following request",
+        "Replace the explicit breakpoint with top-level automatic caching, which finds the stable part of the prompt by itself",
+        "Pad the corpus so the cached prefix clears the model's minimum cacheable length and becomes eligible for cache reads"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A cache write happens only at the breakpoint, and the hash covers everything up to it. Because the timestamp changes, the hash at the last block differs on every request, and the lookback finds no earlier write, since none was ever made at the static positions. The prompt caching page describes this exact mistake: put the breakpoint on the last block that stays the same. A longer TTL does not help, because the entry is never matched at all. Automatic caching puts the breakpoint on the last cacheable block, which is the changing one, so it has the same flaw. The minimum for Sonnet 5.5 is 512 tokens, and the nonzero cache writes show the minimum is already met.",
+      "references": [
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-15",
+      "domain": "models-prompting-context",
+      "objective": "Implement prompt reuse strategies (caching, modular prompts, Skills)",
+      "type": "single",
+      "prompt": "Four agents built by different teams in one Claude API workspace each paste the same 16 runbooks into their system prompts. When a runbook changes, the copies drift out of sync, and a typical task uses only one or two runbooks. All four agents already run with the code execution tool. Which approach best supports reuse across the agents?",
+      "options": [
+        "Keep the runbooks in each agent's system prompt and cache them with a 1-hour TTL, so every agent reads the same text cheaply",
+        "Upload the runbooks as custom Skills in claude.ai settings, so every team member and every agent shares one maintained copy",
+        "Keep the runbooks in one shared repository and have each agent's build step inline all 16 of them into its system prompt",
+        "Upload each runbook once as a custom Skill through the Skills API and list its skill_id in each agent's container parameter"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Custom Skills uploaded through the Skills API are shared workspace-wide, so each runbook has one maintained copy that every agent references by skill_id alongside the code execution tool. Progressive disclosure keeps only each Skill's name and description (about 100 tokens) loaded until a task triggers it, and 16 Skills fit within the limit of 20 per request. A shared repository inlined at build time fixes the drift but still puts all 16 runbooks in every request. Caching lowers the price of a repeated prefix but neither merges the teams' copies nor removes the tokens from context. Skills uploaded in claude.ai are individual to each user and do not sync to the API.",
+      "references": [
+        "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
+        "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+      ]
+    },
+    {
+      "id": "ccar-p-mp-16",
+      "domain": "models-prompting-context",
+      "objective": "Implement prompt reuse strategies (caching, modular prompts, Skills)",
+      "type": "single",
+      "prompt": "A claims-review tool on Claude Sonnet 5.5 keeps a 50,000-token cached case file per conversation. A human adjuster reads each response before replying, and a pause of 10 to 40 minutes comes before nearly every turn; pauses over an hour are rare. The cache currently uses the 5-minute default. What cache setup fits best?",
+      "options": [
+        "Keep the 5-minute default and send a keep-alive request every four minutes for each open conversation until the adjuster replies",
+        "Start on the 5-minute default and switch a conversation to the 1-hour TTL once its first long pause has been detected",
+        "Use the 1-hour TTL from the first request of each conversation, since a pause comes before nearly every turn on this model",
+        "Turn caching off for these conversations, since the adjuster's pauses mean the cached case file expires before most turns"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The cost and intelligence guide's cache-duration table gives the 1-hour duration for Claude Opus 5.5 and Sonnet 5.5 when a pause comes before every turn. It also says to choose the duration when a conversation starts, because the first turn added at 1 hour to a conversation cached at 5 minutes rewrites the whole prompt. Keeping the 5-minute cache warm pays on these models only when 1 or 2 gaps in 20 are long and none lasts more than about half an hour, which is not this pattern. Switching after the first long pause pays that rewrite. Turning caching off bills the full 50,000 tokens at the input price on every turn.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+        "https://platform.claude.com/docs/en/build-with-claude/prompt-caching"
+      ]
+    }
+  ]
+}

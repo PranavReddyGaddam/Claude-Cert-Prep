@@ -273,6 +273,7 @@ export function officialLinks(trackId: string, doc: Doc): DocLink[] {
 
 let devGuide: Doc[] | null = null
 let architectNotes: Doc[] | null = null
+let architectProNotes: Doc[] | null = null
 
 const booksCache = new Map<string, Book[]>()
 
@@ -290,6 +291,15 @@ export function getBooks(trackId: string): Book[] {
       title: "Developer Guide",
       subtitle: `Practitioner guide · ${devGuide.length} chapters`,
       docs: devGuide,
+    })
+  }
+  if (trackId === "ccar-p") {
+    architectProNotes ??= dirDocs("architect-pro-notes")
+    books.push({
+      id: "pro-notes",
+      title: "Architect Professional Notes",
+      subtitle: `Original notes · ${architectProNotes.length} chapters`,
+      docs: architectProNotes,
     })
   }
   if (trackId === "ccar-f") {
@@ -426,6 +436,47 @@ export function getBanks(trackId: string): Bank[] {
       questions: scenarioQs,
       scenarios,
       pickScenarios: pick,
+    })
+  }
+
+  // Domain banks: standalone questions, one file per blueprint domain, for exams whose items are not
+  // grouped into scenarios. The simulation draws a full-length exam from them in blueprint proportion.
+  const bankDir = path.join(ROOT, "assessments", trackId, "bank")
+  const bankFiles = fs.existsSync(bankDir)
+    ? fs
+        .readdirSync(bankDir)
+        .filter((f) => f.endsWith(".json"))
+        .sort((a, b) => (domains[b.slice(0, -5)]?.weight ?? 0) - (domains[a.slice(0, -5)]?.weight ?? 0))
+    : []
+  const bankQs: Question[] = []
+  for (const file of bankFiles) {
+    const raw = readJson<{ id: string; title: string; questions: RawAssessmentQ[] }>(`assessments/${trackId}/bank/${file}`)
+    const qs = raw.questions.map(assessmentQuestion)
+    bankQs.push(...qs)
+    banks.push({
+      id: `domain-${raw.id}`,
+      key: `${trackId}/domain-${raw.id}`,
+      track: trackId,
+      domains,
+      title: raw.title,
+      subtitle: `${domains[raw.id]?.weight ?? 0}% of the exam · ${qs.length} questions`,
+      kind: "domain",
+      timeLimitMinutes: Math.round(perQuestion * qs.length),
+      questions: qs,
+    })
+  }
+  if (bankQs.length >= track.items) {
+    banks.push({
+      id: "exam-simulation",
+      key: `${trackId}/exam-simulation`,
+      track: trackId,
+      domains,
+      title: "Exam Simulation",
+      subtitle: `${track.items} questions drawn from ${bankQs.length} by domain weight · ${track.minutes} min`,
+      kind: "assessment",
+      timeLimitMinutes: track.minutes,
+      questions: bankQs,
+      drawWeighted: track.items,
     })
   }
 

@@ -35,9 +35,9 @@ Chapters 1, 2, 4, 5 and 6 are the longest. They cover the topics where candidate
 - **"What to remember."** This is a short list of facts to check yourself against in the last week.
 - **Endnotes.** Every factual claim is tied to an official Anthropic or MCP page. If a note and the documentation disagree, the documentation wins. Product details such as default values and model support change between releases.
 
-## Use the practice set after each pair of chapters
+## Practise with the scenarios after each pair of chapters
 
-The Architect Practice Set has 60 scenario questions spread across the five domains, with extra items on the hardest objectives. Each explanation says why the right answer is right and why the most tempting distractor fails. Read the explanation even when you answer correctly, because the distractor analysis is where most of the learning is.
+The practice section has six scenarios of 15 questions each, built the way the exam is: one fixed system description, then a run of questions set inside it. The Exam Simulation draws four of them at random. Each explanation says why the right answer is right and why the tempting distractors fail. Read the explanation even when you answer correctly, because the distractor analysis is where most of the learning is.
 
 A good rhythm is to read two chapters, take the questions for those domains, then come back to the "How wrong answers are built" sections for any you missed.
 

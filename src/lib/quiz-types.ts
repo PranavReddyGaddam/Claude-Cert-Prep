@@ -23,12 +23,14 @@ export type Bank = {
   domains: Domains
   title: string
   subtitle: string
-  kind: "assessment" | "lesson" | "scenario"
+  kind: "assessment" | "lesson" | "scenario" | "domain"
   timeLimitMinutes?: number
   questions: Question[]
   scenarios?: Scenario[]
   // Exam simulation: each attempt draws this many whole scenarios at random.
   pickScenarios?: number
+  // Exam simulation from standalone questions: each attempt draws this many, split by blueprint weight.
+  drawWeighted?: number
 }
 
 export type Domains = Record<string, { name: string; weight: number }>

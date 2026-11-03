@@ -10,6 +10,8 @@ Tracks:
   and six practice scenarios.
 - **Claude Certified Architect – Foundations (CCAR-F)**: original notes, lessons, a diagnostic, a full mock exam
   and six practice scenarios.
+- **Claude Certified Architect – Professional (CCAR-P)**: original notes (13 chapters), lessons, and a 126-question
+  bank in seven domain sets. The exam simulation draws 63 questions in the blueprint's domain proportions.
 
 Progress is stored in your browser only. There are no accounts and no tracking.
 
@@ -25,8 +27,9 @@ Then open http://localhost:3000.
 ## Contributing questions
 
 Scenario questions live in `content/assessments/<track>/scenarios/*.json`. Each file is one scenario with 15
-questions. Before opening a pull request, run the quality check, which rejects sets where the answer can be guessed
-from the shape of the options (for example, when the correct answer is usually the longest one):
+questions. Standalone questions (used by CCAR-P, whose exam has no shared scenarios) live in
+`content/assessments/<track>/bank/<domain>.json`, one file per blueprint domain. Before opening a pull request, run the quality check, which rejects sets where the answer can be guessed
+from the shape of the options (for example, when the correct answer is usually the longest or the shortest one):
 
 ```bash
 python3 scripts/check-scenarios.py

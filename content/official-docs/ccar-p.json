@@ -1,0 +1,1180 @@
+{
+ "track": "ccar-p",
+ "pages": [
+  {
+   "slug": "anthropic-research-building-effective-agents",
+   "title": "Building effective agents",
+   "source": "https://www.anthropic.com/research/building-effective-agents",
+   "domains": [
+    "solution-design-architecture"
+   ],
+   "objectives": [
+    "Design end-to-end architectures (input → processing → output → feedback loops)",
+    "Select appropriate architectural patterns (workflow, agentic, augmented LLM)",
+    "Apply decomposition techniques for complex problem solving"
+   ]
+  },
+  {
+   "slug": "anthropic-research-multi-agent-research-system",
+   "title": "How we built our multi-agent research system",
+   "source": "https://www.anthropic.com/research/multi-agent-research-system",
+   "domains": [
+    "solution-design-architecture",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Design multi-agent systems and orchestration strategies",
+    "Apply decomposition techniques for complex problem solving",
+    "Monitor system performance using logging and observability tools"
+   ]
+  },
+  {
+   "slug": "platform-managed-agents-multiagent-orchestration",
+   "title": "Multiagent orchestration",
+   "source": "https://platform.claude.com/docs/en/managed-agents/multiagent-orchestration",
+   "domains": [
+    "solution-design-architecture"
+   ],
+   "objectives": [
+    "Design multi-agent systems and orchestration strategies"
+   ]
+  },
+  {
+   "slug": "platform-managed-agents-overview",
+   "title": "Claude Managed Agents overview",
+   "source": "https://platform.claude.com/docs/en/managed-agents/overview",
+   "domains": [
+    "solution-design-architecture",
+    "integration"
+   ],
+   "objectives": [
+    "Select appropriate architectural patterns (workflow, agentic, augmented LLM)",
+    "Evaluate connection protocols and select the appropriate integration mechanism (MCP, API/CLI, agent-to-agent)"
+   ]
+  },
+  {
+   "slug": "code-agent-sdk-overview",
+   "title": "Agent SDK overview",
+   "source": "https://code.claude.com/docs/en/agent-sdk/overview",
+   "domains": [
+    "solution-design-architecture",
+    "integration"
+   ],
+   "objectives": [
+    "Select appropriate architectural patterns (workflow, agentic, augmented LLM)",
+    "Evaluate connection protocols and select the appropriate integration mechanism (MCP, API/CLI, agent-to-agent)"
+   ]
+  },
+  {
+   "slug": "code-agent-sdk-subagents",
+   "title": "Subagents in the SDK",
+   "source": "https://code.claude.com/docs/en/agent-sdk/subagents",
+   "domains": [
+    "solution-design-architecture"
+   ],
+   "objectives": [
+    "Design multi-agent systems and orchestration strategies"
+   ]
+  },
+  {
+   "slug": "platform-about-claude-use-case-guides-overview",
+   "title": "Guides to common use cases",
+   "source": "https://platform.claude.com/docs/en/about-claude/use-case-guides/overview",
+   "domains": [
+    "solution-design-architecture",
+    "stakeholder-lifecycle"
+   ],
+   "objectives": [
+    "Translate business problems into Claude-based AI solutions",
+    "Conduct structured discovery and requirement gathering"
+   ]
+  },
+  {
+   "slug": "platform-about-claude-use-case-guides-ticket-routing",
+   "title": "Ticket routing",
+   "source": "https://platform.claude.com/docs/en/about-claude/use-case-guides/ticket-routing",
+   "domains": [
+    "solution-design-architecture",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Translate business problems into Claude-based AI solutions",
+    "Align solutions to business value pillars (efficiency, transformation, productivity, cost, performance SLAs)",
+    "Define evaluation metrics (accuracy, latency, cost, safety, security)"
+   ]
+  },
+  {
+   "slug": "platform-about-claude-use-case-guides-customer-support-chat",
+   "title": "Customer support agent",
+   "source": "https://platform.claude.com/docs/en/about-claude/use-case-guides/customer-support-chat",
+   "domains": [
+    "solution-design-architecture"
+   ],
+   "objectives": [
+    "Translate business problems into Claude-based AI solutions",
+    "Design end-to-end architectures (input → processing → output → feedback loops)"
+   ]
+  },
+  {
+   "slug": "platform-test-and-evaluate-develop-tests",
+   "title": "Define success criteria and build evaluations",
+   "source": "https://platform.claude.com/docs/en/test-and-evaluate/develop-tests",
+   "domains": [
+    "solution-design-architecture",
+    "evaluation-testing-optimization",
+    "stakeholder-lifecycle"
+   ],
+   "objectives": [
+    "Translate business problems into Claude-based AI solutions",
+    "Define evaluation metrics (accuracy, latency, cost, safety, security)",
+    "Design evaluation datasets and test frameworks using mixed methodologies",
+    "Conduct structured discovery and requirement gathering"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-batch-processing",
+   "title": "Batch processing",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/batch-processing",
+   "domains": [
+    "solution-design-architecture",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Align solutions to business value pillars (efficiency, transformation, productivity, cost, performance SLAs)",
+    "Optimize token usage, latency, and cost-performance trade-offs"
+   ]
+  },
+  {
+   "slug": "platform-api-service-tiers",
+   "title": "Service tiers",
+   "source": "https://platform.claude.com/docs/en/api/service-tiers",
+   "domains": [
+    "solution-design-architecture",
+    "integration",
+    "stakeholder-lifecycle"
+   ],
+   "objectives": [
+    "Align solutions to business value pillars (efficiency, transformation, productivity, cost, performance SLAs)",
+    "Evaluate accuracy-latency trade-offs and justify configuration decisions",
+    "Manage stakeholder feedback loops and expectation alignment (including SLAs)"
+   ]
+  },
+  {
+   "slug": "platform-api-rate-limits",
+   "title": "Rate limits",
+   "source": "https://platform.claude.com/docs/en/api/rate-limits",
+   "domains": [
+    "solution-design-architecture",
+    "stakeholder-lifecycle"
+   ],
+   "objectives": [
+    "Align solutions to business value pillars (efficiency, transformation, productivity, cost, performance SLAs)",
+    "Manage stakeholder feedback loops and expectation alignment (including SLAs)"
+   ]
+  },
+  {
+   "slug": "platform-about-claude-models-choosing-a-model",
+   "title": "Choosing the right model",
+   "source": "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+   "domains": [
+    "models-prompting-context"
+   ],
+   "objectives": [
+    "Select appropriate Claude models based on trade-offs"
+   ]
+  },
+  {
+   "slug": "platform-models-overview",
+   "title": "Models overview",
+   "source": "https://platform.claude.com/docs/en/models/overview",
+   "domains": [
+    "models-prompting-context"
+   ],
+   "objectives": [
+    "Select appropriate Claude models based on trade-offs"
+   ]
+  },
+  {
+   "slug": "platform-about-claude-pricing",
+   "title": "Pricing",
+   "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+   "domains": [
+    "models-prompting-context",
+    "evaluation-testing-optimization",
+    "solution-design-architecture"
+   ],
+   "objectives": [
+    "Select appropriate Claude models based on trade-offs",
+    "Optimize token usage, latency, and cost-performance trade-offs",
+    "Align solutions to business value pillars (efficiency, transformation, productivity, cost, performance SLAs)"
+   ]
+  },
+  {
+   "slug": "platform-about-claude-models-optimizing-for-cost-and-intelligence",
+   "title": "Optimizing for cost and intelligence",
+   "source": "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+   "domains": [
+    "models-prompting-context",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Select appropriate Claude models based on trade-offs",
+    "Optimize token usage, latency, and cost-performance trade-offs"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-effort",
+   "title": "Effort",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/effort",
+   "domains": [
+    "models-prompting-context",
+    "integration",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Select appropriate Claude models based on trade-offs",
+    "Evaluate accuracy-latency trade-offs and justify configuration decisions",
+    "Optimize token usage, latency, and cost-performance trade-offs"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-fast-mode",
+   "title": "Fast mode",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/fast-mode",
+   "domains": [
+    "integration",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Evaluate accuracy-latency trade-offs and justify configuration decisions",
+    "Optimize token usage, latency, and cost-performance trade-offs"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-prompt-engineering-overview",
+   "title": "Prompt engineering overview",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
+   "domains": [
+    "models-prompting-context"
+   ],
+   "objectives": [
+    "Design system prompts, templates, and guardrails",
+    "Apply prompt engineering techniques (zero-shot, few-shot, chain-of-thought)"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-prompt-engineering-claude-prompting-best-practices",
+   "title": "Prompting best practices",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+   "domains": [
+    "models-prompting-context"
+   ],
+   "objectives": [
+    "Design system prompts, templates, and guardrails",
+    "Apply prompt engineering techniques (zero-shot, few-shot, chain-of-thought)"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-extended-thinking",
+   "title": "Extended thinking",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/extended-thinking",
+   "domains": [
+    "models-prompting-context"
+   ],
+   "objectives": [
+    "Apply prompt engineering techniques (zero-shot, few-shot, chain-of-thought)"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-context-windows",
+   "title": "Context windows",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/context-windows",
+   "domains": [
+    "models-prompting-context"
+   ],
+   "objectives": [
+    "Optimize context windows and manage token usage"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-token-counting",
+   "title": "Token counting",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/token-counting",
+   "domains": [
+    "models-prompting-context",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Optimize context windows and manage token usage",
+    "Optimize token usage, latency, and cost-performance trade-offs"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-compaction",
+   "title": "Compaction overview",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/compaction",
+   "domains": [
+    "models-prompting-context"
+   ],
+   "objectives": [
+    "Optimize context windows and manage token usage"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-context-editing",
+   "title": "Context editing",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/context-editing",
+   "domains": [
+    "models-prompting-context"
+   ],
+   "objectives": [
+    "Optimize context windows and manage token usage"
+   ]
+  },
+  {
+   "slug": "anthropic-research-effective-context-engineering-for-ai-agents",
+   "title": "Effective context engineering for AI agents",
+   "source": "https://www.anthropic.com/research/effective-context-engineering-for-ai-agents",
+   "domains": [
+    "models-prompting-context",
+    "integration"
+   ],
+   "objectives": [
+    "Optimize context windows and manage token usage",
+    "Evaluate progressive discovery vs. monolithic context strategy"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-prompt-caching",
+   "title": "Prompt caching",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/prompt-caching",
+   "domains": [
+    "models-prompting-context",
+    "evaluation-testing-optimization",
+    "integration"
+   ],
+   "objectives": [
+    "Implement prompt reuse strategies (caching, modular prompts, Skills)",
+    "Optimize token usage, latency, and cost-performance trade-offs",
+    "Evaluate accuracy-latency trade-offs and justify configuration decisions"
+   ]
+  },
+  {
+   "slug": "platform-agents-and-tools-agent-skills-overview",
+   "title": "Agent Skills",
+   "source": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/overview",
+   "domains": [
+    "models-prompting-context",
+    "integration"
+   ],
+   "objectives": [
+    "Implement prompt reuse strategies (caching, modular prompts, Skills)",
+    "Evaluate progressive discovery vs. monolithic context strategy"
+   ]
+  },
+  {
+   "slug": "platform-agents-and-tools-agent-skills-best-practices",
+   "title": "Skill authoring best practices",
+   "source": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices",
+   "domains": [
+    "models-prompting-context"
+   ],
+   "objectives": [
+    "Implement prompt reuse strategies (caching, modular prompts, Skills)"
+   ]
+  },
+  {
+   "slug": "platform-agents-and-tools-agent-skills-enterprise",
+   "title": "Skills for enterprise",
+   "source": "https://platform.claude.com/docs/en/agents-and-tools/agent-skills/enterprise",
+   "domains": [
+    "models-prompting-context",
+    "governance-safety-risk",
+    "developer-productivity-operations"
+   ],
+   "objectives": [
+    "Implement prompt reuse strategies (caching, modular prompts, Skills)",
+    "Implement guardrails and safety controls",
+    "Configure Claude tools and environments for teams (e.g., Claude Code)"
+   ]
+  },
+  {
+   "slug": "anthropic-research-equipping-agents-for-the-real-world-with-agent-skills",
+   "title": "Equipping agents for the real world with Agent Skills",
+   "source": "https://www.anthropic.com/research/equipping-agents-for-the-real-world-with-agent-skills",
+   "domains": [
+    "models-prompting-context",
+    "integration"
+   ],
+   "objectives": [
+    "Implement prompt reuse strategies (caching, modular prompts, Skills)",
+    "Evaluate progressive discovery vs. monolithic context strategy"
+   ]
+  },
+  {
+   "slug": "platform-test-and-evaluate-strengthen-guardrails-increase-consistency",
+   "title": "Increase output consistency",
+   "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency",
+   "domains": [
+    "models-prompting-context"
+   ],
+   "objectives": [
+    "Design system prompts, templates, and guardrails"
+   ]
+  },
+  {
+   "slug": "anthropic-research-writing-tools-for-agents",
+   "title": "Writing effective tools for agents — with agents",
+   "source": "https://www.anthropic.com/research/writing-tools-for-agents",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Evaluate tool/agent configuration for capability bloat"
+   ]
+  },
+  {
+   "slug": "platform-agents-and-tools-tool-use-tool-search-tool",
+   "title": "Tool search tool",
+   "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Evaluate tool/agent configuration for capability bloat",
+    "Evaluate progressive discovery vs. monolithic context strategy"
+   ]
+  },
+  {
+   "slug": "platform-agents-and-tools-tool-use-manage-tool-context",
+   "title": "Manage tool context",
+   "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/manage-tool-context",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Evaluate tool/agent configuration for capability bloat",
+    "Evaluate progressive discovery vs. monolithic context strategy"
+   ]
+  },
+  {
+   "slug": "platform-agents-and-tools-tool-use-programmatic-tool-calling",
+   "title": "Programmatic tool calling",
+   "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling",
+   "domains": [
+    "integration",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Evaluate progressive discovery vs. monolithic context strategy",
+    "Optimize token usage, latency, and cost-performance trade-offs"
+   ]
+  },
+  {
+   "slug": "anthropic-research-advanced-tool-use",
+   "title": "Introducing advanced tool use on the Claude Developer Platform",
+   "source": "https://www.anthropic.com/research/advanced-tool-use",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Evaluate tool/agent configuration for capability bloat",
+    "Evaluate progressive discovery vs. monolithic context strategy"
+   ]
+  },
+  {
+   "slug": "anthropic-research-code-execution-with-mcp",
+   "title": "Code execution with MCP : Building more efficient agents",
+   "source": "https://www.anthropic.com/research/code-execution-with-mcp",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Evaluate connection protocols and select the appropriate integration mechanism (MCP, API/CLI, agent-to-agent)",
+    "Evaluate progressive discovery vs. monolithic context strategy"
+   ]
+  },
+  {
+   "slug": "code-agent-sdk-permissions",
+   "title": "Configure permissions",
+   "source": "https://code.claude.com/docs/en/agent-sdk/permissions",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Evaluate tool/agent configuration for capability bloat",
+    "Analyze authentication and authorization requirements to identify security gaps"
+   ]
+  },
+  {
+   "slug": "code-agent-sdk-secure-deployment",
+   "title": "Securely deploying AI agents",
+   "source": "https://code.claude.com/docs/en/agent-sdk/secure-deployment",
+   "domains": [
+    "integration",
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Analyze authentication and authorization requirements to identify security gaps",
+    "Implement guardrails and safety controls"
+   ]
+  },
+  {
+   "slug": "mcp-docs-2026-07-28-tutorials-security-authorization",
+   "title": "Understanding Authorization in MCP",
+   "source": "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/authorization",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Analyze authentication and authorization requirements to identify security gaps"
+   ]
+  },
+  {
+   "slug": "mcp-docs-2026-07-28-tutorials-security-security_best_practices",
+   "title": "Security Best Practices",
+   "source": "https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices",
+   "domains": [
+    "integration",
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Analyze authentication and authorization requirements to identify security gaps",
+    "Identify risks, limitations, and failure modes of LLM systems"
+   ]
+  },
+  {
+   "slug": "mcp-docs-2026-07-28-develop-clients-client-best-practices",
+   "title": "Client Best Practices",
+   "source": "https://modelcontextprotocol.io/docs/2026-07-28/develop/clients/client-best-practices",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Evaluate tool/agent configuration for capability bloat",
+    "Evaluate progressive discovery vs. monolithic context strategy"
+   ]
+  },
+  {
+   "slug": "mcp-docs-2026-07-28-learn-architecture",
+   "title": "Architecture overview",
+   "source": "https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Evaluate connection protocols and select the appropriate integration mechanism (MCP, API/CLI, agent-to-agent)"
+   ]
+  },
+  {
+   "slug": "platform-agents-and-tools-mcp-connector",
+   "title": "MCP connector",
+   "source": "https://platform.claude.com/docs/en/agents-and-tools/mcp-connector",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Evaluate connection protocols and select the appropriate integration mechanism (MCP, API/CLI, agent-to-agent)"
+   ]
+  },
+  {
+   "slug": "platform-manage-claude-workload-identity-federation",
+   "title": "Workload Identity Federation",
+   "source": "https://platform.claude.com/docs/en/manage-claude/workload-identity-federation",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Analyze authentication and authorization requirements to identify security gaps"
+   ]
+  },
+  {
+   "slug": "platform-manage-claude-authentication",
+   "title": "Authentication",
+   "source": "https://platform.claude.com/docs/en/manage-claude/authentication",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Analyze authentication and authorization requirements to identify security gaps"
+   ]
+  },
+  {
+   "slug": "platform-manage-claude-workspaces",
+   "title": "Workspaces",
+   "source": "https://platform.claude.com/docs/en/manage-claude/workspaces",
+   "domains": [
+    "integration",
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Analyze authentication and authorization requirements to identify security gaps",
+    "Ensure compliance with regulations (e.g., GDPR, HIPAA, FedRAMP)"
+   ]
+  },
+  {
+   "slug": "platform-test-and-evaluate-strengthen-guardrails-reduce-latency",
+   "title": "Reducing latency",
+   "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-latency",
+   "domains": [
+    "integration",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Evaluate accuracy-latency trade-offs and justify configuration decisions",
+    "Optimize token usage, latency, and cost-performance trade-offs"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-streaming",
+   "title": "Streaming messages",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/streaming",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Evaluate accuracy-latency trade-offs and justify configuration decisions"
+   ]
+  },
+  {
+   "slug": "code-agent-sdk-observability",
+   "title": "Observability with OpenTelemetry",
+   "source": "https://code.claude.com/docs/en/agent-sdk/observability",
+   "domains": [
+    "integration",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Analyze observability challenges and select monitoring strategies at scale",
+    "Monitor system performance using logging and observability tools"
+   ]
+  },
+  {
+   "slug": "platform-manage-claude-usage-cost-analytics-api",
+   "title": "Usage and Cost Analytics API",
+   "source": "https://platform.claude.com/docs/en/manage-claude/usage-cost-analytics-api",
+   "domains": [
+    "integration",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Analyze observability challenges and select monitoring strategies at scale",
+    "Monitor system performance using logging and observability tools"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-embeddings",
+   "title": "Embeddings",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/embeddings",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Design a RAG pipeline with appropriate chunking and indexing strategies",
+    "Apply retrieval strategies matched to data shape and query pattern"
+   ]
+  },
+  {
+   "slug": "anthropic-research-contextual-retrieval",
+   "title": "Introducing Contextual Retrieval",
+   "source": "https://www.anthropic.com/research/contextual-retrieval",
+   "domains": [
+    "integration",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Design a RAG pipeline with appropriate chunking and indexing strategies",
+    "Apply retrieval strategies matched to data shape and query pattern",
+    "Diagnose system issues (prompt failure, hallucinations, model mismatch)"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-search-results",
+   "title": "Search results",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/search-results",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Apply retrieval strategies matched to data shape and query pattern"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-citations",
+   "title": "Citations",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/citations",
+   "domains": [
+    "integration",
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Apply retrieval strategies matched to data shape and query pattern",
+    "Address ethical AI considerations (bias, fairness, transparency)"
+   ]
+  },
+  {
+   "slug": "platform-agents-and-tools-tool-use-web-search-tool",
+   "title": "Web search tool",
+   "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+   "domains": [
+    "integration"
+   ],
+   "objectives": [
+    "Apply retrieval strategies matched to data shape and query pattern"
+   ]
+  },
+  {
+   "slug": "anthropic-research-demystifying-evals-for-ai-agents",
+   "title": "Demystifying evals for AI agents",
+   "source": "https://www.anthropic.com/research/demystifying-evals-for-ai-agents",
+   "domains": [
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Define evaluation metrics (accuracy, latency, cost, safety, security)",
+    "Design evaluation datasets and test frameworks using mixed methodologies",
+    "Conduct A/B testing and iterative improvements"
+   ]
+  },
+  {
+   "slug": "platform-test-and-evaluate-strengthen-guardrails-reduce-hallucinations",
+   "title": "Reduce hallucinations",
+   "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+   "domains": [
+    "evaluation-testing-optimization",
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Diagnose system issues (prompt failure, hallucinations, model mismatch)",
+    "Identify risks, limitations, and failure modes of LLM systems"
+   ]
+  },
+  {
+   "slug": "platform-agents-and-tools-tool-use-troubleshooting-tool-use",
+   "title": "Troubleshooting tool use",
+   "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/troubleshooting-tool-use",
+   "domains": [
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Diagnose system issues (prompt failure, hallucinations, model mismatch)"
+   ]
+  },
+  {
+   "slug": "platform-api-errors",
+   "title": "Claude API errors",
+   "source": "https://platform.claude.com/docs/en/api/errors",
+   "domains": [
+    "evaluation-testing-optimization",
+    "developer-productivity-operations"
+   ],
+   "objectives": [
+    "Diagnose system issues (prompt failure, hallucinations, model mismatch)",
+    "Support debugging and operational issue resolution"
+   ]
+  },
+  {
+   "slug": "platform-about-claude-model-deprecations",
+   "title": "Model deprecations",
+   "source": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+   "domains": [
+    "evaluation-testing-optimization",
+    "stakeholder-lifecycle"
+   ],
+   "objectives": [
+    "Diagnose system issues (prompt failure, hallucinations, model mismatch)",
+    "Support lifecycle phases (discovery, design, handoff, monitoring, iteration)"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-handling-stop-reasons",
+   "title": "Stop reasons and fallback",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons",
+   "domains": [
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Diagnose system issues (prompt failure, hallucinations, model mismatch)"
+   ]
+  },
+  {
+   "slug": "code-agent-sdk-cost-tracking",
+   "title": "Track cost and usage",
+   "source": "https://code.claude.com/docs/en/agent-sdk/cost-tracking",
+   "domains": [
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Optimize token usage, latency, and cost-performance trade-offs",
+    "Monitor system performance using logging and observability tools"
+   ]
+  },
+  {
+   "slug": "platform-test-and-evaluate-strengthen-guardrails-mitigate-jailbreaks",
+   "title": "Mitigate jailbreaks and prompt injections",
+   "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/mitigate-jailbreaks",
+   "domains": [
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Implement guardrails and safety controls",
+    "Identify risks, limitations, and failure modes of LLM systems"
+   ]
+  },
+  {
+   "slug": "platform-test-and-evaluate-strengthen-guardrails-reduce-prompt-leak",
+   "title": "Reduce prompt leak",
+   "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-prompt-leak",
+   "domains": [
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Implement guardrails and safety controls"
+   ]
+  },
+  {
+   "slug": "platform-test-and-evaluate-strengthen-guardrails-handle-streaming-refusals",
+   "title": "Handle streaming refusals",
+   "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/handle-streaming-refusals",
+   "domains": [
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Implement guardrails and safety controls"
+   ]
+  },
+  {
+   "slug": "platform-managed-agents-secure-deployment-risks",
+   "title": "Security risks and sandbox boundaries",
+   "source": "https://platform.claude.com/docs/en/managed-agents/secure-deployment-risks",
+   "domains": [
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Identify risks, limitations, and failure modes of LLM systems",
+    "Implement guardrails and safety controls"
+   ]
+  },
+  {
+   "slug": "platform-agents-and-tools-tool-use-handle-tool-calls",
+   "title": "Handle tool calls",
+   "source": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/handle-tool-calls",
+   "domains": [
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Apply human-in-the-loop validation strategies"
+   ]
+  },
+  {
+   "slug": "code-agent-sdk-user-input",
+   "title": "Handle approvals and user input",
+   "source": "https://code.claude.com/docs/en/agent-sdk/user-input",
+   "domains": [
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Apply human-in-the-loop validation strategies"
+   ]
+  },
+  {
+   "slug": "code-agent-sdk-hooks",
+   "title": "Intercept and control agent behavior with hooks",
+   "source": "https://code.claude.com/docs/en/agent-sdk/hooks",
+   "domains": [
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Implement guardrails and safety controls",
+    "Apply human-in-the-loop validation strategies"
+   ]
+  },
+  {
+   "slug": "platform-manage-claude-api-and-data-retention",
+   "title": "API and data retention",
+   "source": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
+   "domains": [
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Ensure compliance with regulations (e.g., GDPR, HIPAA, FedRAMP)"
+   ]
+  },
+  {
+   "slug": "platform-manage-claude-cmek-data-retention",
+   "title": "CMEK, data retention, and ZDR",
+   "source": "https://platform.claude.com/docs/en/manage-claude/cmek-data-retention",
+   "domains": [
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Ensure compliance with regulations (e.g., GDPR, HIPAA, FedRAMP)"
+   ]
+  },
+  {
+   "slug": "platform-manage-claude-data-residency",
+   "title": "Data residency",
+   "source": "https://platform.claude.com/docs/en/manage-claude/data-residency",
+   "domains": [
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Ensure compliance with regulations (e.g., GDPR, HIPAA, FedRAMP)"
+   ]
+  },
+  {
+   "slug": "platform-manage-claude-compliance-api",
+   "title": "Compliance API",
+   "source": "https://platform.claude.com/docs/en/manage-claude/compliance-api",
+   "domains": [
+    "governance-safety-risk",
+    "stakeholder-lifecycle"
+   ],
+   "objectives": [
+    "Ensure compliance with regulations (e.g., GDPR, HIPAA, FedRAMP)",
+    "Document architectures and provide implementation guidance"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-claude-in-amazon-bedrock",
+   "title": "Claude in Amazon Bedrock (Opus 4.7 and later)",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/claude-in-amazon-bedrock",
+   "domains": [
+    "governance-safety-risk",
+    "integration"
+   ],
+   "objectives": [
+    "Ensure compliance with regulations (e.g., GDPR, HIPAA, FedRAMP)",
+    "Evaluate connection protocols and select the appropriate integration mechanism (MCP, API/CLI, agent-to-agent)"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-claude-in-microsoft-foundry",
+   "title": "Claude in Microsoft Foundry",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/claude-in-microsoft-foundry",
+   "domains": [
+    "governance-safety-risk",
+    "integration"
+   ],
+   "objectives": [
+    "Ensure compliance with regulations (e.g., GDPR, HIPAA, FedRAMP)",
+    "Evaluate connection protocols and select the appropriate integration mechanism (MCP, API/CLI, agent-to-agent)"
+   ]
+  },
+  {
+   "slug": "platform-about-claude-models-model-ids-and-versions",
+   "title": "Model IDs and versioning",
+   "source": "https://platform.claude.com/docs/en/about-claude/models/model-ids-and-versions",
+   "domains": [
+    "stakeholder-lifecycle"
+   ],
+   "objectives": [
+    "Support lifecycle phases (discovery, design, handoff, monitoring, iteration)"
+   ]
+  },
+  {
+   "slug": "platform-api-versioning",
+   "title": "Versions",
+   "source": "https://platform.claude.com/docs/en/api/versioning",
+   "domains": [
+    "stakeholder-lifecycle"
+   ],
+   "objectives": [
+    "Support lifecycle phases (discovery, design, handoff, monitoring, iteration)"
+   ]
+  },
+  {
+   "slug": "code-admin-setup",
+   "title": "Set up Claude Code for your organization",
+   "source": "https://code.claude.com/docs/en/admin-setup",
+   "domains": [
+    "developer-productivity-operations"
+   ],
+   "objectives": [
+    "Configure Claude tools and environments for teams (e.g., Claude Code)"
+   ]
+  },
+  {
+   "slug": "code-server-managed-settings",
+   "title": "Configure server-managed settings",
+   "source": "https://code.claude.com/docs/en/server-managed-settings",
+   "domains": [
+    "developer-productivity-operations",
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Configure Claude tools and environments for teams (e.g., Claude Code)",
+    "Implement guardrails and safety controls"
+   ]
+  },
+  {
+   "slug": "code-settings",
+   "title": "Settings files and precedence",
+   "source": "https://code.claude.com/docs/en/settings",
+   "domains": [
+    "developer-productivity-operations"
+   ],
+   "objectives": [
+    "Configure Claude tools and environments for teams (e.g., Claude Code)"
+   ]
+  },
+  {
+   "slug": "code-third-party-integrations",
+   "title": "Enterprise deployment overview",
+   "source": "https://code.claude.com/docs/en/third-party-integrations",
+   "domains": [
+    "developer-productivity-operations"
+   ],
+   "objectives": [
+    "Configure Claude tools and environments for teams (e.g., Claude Code)"
+   ]
+  },
+  {
+   "slug": "code-llm-gateway",
+   "title": "Other LLM gateways",
+   "source": "https://code.claude.com/docs/en/llm-gateway",
+   "domains": [
+    "developer-productivity-operations",
+    "integration"
+   ],
+   "objectives": [
+    "Configure Claude tools and environments for teams (e.g., Claude Code)",
+    "Analyze observability challenges and select monitoring strategies at scale"
+   ]
+  },
+  {
+   "slug": "code-monitoring-usage",
+   "title": "Monitoring",
+   "source": "https://code.claude.com/docs/en/monitoring-usage",
+   "domains": [
+    "developer-productivity-operations",
+    "evaluation-testing-optimization",
+    "integration"
+   ],
+   "objectives": [
+    "Configure Claude tools and environments for teams (e.g., Claude Code)",
+    "Monitor system performance using logging and observability tools",
+    "Analyze observability challenges and select monitoring strategies at scale"
+   ]
+  },
+  {
+   "slug": "code-costs",
+   "title": "Manage costs effectively",
+   "source": "https://code.claude.com/docs/en/costs",
+   "domains": [
+    "developer-productivity-operations",
+    "evaluation-testing-optimization"
+   ],
+   "objectives": [
+    "Configure Claude tools and environments for teams (e.g., Claude Code)",
+    "Optimize token usage, latency, and cost-performance trade-offs"
+   ]
+  },
+  {
+   "slug": "code-analytics",
+   "title": "Track team usage with analytics",
+   "source": "https://code.claude.com/docs/en/analytics",
+   "domains": [
+    "developer-productivity-operations"
+   ],
+   "objectives": [
+    "Improve developer workflows using AI-assisted tooling"
+   ]
+  },
+  {
+   "slug": "code-best-practices",
+   "title": "Best practices for Claude Code",
+   "source": "https://code.claude.com/docs/en/best-practices",
+   "domains": [
+    "developer-productivity-operations"
+   ],
+   "objectives": [
+    "Improve developer workflows using AI-assisted tooling"
+   ]
+  },
+  {
+   "slug": "code-common-workflows",
+   "title": "Common workflows",
+   "source": "https://code.claude.com/docs/en/common-workflows",
+   "domains": [
+    "developer-productivity-operations"
+   ],
+   "objectives": [
+    "Improve developer workflows using AI-assisted tooling",
+    "Support debugging and operational issue resolution"
+   ]
+  },
+  {
+   "slug": "code-github-actions",
+   "title": "Claude Code GitHub Actions",
+   "source": "https://code.claude.com/docs/en/github-actions",
+   "domains": [
+    "developer-productivity-operations"
+   ],
+   "objectives": [
+    "Improve developer workflows using AI-assisted tooling"
+   ]
+  },
+  {
+   "slug": "code-code-review",
+   "title": "Code Review",
+   "source": "https://code.claude.com/docs/en/code-review",
+   "domains": [
+    "developer-productivity-operations"
+   ],
+   "objectives": [
+    "Improve developer workflows using AI-assisted tooling"
+   ]
+  },
+  {
+   "slug": "code-troubleshooting",
+   "title": "Troubleshooting",
+   "source": "https://code.claude.com/docs/en/troubleshooting",
+   "domains": [
+    "developer-productivity-operations"
+   ],
+   "objectives": [
+    "Support debugging and operational issue resolution"
+   ]
+  },
+  {
+   "slug": "code-devcontainer",
+   "title": "Development containers",
+   "source": "https://code.claude.com/docs/en/devcontainer",
+   "domains": [
+    "developer-productivity-operations",
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Configure Claude tools and environments for teams (e.g., Claude Code)",
+    "Implement guardrails and safety controls"
+   ]
+  },
+  {
+   "slug": "code-security",
+   "title": "Security",
+   "source": "https://code.claude.com/docs/en/security",
+   "domains": [
+    "developer-productivity-operations",
+    "governance-safety-risk"
+   ],
+   "objectives": [
+    "Configure Claude tools and environments for teams (e.g., Claude Code)",
+    "Implement guardrails and safety controls"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-claude-models-on-google-cloud-overview",
+   "title": "Claude Models on Google Cloud",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/claude-models-on-google-cloud/overview",
+   "domains": [
+    "governance-safety-risk",
+    "integration"
+   ],
+   "objectives": [
+    "Ensure compliance with regulations (e.g., GDPR, HIPAA, FedRAMP)",
+    "Evaluate connection protocols and select the appropriate integration mechanism (MCP, API/CLI, agent-to-agent)"
+   ]
+  }
+ ]
+}

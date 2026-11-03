@@ -40,8 +40,10 @@ async function QuizIndex({ params }: { params: Params }) {
   const banks = getBanks(id)
   if (!track || !banks.length) notFound()
   // The simulation is the closest thing to the real exam, so it leads.
-  const main = banks.filter((b) => b.kind === "assessment").sort((a, b) => Number(!!b.pickScenarios) - Number(!!a.pickScenarios))
+  const sim = (b: (typeof banks)[number]) => Number(!!(b.pickScenarios || b.drawWeighted))
+  const main = banks.filter((b) => b.kind === "assessment").sort((a, b) => sim(b) - sim(a))
   const scenarios = banks.filter((b) => b.kind === "scenario")
+  const byDomain = banks.filter((b) => b.kind === "domain")
   const lessons = banks.filter((b) => b.kind === "lesson")
   return (
     <div className="mx-auto max-w-2xl px-6 pt-20 pb-24 sm:px-8 lg:pt-32">
@@ -67,6 +69,17 @@ async function QuizIndex({ params }: { params: Params }) {
           <h2 className="mt-20 mb-6 text-sm text-muted-foreground">By scenario</h2>
           <ul>
             {scenarios.map((b) => (
+              <Row key={b.id} href={`/${id}/quiz/${b.id}`} title={b.title} subtitle={b.subtitle} right={<BestScore bankId={b.key} />} />
+            ))}
+          </ul>
+        </>
+      )}
+
+      {byDomain.length > 0 && (
+        <>
+          <h2 className="mt-20 mb-6 text-sm text-muted-foreground">By domain</h2>
+          <ul>
+            {byDomain.map((b) => (
               <Row key={b.id} href={`/${id}/quiz/${b.id}`} title={b.title} subtitle={b.subtitle} right={<BestScore bankId={b.key} />} />
             ))}
           </ul>

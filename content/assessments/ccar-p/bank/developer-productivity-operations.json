@@ -1,0 +1,177 @@
+{
+  "id": "developer-productivity-operations",
+  "title": "Developer Productivity & Operational Enablement",
+  "questions": [
+    {
+      "id": "ccar-p-dp-01",
+      "domain": "developer-productivity-operations",
+      "objective": "Configure Claude tools and environments for teams (e.g., Claude Code)",
+      "type": "single",
+      "prompt": "Security requires that no developer can start Claude Code with --dangerously-skip-permissions and that a deny rule for reading .env files applies on every machine. Most developers sign in through Claude for Enterprise, but one team runs Claude Code through Amazon Bedrock. How should you deliver the policy?",
+      "options": [
+        "Server-managed settings from the claude.ai admin console alone, since managed settings take precedence over every other settings source on all devices",
+        "Server-managed settings from the admin console for claude.ai users, plus a file-based or plist/registry managed settings fallback for the Bedrock team",
+        "A managed policy CLAUDE.md deployed to every machine that states both rules, so Claude reads them at the start of every session in every repository",
+        "A committed .claude/settings.json in each repository with the deny rule, plus the bypass setting in each user's HKCU registry key on Windows machines"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The admin setup guide says server-managed settings come from the claude.ai admin console, which needs a Teams or Enterprise plan; Bedrock deployments need a Claude apps gateway or a file-based or OS-level mechanism, and mixed organizations should configure server-managed settings plus a fallback. Server-managed alone therefore misses the Bedrock team. A managed CLAUDE.md is behavioral guidance, not an enforced rule. A committed repository file reaches only repositories that include it, and a developer working anywhere else is uncovered; the HKCU key is writable without elevation, so the guide calls it a convenience default rather than an enforcement channel.",
+      "references": [
+        "https://code.claude.com/docs/en/admin-setup",
+        "https://code.claude.com/docs/en/server-managed-settings"
+      ]
+    },
+    {
+      "id": "ccar-p-dp-02",
+      "domain": "developer-productivity-operations",
+      "objective": "Configure Claude tools and environments for teams (e.g., Claude Code)",
+      "type": "multiple",
+      "prompt": "A Claude Console organization with custom rate limits gave all 200 developers Claude Code on the same Monday. Since then its customer-facing API service, in another workspace of the same organization, gets intermittent 429 errors at peak hours. Which TWO actions address the cause?",
+      "options": [
+        "Set a workspace rate limit on the Claude Code workspace so Claude Code's share of the organization's limits is capped",
+        "Create API keys in the Claude Code workspace for the customer service, so the two workloads draw on separate limits",
+        "Raise the SDK's max_retries on the customer service, so each 429 is retried more times before the error reaches users",
+        "Ramp future rollouts gradually, because a sharp jump in usage can trigger acceleration limits that also return 429s",
+        "Turn off prompt caching in Claude Code, so each request sends fewer tokens and draws less on the input token limits"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "explanation": "The costs page says that for organizations with custom rate limits, Claude Code traffic in the Console's Claude Code workspace counts toward the organization's overall rate limits, and that a workspace rate limit on that workspace caps Claude Code's share to protect other production workloads; otherwise, the workspaces page says, Claude Code usage is rate-limited separately. The rate-limits and errors pages add that sharp usage increases can trigger acceleration limits, which also return 429s, so traffic should ramp gradually. You cannot create API keys in the Claude Code workspace. More retries are a compensating control that adds load at peak. Turning off caching works against you: on most models cache reads do not count toward input-token-per-minute limits, though cache writes do, so caching lowers rate-limit pressure.",
+      "references": [
+        "https://code.claude.com/docs/en/costs",
+        "https://platform.claude.com/docs/en/manage-claude/workspaces",
+        "https://platform.claude.com/docs/en/api/rate-limits",
+        "https://platform.claude.com/docs/en/api/errors"
+      ]
+    },
+    {
+      "id": "ccar-p-dp-03",
+      "domain": "developer-productivity-operations",
+      "objective": "Configure Claude tools and environments for teams (e.g., Claude Code)",
+      "type": "single",
+      "prompt": "A team denies the WebFetch tool in its managed permission rules, and Bash is allowed so developers can build and test. A security review later finds that Claude ran curl from Bash to send a log file to an external paste site. What closes the gap without removing Bash?",
+      "options": [
+        "Add WebSearch and every other web-facing tool to the managed deny list, so Claude has no built-in route left to an outside host",
+        "Add a CLAUDE.md rule telling Claude never to send files to external services and to ask a developer before any network call",
+        "Turn on the Bash sandbox in managed settings with a network allowedDomains list, so shell commands reach only approved hosts",
+        "Add a PostToolUse hook that logs every Bash command to the SIEM, so security can review outbound transfers after they happen"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The admin setup guide describes this exact gap: denying WebFetch blocks Claude's fetch tool, but if Bash is allowed, curl and wget can still reach any URL. Sandboxing closes it with a network domain allowlist that the operating system enforces on shell commands and the processes they start. Denying more tools leaves the same Bash route open. A CLAUDE.md rule is non-deterministic guidance the model may not follow. A logging hook is a compensating control: it records the exfiltration after it has happened instead of preventing it.",
+      "references": [
+        "https://code.claude.com/docs/en/admin-setup",
+        "https://code.claude.com/docs/en/sandboxing"
+      ]
+    },
+    {
+      "id": "ccar-p-dp-04",
+      "domain": "developer-productivity-operations",
+      "objective": "Improve developer workflows using AI-assisted tooling",
+      "type": "single",
+      "prompt": "A repository's CLAUDE.md says 'Always run pnpm tsc --noEmit before you finish.' Claude follows it most of the time, but some sessions still end with type errors. The team has already rewritten the line in capitals and moved it to the top of the file. What should they do next?",
+      "options": [
+        "Add a Stop hook in .claude/settings.json that runs the typecheck and exits with code 2 on failure, so Claude works until it passes",
+        "Expand the CLAUDE.md section with examples of past type errors and why they matter, so the rule carries more weight in each session",
+        "Raise the effort level for the repository, so Claude spends more reasoning on each task and is less likely to skip the typecheck step",
+        "Move the instruction into a skill named typecheck and tell Claude in CLAUDE.md to load that skill before it ends any coding session"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The best-practices page separates non-deterministic instructions (prompts, CLAUDE.md, skills Claude picks up) from deterministic ones that the harness enforces (hooks, deny rules, managed settings). It says that if you keep adding emphasis to a CLAUDE.md line and Claude still misses it, the line belongs in a hook, and it shows a Stop hook that runs tsc and exits 2 so the turn cannot end until the typecheck passes. Longer CLAUDE.md text makes the file heavier, and a long file is one reason lines get lost. More effort is the wrong knob for a rule that must hold every time. A skill is still an instruction Claude chooses to follow.",
+      "references": [
+        "https://code.claude.com/docs/en/best-practices"
+      ]
+    },
+    {
+      "id": "ccar-p-dp-05",
+      "domain": "developer-productivity-operations",
+      "objective": "Improve developer workflows using AI-assisted tooling",
+      "type": "multiple",
+      "prompt": "A company runs the Claude Code GitHub Action on every repository. Monthly token spend and Actions minutes are both well above forecast, and a few runs have looped for over an hour. Leadership wants to keep @claude on issues and pull requests. Which TWO changes reduce cost without removing the feature?",
+      "options": [
+        "Delete CLAUDE.md from every repository, so each run starts with fewer input tokens and finishes in fewer turns",
+        "Set --max-turns in claude_args and add workflow-level timeouts so a single run cannot iterate or run without limit",
+        "Keep CLAUDE.md concise, since it is read on every run, and use issue templates so requests arrive with context",
+        "Raise GitHub's concurrency limits so runs execute in parallel and each run finishes sooner on the hosted runners",
+        "Switch every workflow to automation mode with a fixed prompt, so Claude runs on each push without waiting to be asked"
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "explanation": "The GitHub Actions page lists cost controls for both kinds of spend: write specific requests, use issue templates for context, keep CLAUDE.md concise because Claude reads it every run, set --max-turns in claude_args, set workflow-level timeouts, and use GitHub's concurrency controls to limit parallel runs. Deleting CLAUDE.md is a blunt fix that drops the project standards Claude follows when reviewing and opening pull requests. Raising concurrency runs more jobs at once and does not cut tokens or minutes. Automation mode on every push triggers more runs, not fewer, so it raises both kinds of cost.",
+      "references": [
+        "https://code.claude.com/docs/en/github-actions"
+      ]
+    },
+    {
+      "id": "ccar-p-dp-06",
+      "domain": "developer-productivity-operations",
+      "objective": "Support debugging and operational issue resolution",
+      "type": "single",
+      "prompt": "The platform team adds the OTEL exporter variables and CLAUDE_CODE_ENABLE_TELEMETRY to the env block of each repository's committed .claude/settings.json. A week later the collector has received no telemetry from anyone, though it accepts test data sent by hand. What is the most likely cause?",
+      "options": [
+        "The default metric export interval of 60 seconds is too long for the collector, so batches time out before the collector can store any of them",
+        "OpenTelemetry export is available only on Claude for Enterprise plans, so organizations on other plans or providers send no data to the collector",
+        "Claude Code ignores OTEL exporter variables in repository settings files, so they must be set in managed settings or each developer's setup",
+        "The collector must use the Prometheus exporter, because Claude Code sends metrics only in Prometheus format and never as OTLP over gRPC or HTTP"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The monitoring page states that Claude Code ignores the OpenTelemetry exporter variables in a repository's .claude/settings.json and .claude/settings.local.json, so a repository cannot turn telemetry on or choose its destination; set them in managed settings, or have each developer set them in their shell or user settings. A 60-second export interval delays data but would not stop all of it for a week. The admin guide lists OpenTelemetry usage monitoring as available on all providers. Claude Code supports the otlp exporter as well as prometheus and console, so the format is not the problem, and the collector already accepts test data.",
+      "references": [
+        "https://code.claude.com/docs/en/monitoring-usage",
+        "https://code.claude.com/docs/en/admin-setup"
+      ]
+    },
+    {
+      "id": "ccar-p-dp-07",
+      "domain": "developer-productivity-operations",
+      "objective": "Support debugging and operational issue resolution",
+      "type": "single",
+      "prompt": "A team's workflow passes github_token: ${{ secrets.GITHUB_TOKEN }} to the Claude Code GitHub Action. Claude responds to @claude and pushes fixes to pull request branches, but the CI workflow never runs on Claude's commits, while human pushes trigger it normally. What should you change?",
+      "options": [
+        "Add the Claude GitHub App to allowed_bots, so the bot account that pushes Claude's commits is permitted to trigger workflows",
+        "Grant the workflow contents: write permission, so Claude's pushes count as authorized changes that start the CI workflow run",
+        "Switch the action to automation mode with a prompt input, so Claude's commits are treated as scheduled runs that start CI",
+        "Remove the github_token input so the action authenticates as the Claude GitHub App, or pass a custom app token in its place"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The evidence says what differs: human pushes start CI and Claude's do not, and Claude's are made with the default GITHUB_TOKEN. The GitHub Actions troubleshooting section explains that GitHub does not trigger workflows on commits made with that token, and says to remove the input so the action uses the Claude GitHub App, or to pass a custom app token. allowed_bots controls which bot actors may trigger Claude itself, not whether CI runs. Claude can already push, so write permission is not missing. Automation mode changes how Claude is invoked, not how its commits are authenticated.",
+      "references": [
+        "https://code.claude.com/docs/en/github-actions"
+      ]
+    },
+    {
+      "id": "ccar-p-dp-08",
+      "domain": "developer-productivity-operations",
+      "objective": "Support debugging and operational issue resolution",
+      "type": "single",
+      "prompt": "A nightly enrichment job on a Build-tier Console organization starts failing with HTTP 429 rate_limit_error. The responses carry no retry-after header, the SDK's automatic retries keep failing for hours, and request volume is the same as on previous nights. What should the on-call engineer check first?",
+      "options": [
+        "Whether error.details.error_code is enforced_spend_limit_reached, meaning the tier's monthly spend cap is hit and needs a higher limit",
+        "Whether the job's requests per minute rose above the tier's limit, since 429 means a rate limit and the fix is to lower the job's concurrency",
+        "Whether the API is overloaded across all users tonight, since 429 errors during heavy traffic clear on their own once demand falls off",
+        "Whether max_retries is still at its default of two, since raising it lets the job ride out the rate limit window until requests succeed again"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The clues point away from an ordinary rate limit: volume has not changed, there is no retry-after header, and retries fail for hours. The rate-limits page says a tier spend-cap 429 uses the same rate_limit_error type but has no retry-after header, keeps failing until access resumes, and is identified on the Messages API by error_code enforced_spend_limit_reached; moving to a higher tier restores access. Lowering concurrency treats a cause the unchanged volume rules out. Platform-wide overload is the 529 overloaded_error, not a 429. More retries cannot help, because the cap does not lift until next month or a higher limit.",
+      "references": [
+        "https://platform.claude.com/docs/en/api/rate-limits",
+        "https://platform.claude.com/docs/en/api/errors"
+      ]
+    }
+  ]
+}

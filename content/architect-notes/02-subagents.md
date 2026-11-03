@@ -100,7 +100,7 @@ A team defines a `security-reviewer` subagent. The parent passes "review the aut
 
 - **"The subagent can read the parent's earlier tool results."** It cannot. Only the prompt string crosses over.
 - **"Add the tool to `allowedTools` to restrict the subagent."** `allowedTools` approves. Restrict with `tools`, `disallowedTools` or deny rules.
-- **"Use `disallowedTools: ['Bash(rm *)']` to block one command."** A specifier there removes all of Bash. Use `permissions.deny`.
+- **"Use `disallowedTools: ['Bash(rm *)']` in the subagent definition to block one command."** In subagent frontmatter, a specifier removes all of Bash. Use `permissions.deny`. (The SDK's session-level `disallowed_tools` option is different: there, `Bash(rm *)` is a deny rule and Bash stays available.)
 - **"Tell the subagent in its prompt not to use Write."** That is guidance, not enforcement. Leave `Write` out of `tools`.
 - **"Give every subagent every tool for flexibility."** It widens the blast radius and makes tool selection harder. Scope tools to the role.
 - **"Script each step for the subagent."** Delegate the goal with constraints and a definition of done.
