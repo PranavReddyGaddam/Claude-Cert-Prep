@@ -18,6 +18,9 @@ type Mode = "practice" | "exam"
 type Phase = "setup" | "running" | "results"
 
 const LETTERS = "ABCDEFGH"
+// One half of the side-by-side question view on wide screens.
+const pane = "lg:overflow-y-auto lg:overscroll-contain lg:px-10 lg:py-10 xl:px-14"
+const paneInner = "lg:mx-auto lg:max-w-2xl"
 
 function Md({ children, className }: { children: string; className?: string }) {
   return (
@@ -132,6 +135,8 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
   const [confirmFinish, setConfirmFinish] = useState(false)
   const topRef = useRef<HTMLDivElement>(null)
   const headerRef = useRef<HTMLDivElement>(null)
+  const questionPane = useRef<HTMLDivElement>(null)
+  const answerPane = useRef<HTMLDivElement>(null)
 
   const start = (qs?: Question[]) => {
     let list = qs ?? pool.filter((q) => !domainFilter.length || (q.domain && domainFilter.includes(q.domain)))
@@ -169,6 +174,9 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
     // Only glide up when the top of the quiz is out of view.
     const el = topRef.current
     if (el && el.getBoundingClientRect().top < 0) scrollToTarget(el, { gap: 0 })
+    // Each new question starts at the top of both side-by-side blocks.
+    questionPane.current?.scrollTo({ top: 0 })
+    answerPane.current?.scrollTo({ top: 0 })
   }, [index, phase])
 
   usePin(headerRef, topRef, { enabled: phase === "running" })
@@ -255,8 +263,8 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
     bank.drawWeighted && !missedOnly
       ? Math.min(bank.drawWeighted, pool.length)
       : bank.pickScenarios && !missedOnly
-      ? Math.round((pool.length / Math.max(1, bank.scenarios?.length ?? 1)) * bank.pickScenarios)
-      : pool.filter((qq) => !domainFilter.length || (qq.domain && domainFilter.includes(qq.domain))).length
+        ? Math.round((pool.length / Math.max(1, bank.scenarios?.length ?? 1)) * bank.pickScenarios)
+        : pool.filter((qq) => !domainFilter.length || (qq.domain && domainFilter.includes(qq.domain))).length
 
   /* ---------------- setup ---------------- */
   if (phase === "setup") {
@@ -335,7 +343,9 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
                     onChange={(e) => setTimed(e.target.checked)}
                     className="size-4 accent-foreground"
                   />
-                  Timer ({Math.round((bank.timeLimitMinutes * filteredCount) / Math.max(1, bank.drawWeighted ?? bank.questions.length))} min)
+                  Timer (
+                  {Math.round((bank.timeLimitMinutes * filteredCount) / Math.max(1, bank.drawWeighted ?? bank.questions.length))}{" "}
+                  min)
                 </label>
               )}
             </section>
@@ -488,11 +498,15 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
   const hideTopic = !!q?.scenario || !!bank.drawWeighted
 
   return (
-    <div ref={topRef} className="mx-auto max-w-3xl px-4 py-6 sm:px-8 lg:py-10">
+    // On wide screens the question and the answers are two full-height blocks side by side, each scrolling on its own.
+    <div
+      ref={topRef}
+      className="mx-auto max-w-3xl px-4 py-6 sm:px-8 lg:flex lg:h-[calc(100dvh-3.5rem)] lg:max-w-none lg:flex-col lg:p-0"
+    >
       {/* Pinning wraps the header in a pin-spacer; this outer div keeps that wrapper inside a node React owns,
           so leaving the running view removes it cleanly instead of failing in removeChild. */}
       <div>
-        <div ref={headerRef} className="relative z-20 mb-8 border-b bg-background/90 py-3 backdrop-blur">
+        <div ref={headerRef} className="relative z-20 mb-8 border-b bg-background/90 py-3 backdrop-blur lg:mb-0 lg:px-8">
           <div className="flex items-center justify-between gap-4 text-sm">
             <button onClick={() => setPhase("setup")} className="text-muted-foreground hover:text-foreground">
               <X className="size-4" />
@@ -515,128 +529,141 @@ export function Quiz({ bank, missedOnly = false }: { bank: Bank; missedOnly?: bo
       </div>
 
       {q && (
-        <div>
-          <div className="mb-4 flex flex-wrap items-center gap-2">
-            {/* Scenario questions hide the domain, as the real exam does; it shows up in the review. */}
-            {q.domain && !hideTopic && <Badge variant="secondary">{domainName(bank.domains, q.domain)}</Badge>}
-            {q.multi && <Badge variant="outline">Select {q.correct.length}</Badge>}
-            {flags[q.id] && (
-              <Badge variant="outline">
-                <Flag /> Flagged
-              </Badge>
-            )}
-          </div>
-          {scenario && <ScenarioCard scenario={scenario} />}
-          <Md className="font-heading text-xl leading-snug font-medium sm:text-[1.4rem]">{q.prompt}</Md>
-          {/* The objective would hint at the answer, so in exam-style sets it waits for the review. */}
-          {q.objective && !hideTopic && <p className="mt-2 text-sm text-muted-foreground">{q.objective}</p>}
-
-          <div className="mt-8 space-y-2.5">
-            {q.options.map((opt, i) => {
-              const sel = picked.includes(i)
-              const isAns = q.correct.includes(i)
-              return (
-                <button
-                  key={i}
-                  onClick={() => toggle(i)}
-                  disabled={isRevealed}
-                  className={cn(
-                    "flex w-full items-start gap-3 rounded-xl border p-4 text-left transition-colors",
-                    !isRevealed && (sel ? "border-foreground ring-1 ring-foreground" : "hover:bg-muted/60"),
-                    isRevealed && isAns && "border-success ring-1 ring-success",
-                    isRevealed && sel && !isAns && "border-destructive ring-1 ring-destructive",
-                    isRevealed && !sel && !isAns && "opacity-60"
-                  )}
-                >
-                  <span
-                    className={cn(
-                      "flex size-6 shrink-0 items-center justify-center border text-xs font-medium",
-                      q.multi ? "rounded-md" : "rounded-full",
-                      sel && !isRevealed && "border-foreground bg-foreground text-background",
-                      isRevealed && isAns && "border-success bg-success text-background",
-                      isRevealed && sel && !isAns && "border-destructive bg-destructive text-background"
-                    )}
-                  >
-                    {isRevealed && isAns ? (
-                      <Check className="size-3.5" />
-                    ) : isRevealed && sel ? (
-                      <X className="size-3.5" />
-                    ) : (
-                      LETTERS[i]
-                    )}
-                  </span>
-                  <Md className="pt-0.5 leading-relaxed">{opt}</Md>
-                </button>
-              )
-            })}
-          </div>
-
-          {isRevealed && (
-            <div className="mt-6 rounded-xl border bg-muted/40 p-5">
-              <div className={cn("mb-2 font-heading font-semibold", correctNow ? "text-success" : "text-destructive")}>
-                {correctNow ? "Correct" : `Incorrect · answer: ${q.correct.map((c) => LETTERS[c]).join(", ")}`}
+        <div className="lg:grid lg:min-h-0 lg:flex-1 lg:grid-cols-2 lg:divide-x">
+          <div ref={questionPane} className={cn(pane, "lg:bg-muted/30")}>
+            <div className={paneInner}>
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                {/* Scenario questions hide the domain, as the real exam does; it shows up in the review. */}
+                {q.domain && !hideTopic && <Badge variant="secondary">{domainName(bank.domains, q.domain)}</Badge>}
+                {q.multi && <Badge variant="outline">Select {q.correct.length}</Badge>}
+                {flags[q.id] && (
+                  <Badge variant="outline">
+                    <Flag /> Flagged
+                  </Badge>
+                )}
               </div>
-              <Md className="leading-relaxed">{q.explanation}</Md>
-              <References refs={q.references} />
+              {scenario && <ScenarioCard scenario={scenario} />}
+              <Md className="font-heading text-xl leading-snug font-medium sm:text-[1.4rem]">{q.prompt}</Md>
+              {/* The objective would hint at the answer, so in exam-style sets it waits for the review. */}
+              {q.objective && !hideTopic && <p className="mt-2 text-sm text-muted-foreground">{q.objective}</p>}
             </div>
-          )}
+          </div>
 
-          <div className="mt-8 flex items-center justify-between gap-3">
-            {mode === "exam" ? (
-              <div className="flex gap-2">
-                <Button variant="outline" size="lg" disabled={index === 0} onClick={() => setIndex(index - 1)}>
-                  <ArrowLeft /> Prev
-                </Button>
-                <Button variant="ghost" size="lg" onClick={() => setFlags((f) => ({ ...f, [q.id]: !f[q.id] }))}>
-                  <Flag className={cn(flags[q.id] && "fill-current")} /> {flags[q.id] ? "Unflag" : "Flag"}
-                </Button>
+          <div ref={answerPane} className={pane}>
+            <div className={paneInner}>
+              <div className="mt-8 space-y-2.5 lg:mt-0">
+                {q.options.map((opt, i) => {
+                  const sel = picked.includes(i)
+                  const isAns = q.correct.includes(i)
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => toggle(i)}
+                      disabled={isRevealed}
+                      className={cn(
+                        "flex w-full items-start gap-3 rounded-xl border p-4 text-left transition-colors",
+                        !isRevealed && (sel ? "border-foreground ring-1 ring-foreground" : "hover:bg-muted/60"),
+                        isRevealed && isAns && "border-success ring-1 ring-success",
+                        isRevealed && sel && !isAns && "border-destructive ring-1 ring-destructive",
+                        isRevealed && !sel && !isAns && "opacity-60"
+                      )}
+                    >
+                      <span
+                        className={cn(
+                          "flex size-6 shrink-0 items-center justify-center border text-xs font-medium",
+                          q.multi ? "rounded-md" : "rounded-full",
+                          sel && !isRevealed && "border-foreground bg-foreground text-background",
+                          isRevealed && isAns && "border-success bg-success text-background",
+                          isRevealed && sel && !isAns && "border-destructive bg-destructive text-background"
+                        )}
+                      >
+                        {isRevealed && isAns ? (
+                          <Check className="size-3.5" />
+                        ) : isRevealed && sel ? (
+                          <X className="size-3.5" />
+                        ) : (
+                          LETTERS[i]
+                        )}
+                      </span>
+                      <Md className="pt-0.5 leading-relaxed">{opt}</Md>
+                    </button>
+                  )
+                })}
               </div>
-            ) : (
-              <span className="text-sm text-muted-foreground">{q.multi ? `Choose ${q.correct.length}` : "Choose one"}</span>
-            )}
-            <Button size="lg" className="px-5" onClick={primary} disabled={mode === "practice" && !isRevealed && !picked.length}>
-              {mode === "practice" && !isRevealed ? (
-                "Check"
-              ) : index === questions.length - 1 ? (
-                "Finish"
-              ) : (
-                <>
-                  Next <ArrowRight />
-                </>
+
+              {isRevealed && (
+                <div className="mt-6 rounded-xl border bg-muted/40 p-5">
+                  <div className={cn("mb-2 font-heading font-semibold", correctNow ? "text-success" : "text-destructive")}>
+                    {correctNow ? "Correct" : `Incorrect · answer: ${q.correct.map((c) => LETTERS[c]).join(", ")}`}
+                  </div>
+                  <Md className="leading-relaxed">{q.explanation}</Md>
+                  <References refs={q.references} />
+                </div>
               )}
-            </Button>
-          </div>
 
-          {mode === "exam" && (
-            <div className="mt-10 border-t pt-6">
-              <div className="mb-3 flex items-center justify-between text-sm text-muted-foreground">
-                <span>
-                  {answeredCount} of {questions.length} answered
-                </span>
-                <Button variant="outline" size="sm" onClick={() => setConfirmFinish(true)}>
-                  Finish exam
+              <div className="mt-8 flex items-center justify-between gap-3">
+                {mode === "exam" ? (
+                  <div className="flex gap-2">
+                    <Button variant="outline" size="lg" disabled={index === 0} onClick={() => setIndex(index - 1)}>
+                      <ArrowLeft /> Prev
+                    </Button>
+                    <Button variant="ghost" size="lg" onClick={() => setFlags((f) => ({ ...f, [q.id]: !f[q.id] }))}>
+                      <Flag className={cn(flags[q.id] && "fill-current")} /> {flags[q.id] ? "Unflag" : "Flag"}
+                    </Button>
+                  </div>
+                ) : (
+                  <span className="text-sm text-muted-foreground">{q.multi ? `Choose ${q.correct.length}` : "Choose one"}</span>
+                )}
+                <Button
+                  size="lg"
+                  className="px-5"
+                  onClick={primary}
+                  disabled={mode === "practice" && !isRevealed && !picked.length}
+                >
+                  {mode === "practice" && !isRevealed ? (
+                    "Check"
+                  ) : index === questions.length - 1 ? (
+                    "Finish"
+                  ) : (
+                    <>
+                      Next <ArrowRight />
+                    </>
+                  )}
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-1.5">
-                {questions.map((qq, i) => (
-                  <button
-                    key={qq.id}
-                    onClick={() => setIndex(i)}
-                    className={cn(
-                      "relative size-8 rounded-md border text-xs tabular-nums transition-colors",
-                      i === index && "ring-2 ring-foreground",
-                      (answers[qq.id] ?? []).length ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted"
-                    )}
-                  >
-                    {i + 1}
-                    {flags[qq.id] && (
-                      <span className="absolute -top-1 -right-1 size-2.5 rounded-full border-2 border-background bg-destructive" />
-                    )}
-                  </button>
-                ))}
-              </div>
+
+              {mode === "exam" && (
+                <div className="mt-10 border-t pt-6">
+                  <div className="mb-3 flex items-center justify-between text-sm text-muted-foreground">
+                    <span>
+                      {answeredCount} of {questions.length} answered
+                    </span>
+                    <Button variant="outline" size="sm" onClick={() => setConfirmFinish(true)}>
+                      Finish exam
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {questions.map((qq, i) => (
+                      <button
+                        key={qq.id}
+                        onClick={() => setIndex(i)}
+                        className={cn(
+                          "relative size-8 rounded-md border text-xs tabular-nums transition-colors",
+                          i === index && "ring-2 ring-foreground",
+                          (answers[qq.id] ?? []).length ? "bg-foreground text-background" : "text-muted-foreground hover:bg-muted"
+                        )}
+                      >
+                        {i + 1}
+                        {flags[qq.id] && (
+                          <span className="absolute -top-1 -right-1 size-2.5 rounded-full border-2 border-background bg-destructive" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+          </div>
         </div>
       )}
 
