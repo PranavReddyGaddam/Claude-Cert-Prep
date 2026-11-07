@@ -96,6 +96,19 @@ async function TrackHome({ params }: { params: Params }) {
 
       {track.available ? (
         <>
+          <Section title="Read">
+            <ul>
+              {books.map((b) => (
+                <Item
+                  key={b.id}
+                  href={`/${id}/read/${b.id}/${b.docs[0].slug}`}
+                  title={b.title}
+                  meta={<ReadCount prefix={b.id} slugs={b.docs.map((d) => d.slug)} />}
+                />
+              ))}
+            </ul>
+          </Section>
+
           <Section title="Practice">
             <ul>
               {tests.map((t) => (
@@ -112,19 +125,6 @@ async function TrackHome({ params }: { params: Params }) {
                 meta={<MissedCount ids={trackQuestions(id).map((q) => q.id)} />}
               />
               <Item href={`/${id}/quiz`} title="Quizzes by lesson" meta={`${lessonQuizzes} quizzes`} />
-            </ul>
-          </Section>
-
-          <Section title="Read">
-            <ul>
-              {books.map((b) => (
-                <Item
-                  key={b.id}
-                  href={`/${id}/read/${b.id}/${b.docs[0].slug}`}
-                  title={b.title}
-                  meta={<ReadCount prefix={b.id} slugs={b.docs.map((d) => d.slug)} />}
-                />
-              ))}
             </ul>
           </Section>
         </>
