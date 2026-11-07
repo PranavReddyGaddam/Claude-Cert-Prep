@@ -88,8 +88,7 @@ async function TrackHome({ params }: { params: Params }) {
 
   return (
     <div className="mx-auto max-w-2xl px-6 pt-20 pb-24 sm:px-8 lg:pt-32">
-      <p className="text-sm text-muted-foreground">{track.credential}</p>
-      <h1 className="mt-3 text-5xl font-semibold tracking-[-0.03em] sm:text-6xl">{track.shortName}</h1>
+      <h1 className="text-5xl font-semibold tracking-[-0.03em] sm:text-6xl">{track.shortName}</h1>
       <p className="mt-6 max-w-lg text-lg leading-relaxed text-muted-foreground">{track.summary}</p>
       <p className="mt-6 text-sm text-muted-foreground tabular-nums">
         {track.items} questions · {track.minutes} minutes · 720 of 1000 to pass
