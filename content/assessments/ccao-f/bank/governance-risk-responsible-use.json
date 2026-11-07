@@ -1,0 +1,386 @@
+{
+  "id": "governance-risk-responsible-use",
+  "title": "Governance, Risk, and Responsible Use",
+  "questions": [
+    {
+      "id": "ccao-f-gv-01",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Identify appropriate and inappropriate use cases",
+      "type": "multiple",
+      "prompt": "A talent acquisition lead at a hotel group wants Claude to rank 400 applicants for front-desk roles and send rejection emails to the bottom half. Her company follows Anthropic's Usage Policy. Which TWO controls does the policy require for this use? (Select TWO.)",
+      "options": [
+        "The notice to applicants names Anthropic, Claude and the specific model version that produced the ranking.",
+        "The ranking prompt includes a firm instruction telling Claude to ignore age, gender and other protected traits.",
+        "A qualified person meaningfully reviews the ranking, with authority to change it, before any rejection is sent.",
+        "A manager spot-checks a random tenth of the rejections each week after they have been sent to applicants.",
+        "Applicants are clearly told that AI was used in producing the decision that affects their application."
+      ],
+      "correct": [
+        2,
+        4
+      ],
+      "explanation": "Screening, ranking or rejecting candidates is a High-risk AI Recommendation in the employment area. The Usage Policy requires a qualified human-in-the-loop who meaningfully reviews the recommendation with authority to change it before it is used, and disclosure to the affected person that AI was used. The policy says the disclosure does not need to name Anthropic, Claude or the model. A prompt instruction against bias is an instruction where a control is needed; it satisfies neither requirement. Spot-checking after rejections are sent is review that comes too late and covers only some decisions.",
+      "references": [
+        "https://www.anthropic.com/legal/aup"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-02",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Identify appropriate and inappropriate use cases",
+      "type": "single",
+      "prompt": "A paralegal at a law firm on Claude Enterprise uses Claude to summarize thirty deposition transcripts into an internal memo for the supervising attorney. The attorney will use the memo, among other material, to advise the client. How does the Usage Policy's high-risk requirement apply to the paralegal's summaries?",
+      "options": [
+        "It applies in full, because legal work is a high-risk area, so the client must be told about each AI summary.",
+        "It is prohibited, because the Usage Policy does not allow AI to be used in preparing any legal advice for clients.",
+        "It does not apply to the summaries, because internal drafting that is not the final recommendation is excluded.",
+        "It applies only if the firm is on a consumer plan, because commercial plans are exempt from the Usage Policy."
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The Usage Policy excludes internal drafting, research, summarization or analysis that is not the ultimate High-risk AI Recommendation delivered. The attorney's advice is the recommendation, and the attorney is the qualified person accountable for it, so the paralegal's summaries are support work; they still need ordinary accuracy checks. Treating every internal summary as high-risk over-applies the rule. Nothing prohibits AI in legal work, and Anthropic publishes guidance for lawyers using Claude. Commercial customers are bound by the Usage Policy too; plan type changes data terms, not which uses are allowed.",
+      "references": [
+        "https://www.anthropic.com/legal/aup",
+        "https://support.claude.com/en/articles/15707726-using-claude-for-legal-work-privilege-confidentiality-and-how-to-think-about-configuration"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-03",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Identify appropriate and inappropriate use cases",
+      "type": "single",
+      "prompt": "A boutique travel agency's marketing manager plans to have Claude answer customer messages on the company's social accounts automatically, signing each reply with the name of a real staff member so it feels personal. What does Anthropic's Usage Policy require?",
+      "options": [
+        "It is acceptable as long as the named staff member reads a weekly sample of the replies sent in her name.",
+        "Customers must be told they are talking to AI, and replies must not pose as a real staff member writing them.",
+        "Disclosure is needed only if a customer directly asks whether they are talking to a person or to a bot.",
+        "Each reply must state that it was written by Claude, a model made by Anthropic, and name the model version."
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The Usage Policy requires consumer-facing chatbots and agents that talk directly with external users to disclose that users are interacting with AI, at least at the start of each session or in the interface. It also prohibits convincing people they are interacting with a human when they are not, so signing as a real employee is out. A weekly sample review does not cure misleading every customer. Disclosing only when asked is not the at-minimum standard the policy sets. The policy says the disclosure does not need to identify Anthropic, Claude or the model, so that option demands more than is required.",
+      "references": [
+        "https://www.anthropic.com/legal/aup"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-04",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Identify appropriate and inappropriate use cases",
+      "type": "single",
+      "prompt": "A customer service operations lead at an insurer wants to use Claude on the company's Enterprise plan to label 50,000 past support tickets by topic, then use the labelled set to train an internal ticket-routing classifier. Is this permitted?",
+      "options": [
+        "Yes, but only because the outputs come from a commercial plan; on a consumer plan it would be prohibited.",
+        "No, because any use of Claude's outputs to train another model requires Anthropic's written permission first.",
+        "Yes, and the same labelled set could also train an internal general-purpose chatbot, since it is internal use.",
+        "Yes, because a content-categorization classifier does not compete with Anthropic's models and is permitted."
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Anthropic's page on outputs says you own your outputs and may use them to train models that don't compete with Anthropic's, listing content categorization systems and similar classifiers as examples. A routing classifier fits. The prohibition covers competing models such as general-purpose chatbots and open-ended text generators, whether internal or not, so the third option crosses the line. Saying all training needs written permission over-applies the rule. The page does not make the answer depend on consumer versus commercial plan; the test is whether the trained model competes.",
+      "references": [
+        "https://support.claude.com/en/articles/12326764-can-i-use-my-outputs-to-train-an-ai-model"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-05",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Identify appropriate and inappropriate use cases",
+      "type": "multiple",
+      "prompt": "A regional property management company is reviewing proposed Claude uses submitted by staff. Which TWO proposals are prohibited by the Usage Policy regardless of any human review or disclosure the company adds? (Select TWO.)",
+      "options": [
+        "Drafting an internal summary of the company's tenancy policy so that leasing agents can answer questions.",
+        "Analyzing tenants' video calls with leasing agents to infer their emotions and rate how engaged they seemed.",
+        "Scoring rental applicants' trustworthiness from their social media activity without notifying them at all.",
+        "Recommending approval or denial of rental applications, with a qualified reviewer and disclosure to applicants.",
+        "Explaining to a tenant, in plain language, an eviction notice that the company's lawyer has already issued."
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "explanation": "The Universal Usage Standards prohibit emotion recognition except for medical or safety reasons, and prohibit scoring individuals on trustworthiness or social behaviour without notification or consent; no added control makes these acceptable. Recommending approval or denial of rental applications is a high-risk housing use, which is allowed with a qualified human-in-the-loop and disclosure, so it is not prohibited. Drafting an internal policy summary is ordinary business operations. Explaining a decision a qualified person already made is listed among the exclusions from the high-risk requirements.",
+      "references": [
+        "https://www.anthropic.com/legal/aup"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-06",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Apply data sensitivity, regulatory, and privacy considerations",
+      "type": "single",
+      "prompt": "A consultant on her firm's Team plan gets a poor answer in a chat that contains a client's unreleased financial figures. She is about to click the thumbs-down button to report it. What should she know first?",
+      "options": [
+        "Team plans never use any customer content for training, so the rating sends Anthropic only a score and no text.",
+        "Feedback stores the entire conversation with Anthropic for up to five years, and it may be used for training.",
+        "Feedback sends only the single message she rated, so the earlier client figures in the chat are not included.",
+        "Feedback is anonymous and excluded from training on Team plans, so it is safe as long as she adds no comment."
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic's commercial privacy page says commercial content is not used for training by default, but explicit feedback through the thumbs buttons is an exception: the entire related conversation is stored for up to five years and may be used for research and training. The data is de-linked from her ID, but the client figures still leave the firm. Owners can turn off the Rate chats setting for the organization. Saying Team plans never train ignores the feedback exception. Feedback covers the whole conversation, not one message. De-linking is not the same as exclusion from training.",
+      "references": [
+        "https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-07",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Apply data sensitivity, regulatory, and privacy considerations",
+      "type": "single",
+      "prompt": "An HR manager on her company's Enterprise plan uses an incognito chat to think through a sensitive employee investigation. She assumes that because it is incognito, no one in her organization could ever retrieve it. Which statement is accurate?",
+      "options": [
+        "Incognito chats are kept out of history and memory, but are retained and included in organization data exports.",
+        "Incognito chats are deleted permanently the moment they are closed, so no copy exists for anyone to retrieve.",
+        "Incognito chats can be opened inside a project, so the investigation notes stay private to the project's members.",
+        "Incognito chats are only offered on Free and Pro plans, so on Enterprise the chat was saved as a normal chat."
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Incognito chats aren't saved to chat history or memory and aren't used for training, but they are retained for 30 days, or longer under an Enterprise custom retention setting. On Team and Enterprise plans they are included in organizational data exports available to Owners and in the Compliance API. So they are not immediately deleted on close. Incognito is not available inside projects. And it is offered on all plans, including Team and Enterprise. For a sensitive investigation she should follow the company's HR data policy rather than rely on incognito as a privacy control.",
+      "references": [
+        "https://support.claude.com/en/articles/12260368-use-incognito-chats"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-08",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Apply data sensitivity, regulatory, and privacy considerations",
+      "type": "multiple",
+      "prompt": "An operations director uses a personal Claude Pro account at home and her company's Claude Team plan at work. She is writing a short guide for her staff on how the two differ. Which TWO statements are accurate? (Select TWO.)",
+      "options": [
+        "On the Team plan, inputs and outputs are not used to train Anthropic's models by default.",
+        "On Pro, deleted chats stay in Anthropic's back-end storage indefinitely unless she asks support.",
+        "On the Team plan, an Owner can set a custom retention period for chats of 30 days or longer.",
+        "On Pro, whether chats are used for training depends mainly on her model improvement setting.",
+        "On both plans, the individual user is the data controller for everything she enters into Claude."
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "explanation": "Commercial products, including Team, are not used for training by default. On consumer plans such as Pro, chats are used for training if the user allows it in privacy settings, if a chat is flagged for safety review, or if she opts into a programme, so her setting is the main lever. Deleted consumer chats are removed from history immediately and from back-end storage within 30 days, not kept indefinitely. Custom retention controls are an Enterprise feature, not Team. On Team and Enterprise plans the customer organization is the controller and Anthropic the processor, so the user is not the controller there.",
+      "references": [
+        "https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training",
+        "https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training",
+        "https://privacy.claude.com/en/articles/10023548-how-long-do-you-store-my-data",
+        "https://support.claude.com/en/articles/10440198-configure-custom-data-retention-controls-for-enterprise-plans"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-09",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Apply data sensitivity, regulatory, and privacy considerations",
+      "type": "single",
+      "prompt": "A clinic network is on a HIPAA-ready Enterprise plan; the Primary Owner accepted the BAA last month but has not applied the HIPAA configuration for Cowork. A care coordinator wants to use Cowork on her desktop to sort patient intake PDFs into folders. What is the correct guidance?",
+      "options": [
+        "She can go ahead, because once HIPAA is enabled the BAA covers every feature on the Enterprise plan.",
+        "She can go ahead if she uses an incognito session, since incognito content is not used for training.",
+        "She should not use Cowork with PHI until the Primary Owner applies the HIPAA configuration for it.",
+        "She should ask an Admin to apply the HIPAA configuration for Cowork on the organization's behalf."
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Anthropic's HIPAA page says enabling HIPAA does not bring Cowork under the BAA; before the Primary Owner applies the HIPAA configuration, Cowork is available but not covered, and PHI should only be processed through covered features. Assuming the BAA covers everything is the trap the page warns about. Incognito changes history, memory and training, not BAA coverage. The page says the Primary Owner must apply the configuration, so asking an Admin is the right idea with the wrong role, and the configuration is currently only available to organizations with an Anthropic account team.",
+      "references": [
+        "https://support.claude.com/en/articles/13296973-hipaa-ready-enterprise-plans"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-10",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Apply data sensitivity, regulatory, and privacy considerations",
+      "type": "single",
+      "prompt": "A paralegal at a small firm wants to analyze a client's confidential settlement agreement using her personal Claude Free account. The firm has an approved commercial Claude workspace. She plans to start the chat with: \"Do not store or train on this document.\" What is the best course of action?",
+      "options": [
+        "Turn off the model improvement setting on her Free account first, and then upload the agreement as planned.",
+        "Upload the agreement in an incognito chat on her Free account, since incognito chats are not used for training.",
+        "Upload it as planned, since Claude follows clear instructions and the line makes her intent explicit to it.",
+        "Use the firm's approved commercial workspace, following firm policy on what client material may go in it."
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "A line in the prompt does not change how data is stored or used; that is an instruction where a control is needed. Anthropic's legal-work guidance names commercial terms, with no training by default and a data processing agreement, as the baseline expectation for legal technology, and the firm has already approved such a workspace. Turning off model improvement and using incognito are real consumer controls that limit training, but both still leave client material in a personal account outside the firm's control and policy. Firm policy, not the paralegal's personal settings, governs client confidential data.",
+      "references": [
+        "https://support.claude.com/en/articles/15707726-using-claude-for-legal-work-privilege-confidentiality-and-how-to-think-about-configuration",
+        "https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training",
+        "https://support.claude.com/en/articles/12260368-use-incognito-chats"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-11",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Follow organizational AI policies and governance standards",
+      "type": "single",
+      "prompt": "A market analyst at a company on a Team plan needs current competitor pricing from the web, but an Owner has turned off web search for chat and Cowork in organization settings. Her deadline is tomorrow. What should she do?",
+      "options": [
+        "Ask an Owner about enabling web search or an approved alternative, and gather the pricing another approved way.",
+        "Run the research on her personal Pro account tonight and paste the findings into the work project tomorrow.",
+        "Add an instruction to her project telling Claude that web search is allowed for this one research task only.",
+        "Use Claude in Chrome to browse the competitor sites directly, since that is not affected by the web search toggle."
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Owners on Team and Enterprise plans decide which features members can use, and Anthropic's pages direct members to the organization's owners and internal policies. The right move is to ask for the capability or use an approved route. Moving the work to a personal account routes around a control the organization set on purpose. A project instruction cannot turn on a capability an Owner has disabled. Claude in Chrome is controlled separately, but using it to get around a deliberate web-search restriction is the same route-around, and Owners can switch Chrome off or restrict it with allowlists too.",
+      "references": [
+        "https://support.claude.com/en/articles/9265372-who-owns-and-manages-the-data-of-my-team",
+        "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-12",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Follow organizational AI policies and governance standards",
+      "type": "single",
+      "prompt": "A compliance manager at a bank on an Enterprise plan wants every employee's Claude responses and generated artifacts to avoid including customer account numbers. She asks how to set this up so it applies across the organization. Which statement is accurate?",
+      "options": [
+        "Each employee should add the rule to their personal instructions, which then take precedence over any org setting.",
+        "An Owner should add it to organization instructions, but individuals' own instructions then stop applying at all.",
+        "Adding it to one public project's instructions applies it to every conversation that employees have in the company.",
+        "An Owner can add it to organization instructions, which apply in every conversation and win over conflicting ones."
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Organization instructions are set by Owners and Primary Owners on Team and Enterprise plans and apply to everyone in every conversation; when they conflict with an individual's instructions, the organization-level instruction is favoured. Anthropic gives a data-handling reminder about account numbers as an example. Personal instructions do not take precedence over organization instructions, and each person could change or skip them. Individual instructions still apply to anything the organization's instructions don't address. A project's instructions apply only inside that project. Keeping account numbers out of chats is still the stronger control.",
+      "references": [
+        "https://support.claude.com/en/articles/14546867-set-organization-instructions"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-13",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Follow organizational AI policies and governance standards",
+      "type": "multiple",
+      "prompt": "A freelance designer on a Claude Pro plan shared a chat with one client using a public link. She then realizes that earlier in the chat she pasted another client's confidential pricing. Which TWO statements are accurate? (Select TWO.)",
+      "options": [
+        "Because she sent the link to one person, Claude restricts it so it opens only for that person's email.",
+        "The public link also shares the files she attached to the chat, including the other client's documents.",
+        "Anyone who has the link can view the chat without a Claude account, and the client could forward it on.",
+        "Turning the link off stops it working, but it cannot remove copies or screenshots someone already made.",
+        "The link automatically includes every message she sends in that chat after sharing, unless she deletes it."
+      ],
+      "correct": [
+        2,
+        3
+      ],
+      "explanation": "A public link lets anyone with the link view a snapshot of the chat, with no Claude account needed, and there is no way to limit it to specific people, so forwarding is possible. Turning it off disables the link but cannot remove copies, screenshots or archives others already made. Anthropic's rule is to treat a public link as public. The link does not restrict itself to the recipient. Attached files are not included in the snapshot. The snapshot covers messages up to the moment of sharing; later messages stay private unless she updates it.",
+      "references": [
+        "https://support.claude.com/en/articles/16762437-public-links-for-shared-chats"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-14",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Follow organizational AI policies and governance standards",
+      "type": "single",
+      "prompt": "On a company's Team plan, a financial analyst who is leaving next week has a private project holding the team's quarterly reporting instructions and knowledge files. Her manager wants the team to keep using it after her account is removed. What should happen before removal?",
+      "options": [
+        "She shares the project with the colleagues who need it and gives them \"Can edit\" access before she leaves.",
+        "Nothing is needed, since a removed member's private projects move to the team's Owner automatically.",
+        "She archives the project, since archiving makes a private project available to everyone in the organization.",
+        "She shares a chat from the project with the team, since sharing a chat also shares the project's knowledge."
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Anthropic's page on removing members says that if a project is private, other members can no longer access it after the owner is removed; to pass it on, the member should share it with specific users with \"Can edit\" or make it editable by the organization. Projects do not transfer to an Owner automatically, although the Primary Owner can export the data. Archiving keeps existing permissions and does not open a private project to anyone. A shared chat snapshot does not share the project's knowledge, and shared chats from a removed user become inaccessible to remaining members anyway.",
+      "references": [
+        "https://support.claude.com/en/articles/12053672-what-happens-to-a-user-s-data-when-they-are-removed-from-a-team-or-enterprise-organization",
+        "https://support.claude.com/en/articles/9519189-manage-project-visibility-and-sharing"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-15",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Understand the ethical implications of AI usage",
+      "type": "single",
+      "prompt": "A procurement specialist runs a Cowork task in \"Automatically approve\" mode to summarize supplier emails and update a tracker. Partway through, she sees Claude opening a payments website that she never mentioned. What is the best response?",
+      "options": [
+        "Let it continue, since Automatically approve already reviews each action for safety and blocks anything unsafe.",
+        "Ask Claude why it opened the payments site, and let the task continue if the explanation sounds reasonable.",
+        "Stop the task, check what it did, report it to Anthropic, and rerun with narrower access and manual approval.",
+        "Add an instruction to ignore any instructions found in emails, then restart the same task in the same mode."
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Anthropic's Cowork safety guidance says to watch for Claude accessing files or websites you didn't mention, stop the task immediately if something feels off, and report suspicious behaviour. Supplier emails are untrusted content, a classic route for prompt injection. Rerunning with a narrower scope and \"Manually approve\" fits Anthropic's advice for sensitive or hard-to-undo work. Auto mode's screening reduces risk, but Anthropic says no defence is perfect. Asking Claude to explain itself is trusting the model's self-report. An instruction to ignore embedded instructions is guidance, not a control, and leaves the same access in place.",
+      "references": [
+        "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely",
+        "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-16",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Understand the ethical implications of AI usage",
+      "type": "multiple",
+      "prompt": "An executive assistant wants to use Claude in Chrome to fill in conference registration and travel booking forms for her director. She asks which habits match Anthropic's safety guidance. Which TWO practices should she adopt? (Select TWO.)",
+      "options": [
+        "Let Claude type the director's corporate card number into booking forms, since risky actions ask first.",
+        "Use a separate browser profile that has no access to banking, health or other sensitive accounts.",
+        "Rely on Claude to filter sensitive details out of its screenshots before they are added to the chat.",
+        "Avoid opening the side panel while sensitive information is visible, since Claude takes screenshots.",
+        "Choose \"Skip all approvals\" on unfamiliar booking sites so that Claude can finish the forms faster."
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Anthropic recommends a separate browser profile without access to sensitive accounts, and warns that Claude takes screenshots of the tabs it works in, so anything visible becomes part of the conversation; avoid opening the panel while sensitive information is on screen. Claude in Chrome is prohibited from inputting sensitive data, so the card number option fails even though some actions ask for confirmation. The page says Claude cannot filter sensitive content out of what it sees. For new websites the guidance is to review proposed actions before approving them, which is the opposite of skipping approvals.",
+      "references": [
+        "https://support.claude.com/en/articles/12902428-use-claude-in-chrome-safely"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-17",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Understand the ethical implications of AI usage",
+      "type": "single",
+      "prompt": "A social media coordinator set up a Cowork scheduled task that drafts and posts a daily promotion to the company's account. Overnight it posted a promotion with the wrong price. Her manager asks who is responsible for the post. According to Anthropic, who is?",
+      "options": [
+        "Anthropic, because Automatically approve mode is meant to screen and block unsafe actions before they run.",
+        "She is, because users remain responsible for actions that scheduled tasks take on their behalf, posts included.",
+        "No one individually, because the post was made by an automated scheduled run that nobody was watching live.",
+        "The organization's Owner, because admins control Cowork access for everyone on Team and Enterprise plans."
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic's Cowork safety page states that you remain responsible for all actions Claude takes on your behalf, explicitly including content published and actions taken by scheduled tasks. The same page advises against scheduling tasks that send messages or take hard-to-undo actions, and recommends reviewing outputs after each run. Auto mode's screening targets unsafe actions such as injection or exfiltration, not wrong prices, and it does not shift accountability. An unwatched run is the reason for extra care, not an exemption. Admins control access to Cowork; that does not make them responsible for each user's tasks.",
+      "references": [
+        "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely"
+      ]
+    },
+    {
+      "id": "ccao-f-gv-18",
+      "domain": "governance-risk-responsible-use",
+      "objective": "Understand the ethical implications of AI usage",
+      "type": "single",
+      "prompt": "A secondary school's head of English proposes a rule: any essay with a detected Claude watermark is treated as proof of cheating, and any essay without one is accepted as the student's own work. The school uses Claude for staff. What is the best response?",
+      "options": [
+        "Accept the rule for detected marks only, since a mark proves that Claude wrote the essay's content.",
+        "Ask Claude to read each flagged essay and confirm whether it wrote the text before any action is taken.",
+        "Ban all student use of AI tools, since no detection method can reliably separate their work from Claude's.",
+        "Reject it: marks are signals, not proof, and misconduct findings need a qualified person and disclosure."
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Anthropic says a detected mark means content may have been processed by Claude but is not conclusive, since students may use Claude to proofread or translate their own ideas, and a missing mark does not prove human authorship, since editing, short passages or older models can remove the signal. A determination of academic misconduct is also a high-risk education decision under the Usage Policy, requiring a qualified human reviewer and disclosure. Treating a detected mark as proof ignores the first limit. Asking Claude whether it wrote the text is trusting the model's self-report. A blanket ban is an overreaction that does not fix the evidence problem.",
+      "references": [
+        "https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content",
+        "https://www.anthropic.com/legal/aup"
+      ]
+    }
+  ]
+}

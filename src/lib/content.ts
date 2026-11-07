@@ -274,6 +274,7 @@ export function officialLinks(trackId: string, doc: Doc): DocLink[] {
 let devGuide: Doc[] | null = null
 let architectNotes: Doc[] | null = null
 let architectProNotes: Doc[] | null = null
+let associateNotes: Doc[] | null = null
 
 const booksCache = new Map<string, Book[]>()
 
@@ -291,6 +292,15 @@ export function getBooks(trackId: string): Book[] {
       title: "Developer Guide",
       subtitle: `Practitioner guide · ${devGuide.length} chapters`,
       docs: devGuide,
+    })
+  }
+  if (trackId === "ccao-f") {
+    associateNotes ??= dirDocs("associate-notes")
+    books.push({
+      id: "notes",
+      title: "Associate Notes",
+      subtitle: `Original notes · ${associateNotes.length} chapters`,
+      docs: associateNotes,
     })
   }
   if (trackId === "ccar-p") {

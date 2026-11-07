@@ -1,0 +1,308 @@
+{
+ "id": "configuration-knowledge-management",
+ "title": "Configuration and Knowledge Management",
+ "questions": [
+  {
+   "id": "ccao-f-cf-01",
+   "domain": "configuration-knowledge-management",
+   "objective": "Configure Claude Projects with instructions and knowledge sources",
+   "type": "single",
+   "prompt": "A training lead sets up a Project for new-hire coaching. She names it \"Coaching - formal tone, UK spelling, never quote salaries\" and writes the same rules into the Project description. Claude's replies in the Project ignore all three rules. What is the most likely cause?",
+   "options": [
+    "The rules are too short to be noticed, so she should repeat them in capitals in both the name and description",
+    "Claude cannot see a Project's name or description, so the rules need to go in the Project instructions",
+    "The Project's knowledge is empty, and Claude follows its instructions only after documents are uploaded",
+    "Projects apply their rules only to new chats, so she should delete and recreate the existing coaching chats"
+   ],
+   "correct": [
+    1
+   ],
+   "explanation": "Anthropic's Project setup steps say to give the Project a name and description, and note that Claude will not have access to those details. Behaviour rules belong in the Project instructions, which Claude uses for every chat in the Project. Repeating the rules in capitals does not help, because Claude never sees either field. The help pages do not tie instructions to having knowledge uploaded; instructions and knowledge are configured separately. Recreating the chats would not help while the rules sit in fields Claude cannot read.",
+   "references": [
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects",
+    "https://support.claude.com/en/articles/9517075-what-are-projects"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-02",
+   "domain": "configuration-knowledge-management",
+   "objective": "Configure Claude Projects with instructions and knowledge sources",
+   "type": "multiple",
+   "prompt": "A legal operations manager is configuring a Project that drafts first-pass responses to supplier contract queries. She has a two-line tone rule, an escalation rule, a 60-page contract playbook and a clause library that changes monthly. Which TWO setup choices are best? (Select TWO.)",
+   "options": [
+    "Put the tone rule and the escalation rule in the Project instructions as short, explicit directions",
+    "Paste the whole playbook into the Project instructions so that Claude treats every page of it as a rule",
+    "Put the tone and escalation rules into the description field so that every member can see them at once",
+    "Upload the playbook and the current clause library to the Project knowledge as separate, dated files",
+    "Keep the clause library out of the Project and paste the relevant clause into each chat when it comes up"
+   ],
+   "correct": [
+    0,
+    3
+   ],
+   "explanation": "Project instructions tell Claude how to behave in every chat in the Project, so short, explicit directions such as tone and escalation belong there. Project knowledge holds reference material used across all chats, and separate, dated files make the monthly clause updates easy to spot and replace. Pasting a 60-page playbook into the instructions blurs the line between how to behave and what is true, and buries the two real rules. Claude cannot see the description field, so rules placed there have no effect. Pasting clauses chat by chat brings back the manual work a Project is meant to remove and risks using an outdated clause.",
+   "references": [
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects",
+    "https://support.claude.com/en/articles/9517075-what-are-projects"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-03",
+   "domain": "configuration-knowledge-management",
+   "objective": "Configure Claude Projects with instructions and knowledge sources",
+   "type": "single",
+   "prompt": "A research coordinator on a paid plan keeps adding interview transcripts to a Project. When the knowledge grows close to the context window limit, she notices Claude's replies say it is searching the Project's knowledge. A colleague tells her she must now split the Project into several smaller ones. What should she understand?",
+   "options": [
+    "She has reached the hard knowledge limit, so new transcripts will be ignored until she removes older ones",
+    "She needs to turn on retrieval in the Project settings, or Claude will stop reading the latest files",
+    "Retrieval mode means Claude now reads only file names, so she should merge all the transcripts into one",
+    "On paid plans Claude switches to a retrieval mode by itself, so she can keep adding to the knowledge"
+   ],
+   "correct": [
+    3
+   ],
+   "explanation": "Anthropic's RAG page says that on paid plans, when Project knowledge approaches the context window limit, Claude automatically enables a retrieval mode that expands the Project's capacity by up to ten times while keeping response quality. So she does not need to split the Project, and nothing is ignored at that point. There is no setting she has to turn on; the switch is automatic. Retrieval searches the content of the knowledge to find what is relevant, so merging every transcript into one file is unnecessary and makes the material harder to maintain.",
+   "references": [
+    "https://support.claude.com/en/articles/11473015-retrieval-augmented-generation-rag-for-projects",
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-04",
+   "domain": "configuration-knowledge-management",
+   "objective": "Configure Claude Projects with instructions and knowledge sources",
+   "type": "single",
+   "prompt": "A Team-plan marketing manager shares a campaign Project with two colleagues from the brand team, giving them \"Can view\" access. One asks why he cannot see the chats she has been having with Claude in the Project. Another asks whether he can change the Project instructions. What is accurate?",
+   "options": [
+    "View access shows everything in the Project, so her chats are hidden only if she deleted them first",
+    "Members with view access can edit the instructions, but they cannot add files to the Project knowledge",
+    "Shared members see the knowledge and instructions; her chats stay private and editing needs Can edit",
+    "Shared Projects expose all chats to members, so the missing chats mean the share did not save correctly"
+   ],
+   "correct": [
+    2
+   ],
+   "explanation": "Anthropic's sharing page says Can view members can see the Project's contents, knowledge and instructions and chat in it, but cannot edit it, while Can edit members can change instructions and knowledge. It also says sharing a Project shares the Project and its knowledge, but the owner's chats remain private unless she chooses to share them. So the first colleague's question has a simple answer, and the second needs Can edit. View access does not show her chats. View members cannot edit instructions. The missing chats are expected behaviour, not a failed share.",
+   "references": [
+    "https://support.claude.com/en/articles/9519189-manage-project-visibility-and-sharing",
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-05",
+   "domain": "configuration-knowledge-management",
+   "objective": "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)",
+   "type": "single",
+   "prompt": "An events manager on a Team plan wants Claude to read the venue contracts in her Google Drive and draft supplier reminder emails in Gmail. Her company's owner has enabled the Google Workspace connectors for the organization, but Claude says it cannot see her Drive. What step is she most likely missing?",
+   "options": [
+    "Connecting her own Google account, since each member authenticates after the owner enables a connector",
+    "Asking the owner to grant her Drive access inside Claude, since enabling a connector shares all files",
+    "Uploading the contracts to a shared Project, since Drive connectors only work inside shared Projects",
+    "Switching to Claude Desktop, since Google Drive is connected through a desktop extension on her computer"
+   ],
+   "correct": [
+    0
+   ],
+   "explanation": "Anthropic's connectors page says that on Team and Enterprise plans an owner first enables a connector for the organization, which makes it available but grants no one access, and then each member authenticates with the service. Claude then inherits that member's own permissions. Enabling a connector does not share anyone's files, so an owner cannot grant her Drive access inside Claude. The Google Drive connector can be added to the Files of private Projects only, not shared ones. Google Workspace is a cloud service connected as a remote connector, which works on the web; desktop extensions are for tools that run on the computer itself.",
+   "references": [
+    "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities",
+    "https://support.claude.com/en/articles/10166901-use-google-workspace-connectors",
+    "https://support.claude.com/en/articles/11725091-when-to-use-desktop-and-web-connectors"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-06",
+   "domain": "configuration-knowledge-management",
+   "objective": "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)",
+   "type": "multiple",
+   "prompt": "A finance assistant connects Gmail and Google Drive to Claude. She plans to have Claude total the invoice PDFs attached to supplier emails and to keep a Google Doc of payment notes current in a Project. Which TWO statements about this plan are accurate? (Select TWO.)",
+   "options": [
+    "Once Gmail is connected, Claude can open each attachment and read the totals directly from the PDFs",
+    "A Google Doc added to the Project is a snapshot, so she must re-add it each time the notes are updated",
+    "Through Gmail, Claude sees attachment metadata only, so she must add the invoice PDFs to the chat herself",
+    "The Drive connector can be used in any Project as long as the Project is shared with the finance team",
+    "A Google Doc added from Drive stays synced, so the Project works from its latest version in Google Drive"
+   ],
+   "correct": [
+    2,
+    4
+   ],
+   "explanation": "Anthropic's Google Workspace page says the Gmail connector can access email metadata including attachment metadata, but not attachment content, so the PDFs need to be uploaded or added another way. It also says Google Docs added to chats and Projects sync directly from Drive, so Claude works from the latest version. The first wrong option contradicts the attachment limit. The second contradicts the syncing behaviour. The Drive connector is available only when adding files to private Projects, so sharing the Project with the team would remove that option rather than enable it.",
+   "references": [
+    "https://support.claude.com/en/articles/10166901-use-google-workspace-connectors"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-07",
+   "domain": "configuration-knowledge-management",
+   "objective": "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)",
+   "type": "single",
+   "prompt": "An analyst at a logistics firm wants Claude to answer questions from a spreadsheet tool that runs only on her laptop and has no cloud version. She also uses the company's cloud project tracker. She works in the web app, on her phone and in Claude Desktop. How should she connect the two tools?",
+   "options": [
+    "Remote connectors for both tools, so that the laptop spreadsheet is available on her phone as well",
+    "A desktop extension for the laptop tool, used in Claude Desktop, and a remote connector for the tracker",
+    "A desktop extension for both tools, since desktop extensions work on the web, mobile and in Desktop",
+    "Upload the whole tracker to a Project each morning and skip connectors, since connectors can't read data"
+   ],
+   "correct": [
+    1
+   ],
+   "explanation": "Anthropic's guidance is to use a remote connector for cloud services you sign into, because remote connectors work across web, mobile, Desktop, Cowork and Claude Code, and to use a desktop extension for tools that run on your computer or have no cloud version. Desktop extensions run locally and are available only in Claude Desktop and Claude Code, not on the web or mobile. A remote connector cannot reach a tool that exists only on her laptop. A desktop extension for the tracker would lose access on her phone and the web. Connectors can retrieve data from connected services, so daily uploads are unnecessary.",
+   "references": [
+    "https://support.claude.com/en/articles/11725091-when-to-use-desktop-and-web-connectors",
+    "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-08",
+   "domain": "configuration-knowledge-management",
+   "objective": "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)",
+   "type": "single",
+   "prompt": "A Team-plan HR coordinator connects Claude to the company's HR system. A colleague worries that this lets anyone using Claude read every employee's salary record, including people who cannot see salaries in the HR system today. How should the coordinator respond?",
+   "options": [
+    "Connectors use the coordinator's permissions for everyone, so she should connect with a low-access account",
+    "Claude hides salary fields by default, so the colleague's concern does not apply to any HR connector",
+    "Adding a Project instruction that forbids discussing salaries is the control that addresses this concern",
+    "Claude inherits each person's own permissions, so people see only records they can already access there"
+   ],
+   "correct": [
+    3
+   ],
+   "explanation": "Anthropic's connectors page says Claude inherits each person's permissions from the connected service, so if someone cannot access a record in the HR system, Claude cannot access it for them either. Each member authenticates with their own account. Connectors do not run on the person who set them up for everyone, so connecting with a low-access account is not how access works. The help pages say nothing about salary fields being hidden by default. A Project instruction is a request to Claude, not an access control; the protection here is the source system's own permissions.",
+   "references": [
+    "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-09",
+   "domain": "configuration-knowledge-management",
+   "objective": "Create effective system-level instructions",
+   "type": "single",
+   "prompt": "A customer support lead writes Project instructions for drafting refund replies: \"Be helpful, professional and empathetic. Don't be too long. Follow our policies.\" Drafts vary in length, sometimes promise refunds outside policy and rarely ask for an order number. Which rewrite is most effective?",
+   "options": [
+    "State the reader, a word range, the refund conditions to check and that every reply asks for the order number",
+    "Add that Claude is a senior support agent with ten years of experience who always follows the policies",
+    "Ask Claude to use its best judgment on length and policy, since it knows how support replies usually work",
+    "Put \"FOLLOW OUR POLICIES\" in capitals at the start and the end of the instructions so it is never missed"
+   ],
+   "correct": [
+    0
+   ],
+   "explanation": "Anthropic's prompting guidance is to be clear and direct and to give the context Claude needs, including explicit constraints and the exact output wanted. \"Don't be too long\" and \"our policies\" give Claude nothing it can apply; a word range, the refund conditions and the order-number step make each requirement concrete and checkable. A persona changes tone but does not tell Claude what the policies are. Leaving length and policy to Claude's judgment is what produced the variation. Capitals add emphasis to an instruction that still does not say what the policies require.",
+   "references": [
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-10",
+   "domain": "configuration-knowledge-management",
+   "objective": "Create effective system-level instructions",
+   "type": "multiple",
+   "prompt": "An Enterprise owner wants every employee's Claude to use the company's preferred terms, write in UK English and never present itself as giving legal advice. One team also has its own detailed proposal-writing steps. Which TWO statements about organization instructions are accurate? (Select TWO.)",
+   "options": [
+    "Organization instructions can switch off Claude's built-in safety guidelines when the company requires it",
+    "If an individual's instruction directly contradicts an organization instruction, Claude favors the org one",
+    "Organization instructions have a character limit and can take up to an hour to apply across products",
+    "Organization instructions replace each member's own instructions, which are ignored once they are set",
+    "The team's detailed proposal steps should go into the organization instructions so everyone has them too"
+   ],
+   "correct": [
+    1,
+    2
+   ],
+   "explanation": "Anthropic's organization-instructions page says that when both are set, organization instructions take precedence, and Claude favors them over a directly contradicting individual instruction. It gives a 3,000-character limit and says changes can take up to an hour to take effect (as of November 2026). It also says organization preferences cannot disable built-in safety guidelines. Individual instructions still apply where they do not conflict, so they are not ignored. Task-specific procedures for one team are better kept in a Skill or that team's Project, rather than loaded into instructions that apply to everyone.",
+   "references": [
+    "https://support.claude.com/en/articles/14546867-set-organization-instructions",
+    "https://support.claude.com/en/articles/12512176-what-are-skills"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-11",
+   "domain": "configuration-knowledge-management",
+   "objective": "Create effective system-level instructions",
+   "type": "single",
+   "prompt": "A teacher wants Claude to write in British English everywhere she uses it, to follow her department's lesson-plan template only when she is planning lessons, and to apply a detailed marking procedure with rubrics whenever she asks it to mark coursework. Which setup fits best?",
+   "options": [
+    "All three in her profile instructions, so that Claude applies every rule in every chat she starts",
+    "All three in one lesson Project's instructions, so she has a single place to keep everything up to date",
+    "British English in profile instructions, the template in a lesson Project, the marking steps in a Skill",
+    "British English in memory, the template in profile instructions and the marking steps in each chat"
+   ],
+   "correct": [
+    2
+   ],
+   "explanation": "Anthropic's personalization page says profile instructions are for account-wide preferences that affect all interactions, Project instructions apply to the chats in one body of work, and Skills package procedures that Claude loads when a task calls for them. Putting everything in profile instructions would push the template and marking rules into unrelated chats. Putting everything in one Project's instructions would lose British English outside that Project and make the marking steps load where they are not needed. Memory is not where Anthropic recommends setting standing preferences, and pasting marking steps into each chat repeats work a Skill removes.",
+   "references": [
+    "https://support.claude.com/en/articles/10185728-understanding-claude-s-personalization-features",
+    "https://support.claude.com/en/articles/12512176-what-are-skills",
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-12",
+   "domain": "configuration-knowledge-management",
+   "objective": "Inform, maintain, and update Claude configurations, knowledge sources, and instructions",
+   "type": "single",
+   "prompt": "A procurement team's Project still holds the 2025 supplier policy alongside the 2026 version that replaced it. Claude sometimes quotes the old approval thresholds. The Project has a dozen members who use it daily. What is the best fix?",
+   "options": [
+    "Add a Project instruction telling Claude to prefer the newer policy whenever the two documents disagree",
+    "Remove the 2025 file from the knowledge and keep only the current policy, clearly named with its date",
+    "Leave both files and ask each member to check which year Claude quoted before they act on any threshold",
+    "Start a fresh Project for 2026 and leave the old one open, so members can pick whichever they prefer"
+   ],
+   "correct": [
+    1
+   ],
+   "explanation": "Project knowledge is used across all chats in the Project, so an outdated document there keeps feeding wrong thresholds into every member's answers. Removing it and keeping one clearly dated current version fixes the cause. An instruction to prefer the newer document is a request that may fail on an ambiguous passage, and it leaves the old thresholds available to quote. Asking a dozen members to catch it every time moves a configuration problem onto every user. A second Project leaves the outdated one in use. This is general practice applied to how Anthropic describes Project knowledge.",
+   "references": [
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects",
+    "https://support.claude.com/en/articles/9517075-what-are-projects"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-13",
+   "domain": "configuration-knowledge-management",
+   "objective": "Inform, maintain, and update Claude configurations, knowledge sources, and instructions",
+   "type": "multiple",
+   "prompt": "An operations lead owns a Project that five shift supervisors use to draft incident reports. She is about to change the instructions to add a new safety-reporting section. Which TWO practices will best keep the Project reliable as it changes? (Select TWO.)",
+   "options": [
+    "Rerun a fixed set of past incidents through the Project after the change and compare the new drafts",
+    "Ask Claude in the Project whether the new instructions are better and keep them if it agrees they are",
+    "Make the change only in her own copy of the instructions so the supervisors keep using the old version",
+    "Rewrite the whole instruction set from scratch each time, since small edits tend to leave old rules behind",
+    "Record what changed and why, with the date, so supervisors know which version produced which reports"
+   ],
+   "correct": [
+    0,
+    4
+   ],
+   "explanation": "Rerunning a fixed set of real cases after every change shows whether the new section works and whether anything else broke, and a dated record of changes lets supervisors trace a report back to the instructions that produced it. Both are general practice consistent with Anthropic's advice to test prompts against clear success criteria. Claude's opinion of its own instructions is a self-report, not a test. Project instructions are shared by the Project, so there is no private copy that leaves others on the old version. Rewriting everything each time makes it harder to see what changed and adds new risk.",
+   "references": [
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects",
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+   ]
+  },
+  {
+   "id": "ccao-f-cf-14",
+   "domain": "configuration-knowledge-management",
+   "objective": "Inform, maintain, and update Claude configurations, knowledge sources, and instructions",
+   "type": "single",
+   "prompt": "A marketing team built a custom Skill for writing product launch posts. Since the brand guidelines changed, Claude has stopped using the Skill for launch posts and sometimes uses it for unrelated blog posts. The Skill's instructions were updated, but its name and description were not. What should they check first?",
+   "options": [
+    "The Skill's file size, since Claude skips any Skill whose instructions have grown past a fixed size",
+    "The team's profile instructions, since a profile setting decides which Skills Claude can load at all",
+    "The model selected in each chat, since only the most capable model is able to choose between Skills",
+    "The Skill's description, since Claude relies on it to decide what the Skill does and when to use it"
+   ],
+   "correct": [
+    3
+   ],
+   "explanation": "Anthropic's custom-Skills page says every Skill's main file needs name and description fields, and that the description should say clearly what the Skill does and when to use it. Claude reviews available Skills and loads the relevant ones, so a description that no longer matches the task leads to the Skill being skipped or used in the wrong place. The help pages do not describe a size cut-off that disables a Skill. Profile instructions set preferences; Skills are turned on and managed in the Skills settings. Nothing in Anthropic's pages limits Skill selection to the most capable model.",
+   "references": [
+    "https://support.claude.com/en/articles/12512198-how-to-create-custom-skills",
+    "https://support.claude.com/en/articles/12512176-what-are-skills"
+   ]
+  }
+ ]
+}

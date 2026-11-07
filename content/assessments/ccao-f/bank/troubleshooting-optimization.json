@@ -1,0 +1,286 @@
+{
+  "id": "troubleshooting-optimization",
+  "title": "Troubleshooting and Optimization",
+  "questions": [
+    {
+      "id": "ccao-f-tr-01",
+      "domain": "troubleshooting-optimization",
+      "objective": "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs",
+      "type": "single",
+      "prompt": "On her commute, a sales manager starts research in Claude Mobile, asking for an account briefing that draws on her Gmail and Google Drive connectors as well as the web. The briefing cites only public web pages and misses last week's email thread with the client. No error appeared. What is the most likely cause and fix?",
+      "options": [
+        "The connectors' access has expired, so she should disconnect and reconnect them, then rerun it on her phone",
+        "Research started in Claude Mobile only searches the web, so she should rerun it on the web or on Desktop",
+        "Research tends to favor public sources, so she should add \"prioritize my internal sources\" to the prompt",
+        "The email thread is too recent to have been indexed, so she should wait a day and then rerun the research"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic documents that research started in Claude Mobile only searches the web and does not use connectors, with no error or other sign that they were skipped. The fix is to start research on the web or in Claude Desktop. Reconnecting the connectors and rerunning on the phone repeats the same limitation. Steering Claude toward internal sources is Anthropic's advice when research skips connectors on web or desktop, not on mobile. There is no indexing delay to wait out.",
+      "references": [
+        "https://support.claude.com/en/articles/11088861-use-research-on-claude"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-02",
+      "domain": "troubleshooting-optimization",
+      "objective": "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs",
+      "type": "single",
+      "prompt": "A marketing coordinator is drafting campaign copy when Claude replies, \"Due to unexpected capacity constraints, Claude is unable to respond to your message. Please try again soon.\" She checks the status page and sees no active incident. What should she do?",
+      "options": [
+        "Report an outage to her workspace admin, since the service is clearly down for her organization",
+        "Shorten the message and remove the attachments, since the error means the request was too large",
+        "Switch to a different model in the menu, since the selected model must have been retired today",
+        "Wait a few minutes and try again, since this is temporary high demand and not a service outage"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Anthropic explains that capacity constraints are temporary high demand across all users, not outages, and that they do not appear on the status page. The advice is to try again in a few minutes. Reporting an outage misreads the message, and the status page already shows no incident. Shortening the message confuses this with the length-limit error, which has different wording. Nothing suggests a model retirement; deprecations are announced in advance and do not appear as capacity errors.",
+      "references": [
+        "https://support.claude.com/en/articles/12466728-troubleshoot-claude-error-messages"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-03",
+      "domain": "troubleshooting-optimization",
+      "objective": "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs",
+      "type": "multiple",
+      "prompt": "A fundraising manager at a hospice charity asks Claude, \"Write a donor email for our spring appeal.\" The result is polite, grammatical and so generic it could come from any charity. She needs a usable draft by noon. Which TWO changes are most likely to fix the problem?",
+      "options": [
+        "Say who the donors are, the appeal's goal and target amount, and one patient story to feature",
+        "Ask Claude to make the email more emotional and persuasive so that it stands out to donors",
+        "Include a past appeal email that performed well, as an example of the tone and structure",
+        "Switch to the most capable model at Max effort so that the quality of the writing improves",
+        "Regenerate the response several times and pick whichever version sounds least generic"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "A generic answer usually means Claude lacked context. Anthropic's advice is to include as much context as possible, as if for someone with no background, and its consistency guidance says examples work better than abstract instructions. The audience, goal, amount and a real story, plus a past email that worked, supply what was missing. Asking for more emotion is a cosmetic instruction with nothing specific to say. A stronger model or effort level cannot invent her charity's details. Regenerating reshuffles the same missing context.",
+      "references": [
+        "https://support.claude.com/en/articles/7996857-my-prompt-isn-t-giving-me-a-helpful-answer",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-04",
+      "domain": "troubleshooting-optimization",
+      "objective": "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs",
+      "type": "multiple",
+      "prompt": "A policy officer asks Claude, in a single message, for a clause-by-clause comparison of two 40-clause supplier contracts. The response covers clauses 1 to 15 in detail and then wraps up with a short summary. No error message appeared. Which TWO next steps does Anthropic's guidance support?",
+      "options": [
+        "Start a new chat and resend the identical request, since the conversation has reached its length limit",
+        "Give Claude the previous prompt and its response, and ask it to continue from clause 16 onward",
+        "Ask Claude to be much more concise so that all 40 clauses fit into one response next time",
+        "Split the comparison into batches of clauses and ask for each batch in a separate request",
+        "Turn on web search so that Claude can retrieve the remaining clauses from the suppliers directly"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Anthropic's Help Center says that when a response is too brief or only partly complete, you should retool the prompt and give Claude the previous prompt and response so it picks up where it left off. Breaking a complex request into substeps is also standard advice. No length-limit error appeared, so starting over with the same request just repeats the problem. Forcing everything into one concise answer sacrifices the detail the comparison needs. Web search cannot retrieve private contract text.",
+      "references": [
+        "https://support.claude.com/en/articles/8114518-claude-s-response-to-my-prompt-is-too-brief",
+        "https://support.claude.com/en/articles/7996857-my-prompt-isn-t-giving-me-a-helpful-answer"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-05",
+      "domain": "troubleshooting-optimization",
+      "objective": "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs",
+      "type": "single",
+      "prompt": "A team lead's project produces a weekly operations summary. Last week she switched models, rewrote the project instructions, and replaced two knowledge files all at once. This week's summary is worse in ways she cannot explain. What is the best way to find and fix the problem?",
+      "options": [
+        "Switch back to the original model first, since a change of model is the most common cause of regressions",
+        "Ask Claude which of the three changes made the summary worse, and undo the one that it identifies",
+        "Re-test the changes one at a time on the same week's input, and compare each result with the old output",
+        "Add more detailed instructions on top of the new ones to correct each problem she has noticed so far"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Changing several variables at once makes the cause impossible to see. Re-testing one change at a time on the same input, against the previous output, isolates what caused the regression and turns the failing week into a test case. Reverting the model first is a guess; the new instructions or files are equally likely causes. Claude cannot reliably say which of its inputs changed its own behavior. Layering more instructions on top treats symptoms and adds another uncontrolled variable.",
+      "references": [
+        "https://support.claude.com/en/articles/7996857-my-prompt-isn-t-giving-me-a-helpful-answer",
+        "https://support.claude.com/en/articles/12738598-adapt-to-new-model-personas-after-deprecations"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-06",
+      "domain": "troubleshooting-optimization",
+      "objective": "Adjust approach based on feedback and results",
+      "type": "multiple",
+      "prompt": "A marketing lead uses a Claude project to draft weekly social posts. Every week her director makes the same edits: removing exclamation marks, replacing \"solutions\" with the product name, and adding the events page link. Which TWO changes best act on this feedback?",
+      "options": [
+        "Add the director's three rules to the project instructions so that every draft follows them",
+        "Upload two posts the director approved to the project as examples of the expected output",
+        "Add the three rules to her profile instructions so that they apply to all her conversations",
+        "Give each draft the director rewrites a thumbs-down so Claude learns the director's preferences",
+        "Keep editing each draft by hand, because the director's preferences may change over time"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Recurring feedback belongs in standing instructions at the right scope. Project instructions apply to every chat in that project, and approved examples show the target more effectively than abstract rules. Profile instructions would push this product's rules into all her unrelated conversations. A thumbs-down sends feedback to Anthropic and does not change her next draft. Continuing to edit by hand wastes the signal she already has; instructions can be updated if the preferences change.",
+      "references": [
+        "https://support.claude.com/en/articles/10185728-understanding-claude-s-personalization-features",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency",
+        "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-07",
+      "domain": "troubleshooting-optimization",
+      "objective": "Adjust approach based on feedback and results",
+      "type": "single",
+      "prompt": "A secondary-school teacher has a Claude project tuned over months to give students feedback in a particular tone. Anthropic announces that the model she uses will be retired in three months. What should she do first?",
+      "options": [
+        "Wait until the retirement date, switch then, and adjust the instructions only if students complain",
+        "Test a newer model now, side by side on her key prompts, and adjust the instructions before it retires",
+        "Add \"behave exactly like the previous model\" to the project instructions before the model is retired",
+        "Copy all of her old conversations into the project so the new model reproduces the old one exactly"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic recommends experimenting with newer models as soon as a deprecation is announced, running side-by-side comparisons on the prompts that matter most, and using project instructions and memory to shape the new model's tone. Waiting until retirement leaves no time to tune and puts students on an untested setup. An instruction to behave like an old model gives the new one nothing concrete to follow. Dumping old conversations into the project adds bulk; Anthropic suggests asking Claude to draft instructions from conversations you valued.",
+      "references": [
+        "https://support.claude.com/en/articles/12738598-adapt-to-new-model-personas-after-deprecations"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-08",
+      "domain": "troubleshooting-optimization",
+      "objective": "Adjust approach based on feedback and results",
+      "type": "single",
+      "prompt": "An analyst on a Team plan has spent a morning refining a chat prompt for a market landscape covering 20 competitors. However she words it, the answers stay shallow and cite only a few sources. Her prompt is already clear about scope, criteria and format. What is the best change of approach?",
+      "options": [
+        "Switch to research, which runs several searches that build on each other and explores open questions",
+        "Add \"be thorough and cite many sources\" to the prompt again, with stronger and more explicit wording",
+        "Raise effort to Max and turn on thinking while keeping the same chat and the same prompt she has now",
+        "Split the task into 20 separate chats, one per competitor, and then merge all the results by hand"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "When a clear prompt keeps producing shallow, lightly sourced answers to a broad question, the feature is the problem. Research runs multiple searches that build on each other and works through open questions, which suits a 20-competitor landscape. Stronger wording repeats a fix that has already failed. More effort and thinking deepen reasoning over what was found but do not add the multi-search investigation. Twenty manual chats lose the cross-competitor view and multiply the work.",
+      "references": [
+        "https://support.claude.com/en/articles/11088861-use-research-on-claude",
+        "https://support.claude.com/en/articles/8664678-change-the-model-effort-and-thinking-settings"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-09",
+      "domain": "troubleshooting-optimization",
+      "objective": "Adjust approach based on feedback and results",
+      "type": "single",
+      "prompt": "An operations manager pastes each morning's new helpdesk tickets into Claude to categorize them, then copies the categories back into the ticketing system. It works, but it now takes an hour a day and the backlog is growing. There is no connector for the helpdesk system. What is the best next step?",
+      "options": [
+        "Escalate to a developer or architect with the requirement, daily volume and sample tickets",
+        "Set up a scheduled task that tells Claude to write categories into the helpdesk each morning",
+        "Ask Claude in chat to connect to the helpdesk using the team's API key and update tickets",
+        "Keep the manual process but paste the tickets in hourly batches to spread the workload out"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "The results show that the chat-based approach does not scale, and the fix needs an integration with another system, which is developer or architect work rather than something to improvise in chat. Escalating with the requirement, volume and examples is the Associate move. Scheduled tasks use the connectors you have set up, and none exists here. Claude cannot reach tools that are not integrated, and pasting an API key into chat creates a security problem without solving anything. Smaller batches move the hour around without saving it.",
+      "references": [
+        "https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork",
+        "https://support.claude.com/en/articles/8241188-claude-is-producing-links-that-don-t-work-and-falsely-claiming-that-it-has-sent-emails-or-produced-external-documents-what-s-going-on"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-10",
+      "domain": "troubleshooting-optimization",
+      "objective": "Optimize workflows for efficiency and effectiveness",
+      "type": "multiple",
+      "prompt": "Every Monday an analyst opens a new chat, uploads the same three reference documents, pastes the week's CSV and asks a long series of follow-ups, with all her connectors switched on. She keeps hitting her session limit by mid-morning. Which TWO changes reduce usage without lowering the quality of her work?",
+      "options": [
+        "Put the three reference documents into a project, where reused content is cached and counts less",
+        "Turn off the connected apps that this task does not use, since tools and connectors use many tokens",
+        "Ask Claude to keep every answer as short as possible, even when the question needs a fuller answer",
+        "Enable usage credits so that she can carry on working once she reaches the five-hour session limit",
+        "Split her follow-ups across several new chats, re-uploading the documents to each one as she goes"
+      ],
+      "correct": [
+        0,
+        1
+      ],
+      "explanation": "Anthropic's usage guidance says project content is cached and counts less against limits when reused, and that tools and connectors are token-intensive, so turning off ones you do not need saves usage. Both cut waste without touching quality. Forcing short answers lowers quality where the question needs detail. Usage credits let work continue at pay-as-you-go rates but do not reduce what she uses. Re-uploading the same documents to several chats multiplies the usage she is trying to cut.",
+      "references": [
+        "https://support.claude.com/en/articles/9797557-usage-limit-best-practices",
+        "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work",
+        "https://support.claude.com/en/articles/12466728-troubleshoot-claude-error-messages"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-11",
+      "domain": "troubleshooting-optimization",
+      "objective": "Optimize workflows for efficiency and effectiveness",
+      "type": "single",
+      "prompt": "Each Monday a communications manager spends an hour asking Claude to summarize the past week's messages in four Slack channels into a briefing for leadership. Her team is on a paid plan with Cowork and the Slack connector set up. What is the best way to optimize this workflow?",
+      "options": [
+        "Save the prompt in a document and paste it into a fresh chat every Monday morning before work",
+        "Add the briefing request to her profile instructions so that Claude produces it every Monday",
+        "Create a weekly scheduled task for the briefing, and review each run before forwarding it on",
+        "Create a weekly scheduled task that sends the briefing to leadership without anyone reviewing it"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Scheduled tasks let you describe recurring work once and have Claude run it on a cadence using your connectors, and you review results when each run is ready. Keeping a review before it goes to leadership preserves quality. Pasting a saved prompt each week still costs her the manual hour. Profile instructions shape how Claude responds in conversations; they do not run anything on a schedule. Sending unreviewed output to leadership automates any error along with the work.",
+      "references": [
+        "https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-12",
+      "domain": "troubleshooting-optimization",
+      "objective": "Optimize workflows for efficiency and effectiveness",
+      "type": "single",
+      "prompt": "An online retailer's content lead needs 300 product descriptions a month. Each one can be checked quickly against its spec sheet for size, materials and care instructions. She wants the best balance of cost, speed and quality. Which approach fits best?",
+      "options": [
+        "Use the most capable model at Max effort for every description, to keep errors to a minimum",
+        "Use the lowest setting for all 300 and publish without checking, since descriptions are low risk",
+        "Generate each description three times and publish whichever of the three versions is longest",
+        "Draft at a lower setting, check against the spec sheets, and redo only failures at a higher one"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Where outputs are cheap to check, Anthropic's cost guidance favors running at a lower setting and re-running only the failures at a higher one, which costs less than running everything at the top setting for a similar result. Max effort on all 300 routine items spends capability where it is not needed. Publishing unchecked descriptions lets wrong sizes or materials reach customers. Generating three versions triples the work, and length is not a quality criterion.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+        "https://support.claude.com/en/articles/8664678-change-the-model-effort-and-thinking-settings"
+      ]
+    },
+    {
+      "id": "ccao-f-tr-13",
+      "domain": "troubleshooting-optimization",
+      "objective": "Optimize workflows for efficiency and effectiveness",
+      "type": "single",
+      "prompt": "To save usage, a team moved its weekly report drafting from the default effort level to Low. Each report now needs two rounds of corrections before it can be sent, and the team lead's review time has doubled. How should the team judge the change?",
+      "options": [
+        "Keep Low effort, since each message now uses less and corrections are a normal part of review",
+        "Judge it by total usage and time per finished report, and restore the default if rework wins",
+        "Switch to the most capable model at Max effort, so that no corrections are ever needed again",
+        "Add an instruction asking Claude to make fewer mistakes, and keep the effort level set at Low"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Optimization is judged by the cost of a finished, usable result, including rework, not by usage per message. Anthropic's cost guidance makes the same point: compare on cost per completed task, because failed attempts and retries still cost. Its effort guidance says Low and Medium suit routine tasks, so the test is whether this task is routine enough. Keeping Low ignores doubled review time. Jumping to the top setting overcorrects. Asking Claude to make fewer mistakes is an instruction that does not supply anything it lacked.",
+      "references": [
+        "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+        "https://support.claude.com/en/articles/8664678-change-the-model-effort-and-thinking-settings",
+        "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work"
+      ]
+    }
+  ]
+}

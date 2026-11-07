@@ -6,6 +6,9 @@ questions set inside it).
 
 Tracks:
 
+- **Claude Certified Associate – Foundations (CCAO-F)**: original notes (14 chapters), lessons, a diagnostic, a full mock
+  exam and a 120-question bank in seven domain sets. The exam simulation draws 60 questions in the blueprint's domain
+  proportions.
 - **Claude Certified Developer – Foundations (CCDV-F)**: developer guide, lessons, a diagnostic, a full mock exam
   and six practice scenarios.
 - **Claude Certified Architect – Foundations (CCAR-F)**: original notes, lessons, a diagnostic, a full mock exam
@@ -27,7 +30,7 @@ Then open http://localhost:3000.
 ## Contributing questions
 
 Scenario questions live in `content/assessments/<track>/scenarios/*.json`. Each file is one scenario with 15
-questions. Standalone questions (used by CCAR-P, whose exam has no shared scenarios) live in
+questions. Standalone questions (used by CCAO-F and CCAR-P, whose exams have no shared scenarios) live in
 `content/assessments/<track>/bank/<domain>.json`, one file per blueprint domain. Before opening a pull request, run the quality check, which rejects sets where the answer can be guessed
 from the shape of the options (for example, when the correct answer is usually the longest or the shortest one):
 

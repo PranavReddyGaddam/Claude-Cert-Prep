@@ -1,0 +1,1297 @@
+{
+ "track": "ccao-f",
+ "pages": [
+  {
+   "slug": "support-7996853-introduction-to-prompt-design",
+   "title": "Introduction to prompt design",
+   "source": "https://support.claude.com/en/articles/7996853-introduction-to-prompt-design",
+   "domains": [
+    "prompting-task-execution"
+   ],
+   "objectives": [
+    "Create effective prompts for business and technical tasks",
+    "Apply task decomposition techniques to structure complex requests",
+    "Iterate prompts to improve output quality",
+    "Adapt prompting strategies based on task type (analysis, research, drafting, brainstorming)"
+   ]
+  },
+  {
+   "slug": "support-7996857-my-prompt-isn-t-giving-me-a-helpful-answer",
+   "title": "My prompt isn\u2019t giving me a helpful answer.",
+   "source": "https://support.claude.com/en/articles/7996857-my-prompt-isn-t-giving-me-a-helpful-answer",
+   "domains": [
+    "prompting-task-execution",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Iterate prompts to improve output quality",
+    "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs",
+    "Adjust approach based on feedback and results"
+   ]
+  },
+  {
+   "slug": "support-8114518-claude-s-response-to-my-prompt-is-too-brief",
+   "title": "Claude\u2019s response to my prompt is too brief.",
+   "source": "https://support.claude.com/en/articles/8114518-claude-s-response-to-my-prompt-is-too-brief",
+   "domains": [
+    "prompting-task-execution",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Iterate prompts to improve output quality",
+    "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs"
+   ]
+  },
+  {
+   "slug": "support-7996845-what-are-some-things-i-can-use-claude-for",
+   "title": "What are some things I can use Claude for?",
+   "source": "https://support.claude.com/en/articles/7996845-what-are-some-things-i-can-use-claude-for",
+   "domains": [
+    "prompting-task-execution",
+    "workflow-integration-solution-design"
+   ],
+   "objectives": [
+    "Adapt prompting strategies based on task type (analysis, research, drafting, brainstorming)",
+    "Apply Claude to analyze requirements and use cases",
+    "Leverage Claude for research, planning, and process optimization"
+   ]
+  },
+  {
+   "slug": "support-8664678-change-the-model-effort-and-thinking-settings",
+   "title": "Change the model, effort, and thinking settings",
+   "source": "https://support.claude.com/en/articles/8664678-change-the-model-effort-and-thinking-settings",
+   "domains": [
+    "prompting-task-execution",
+    "product-model-selection",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Align model selection with task requirements (cost, speed, quality)",
+    "Adapt prompting strategies based on task type (analysis, research, drafting, brainstorming)",
+    "Optimize workflows for efficiency and effectiveness"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-prompt-engineering-overview",
+   "title": "Prompt engineering overview",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
+   "domains": [
+    "prompting-task-execution"
+   ],
+   "objectives": [
+    "Create effective prompts for business and technical tasks",
+    "Iterate prompts to improve output quality"
+   ]
+  },
+  {
+   "slug": "platform-build-with-claude-prompt-engineering-claude-prompting-best-practices",
+   "title": "Prompting best practices",
+   "source": "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+   "domains": [
+    "prompting-task-execution",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Create effective prompts for business and technical tasks",
+    "Apply task decomposition techniques to structure complex requests",
+    "Iterate prompts to improve output quality",
+    "Adapt prompting strategies based on task type (analysis, research, drafting, brainstorming)",
+    "Create effective system-level instructions"
+   ]
+  },
+  {
+   "slug": "support-8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on",
+   "title": "Claude is providing incorrect or misleading responses. What\u2019s going on?",
+   "source": "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on",
+   "domains": [
+    "output-evaluation-validation"
+   ],
+   "objectives": [
+    "Evaluate Claude-generated outputs for accuracy and completeness",
+    "Identify hallucinations, inconsistencies, and biases in responses",
+    "Apply fact-checking and validation techniques"
+   ]
+  },
+  {
+   "slug": "support-8241188-claude-is-producing-links-that-don-t-work-and-falsely-claiming-that-it-has-sent-emails-or-produced-external-documents-what-s-going-on",
+   "title": "Claude is producing links that don\u2019t work and falsely claiming that it has sent emails or produced external documents. What\u2019s going on?",
+   "source": "https://support.claude.com/en/articles/8241188-claude-is-producing-links-that-don-t-work-and-falsely-claiming-that-it-has-sent-emails-or-produced-external-documents-what-s-going-on",
+   "domains": [
+    "output-evaluation-validation",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Identify hallucinations, inconsistencies, and biases in responses",
+    "Apply fact-checking and validation techniques",
+    "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs"
+   ]
+  },
+  {
+   "slug": "support-8114494-how-up-to-date-is-claude-s-training-data",
+   "title": "How up-to-date is Claude's training data?",
+   "source": "https://support.claude.com/en/articles/8114494-how-up-to-date-is-claude-s-training-data",
+   "domains": [
+    "output-evaluation-validation",
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Identify hallucinations, inconsistencies, and biases in responses",
+    "Apply fact-checking and validation techniques",
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)"
+   ]
+  },
+  {
+   "slug": "support-10684626-enable-and-use-web-search",
+   "title": "Enable and use web search",
+   "source": "https://support.claude.com/en/articles/10684626-enable-and-use-web-search",
+   "domains": [
+    "output-evaluation-validation",
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Apply fact-checking and validation techniques",
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)"
+   ]
+  },
+  {
+   "slug": "support-11088861-use-research-on-claude",
+   "title": "Use research on Claude",
+   "source": "https://support.claude.com/en/articles/11088861-use-research-on-claude",
+   "domains": [
+    "output-evaluation-validation",
+    "product-model-selection",
+    "workflow-integration-solution-design"
+   ],
+   "objectives": [
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)",
+    "Leverage Claude for research, planning, and process optimization",
+    "Apply fact-checking and validation techniques"
+   ]
+  },
+  {
+   "slug": "support-11095361-when-should-i-use-web-search-extended-thinking-and-research",
+   "title": "When should I use web search, extended thinking, and research?",
+   "source": "https://support.claude.com/en/articles/11095361-when-should-i-use-web-search-extended-thinking-and-research",
+   "domains": [
+    "prompting-task-execution",
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)",
+    "Adapt prompting strategies based on task type (analysis, research, drafting, brainstorming)",
+    "Align model selection with task requirements (cost, speed, quality)"
+   ]
+  },
+  {
+   "slug": "support-16266773-how-claude-marks-ai-generated-content",
+   "title": "How Claude marks AI-generated content",
+   "source": "https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content",
+   "domains": [
+    "output-evaluation-validation",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Determine when human review or additional verification is required",
+    "Follow organizational AI policies and governance standards"
+   ]
+  },
+  {
+   "slug": "support-10366421-how-does-claude-handle-mathematical-equations-and-calculations",
+   "title": "How does Claude handle mathematical equations and calculations?",
+   "source": "https://support.claude.com/en/articles/10366421-how-does-claude-handle-mathematical-equations-and-calculations",
+   "domains": [
+    "output-evaluation-validation"
+   ],
+   "objectives": [
+    "Evaluate Claude-generated outputs for accuracy and completeness",
+    "Apply fact-checking and validation techniques"
+   ]
+  },
+  {
+   "slug": "platform-test-and-evaluate-strengthen-guardrails-reduce-hallucinations",
+   "title": "Reduce hallucinations",
+   "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+   "domains": [
+    "output-evaluation-validation",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Identify hallucinations, inconsistencies, and biases in responses",
+    "Apply fact-checking and validation techniques",
+    "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs"
+   ]
+  },
+  {
+   "slug": "platform-test-and-evaluate-strengthen-guardrails-increase-consistency",
+   "title": "Increase output consistency",
+   "source": "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency",
+   "domains": [
+    "output-evaluation-validation",
+    "configuration-knowledge-management",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)",
+    "Create effective system-level instructions",
+    "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs"
+   ]
+  },
+  {
+   "slug": "support-17153992-what-are-artifacts-and-how-do-i-use-them",
+   "title": "What are artifacts and how do I use them?",
+   "source": "https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them",
+   "domains": [
+    "output-evaluation-validation",
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)",
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)"
+   ]
+  },
+  {
+   "slug": "support-9547008-share-artifacts",
+   "title": "Share artifacts",
+   "source": "https://support.claude.com/en/articles/9547008-share-artifacts",
+   "domains": [
+    "output-evaluation-validation",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)",
+    "Identify appropriate and inappropriate use cases"
+   ]
+  },
+  {
+   "slug": "support-13641943-visual-and-interactive-content",
+   "title": "Visual and interactive content",
+   "source": "https://support.claude.com/en/articles/13641943-visual-and-interactive-content",
+   "domains": [
+    "output-evaluation-validation",
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)",
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)"
+   ]
+  },
+  {
+   "slug": "support-13979539-custom-visuals-in-chat-and-cowork",
+   "title": "Custom visuals in chat and Cowork",
+   "source": "https://support.claude.com/en/articles/13979539-custom-visuals-in-chat-and-cowork",
+   "domains": [
+    "output-evaluation-validation"
+   ],
+   "objectives": [
+    "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)"
+   ]
+  },
+  {
+   "slug": "support-12111783-create-and-edit-files-with-claude",
+   "title": "Create and edit files with Claude",
+   "source": "https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude",
+   "domains": [
+    "output-evaluation-validation",
+    "product-model-selection",
+    "workflow-integration-solution-design"
+   ],
+   "objectives": [
+    "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)",
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)",
+    "Use Claude to support solution design, development, and iteration"
+   ]
+  },
+  {
+   "slug": "support-8241126-upload-files-to-claude",
+   "title": "Upload files to Claude",
+   "source": "https://support.claude.com/en/articles/8241126-upload-files-to-claude",
+   "domains": [
+    "product-model-selection",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)",
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)"
+   ]
+  },
+  {
+   "slug": "support-9002504-can-claude-produce-images",
+   "title": "Can Claude produce images?",
+   "source": "https://support.claude.com/en/articles/9002504-can-claude-produce-images",
+   "domains": [
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)"
+   ]
+  },
+  {
+   "slug": "support-15424964-claude-fable-models-on-your-plan",
+   "title": "Claude Fable models on your plan",
+   "source": "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
+   "domains": [
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Differentiate between Claude model types (Haiku, Sonnet, Opus)",
+    "Align model selection with task requirements (cost, speed, quality)"
+   ]
+  },
+  {
+   "slug": "support-15363606-why-claude-switched-models-in-your-conversation-with-fable-5-or-fable-5-1",
+   "title": "Why Claude switched models in your conversation with Fable 5 or Fable 5.1",
+   "source": "https://support.claude.com/en/articles/15363606-why-claude-switched-models-in-your-conversation-with-fable-5-or-fable-5-1",
+   "domains": [
+    "product-model-selection",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Differentiate between Claude model types (Haiku, Sonnet, Opus)",
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "support-16049681-why-claude-switched-models-in-your-conversation-with-opus-5-or-opus-5-5",
+   "title": "Why Claude switched models in your conversation with Opus 5 or Opus 5.5",
+   "source": "https://support.claude.com/en/articles/16049681-why-claude-switched-models-in-your-conversation-with-opus-5-or-opus-5-5",
+   "domains": [
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Differentiate between Claude model types (Haiku, Sonnet, Opus)"
+   ]
+  },
+  {
+   "slug": "support-17161993-why-claude-switched-models-in-your-conversation-with-sonnet-5-5",
+   "title": "Why Claude switched models in your conversation with Sonnet 5.5",
+   "source": "https://support.claude.com/en/articles/17161993-why-claude-switched-models-in-your-conversation-with-sonnet-5-5",
+   "domains": [
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Differentiate between Claude model types (Haiku, Sonnet, Opus)"
+   ]
+  },
+  {
+   "slug": "support-17444146-claude-haiku-4-5-was-removed-from-the-model-selector",
+   "title": "Claude Haiku 4.5 was removed from the model selector",
+   "source": "https://support.claude.com/en/articles/17444146-claude-haiku-4-5-was-removed-from-the-model-selector",
+   "domains": [
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Differentiate between Claude model types (Haiku, Sonnet, Opus)"
+   ]
+  },
+  {
+   "slug": "support-8114487-what-interfaces-can-i-use-to-access-claude",
+   "title": "What interfaces can I use to access Claude?",
+   "source": "https://support.claude.com/en/articles/8114487-what-interfaces-can-i-use-to-access-claude",
+   "domains": [
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)"
+   ]
+  },
+  {
+   "slug": "platform-about-claude-models-choosing-a-model",
+   "title": "Choosing the right model",
+   "source": "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+   "domains": [
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Differentiate between Claude model types (Haiku, Sonnet, Opus)",
+    "Align model selection with task requirements (cost, speed, quality)"
+   ]
+  },
+  {
+   "slug": "platform-about-claude-models-optimizing-for-cost-and-intelligence",
+   "title": "Optimizing for cost and intelligence",
+   "source": "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+   "domains": [
+    "product-model-selection",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Align model selection with task requirements (cost, speed, quality)",
+    "Optimize workflows for efficiency and effectiveness"
+   ]
+  },
+  {
+   "slug": "support-8606394-how-large-is-the-context-window-on-paid-claude-plans",
+   "title": "How large is the context window on paid Claude plans?",
+   "source": "https://support.claude.com/en/articles/8606394-how-large-is-the-context-window-on-paid-claude-plans",
+   "domains": [
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)"
+   ]
+  },
+  {
+   "slug": "support-11647753-how-do-usage-and-length-limits-work",
+   "title": "How do usage and length limits work?",
+   "source": "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work",
+   "domains": [
+    "product-model-selection",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)",
+    "Optimize workflows for efficiency and effectiveness"
+   ]
+  },
+  {
+   "slug": "support-9797557-usage-limit-best-practices",
+   "title": "Usage limit best practices",
+   "source": "https://support.claude.com/en/articles/9797557-usage-limit-best-practices",
+   "domains": [
+    "product-model-selection",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)",
+    "Optimize workflows for efficiency and effectiveness"
+   ]
+  },
+  {
+   "slug": "support-11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
+   "title": "Use Claude\u2019s chat search and memory to build on previous context",
+   "source": "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
+   "domains": [
+    "product-model-selection",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)",
+    "Inform, maintain, and update Claude configurations, knowledge sources, and instructions"
+   ]
+  },
+  {
+   "slug": "support-12123587-import-and-export-your-memory-from-claude",
+   "title": "Import and export your memory from Claude",
+   "source": "https://support.claude.com/en/articles/12123587-import-and-export-your-memory-from-claude",
+   "domains": [
+    "product-model-selection",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)",
+    "Inform, maintain, and update Claude configurations, knowledge sources, and instructions"
+   ]
+  },
+  {
+   "slug": "support-10185728-understanding-claude-s-personalization-features",
+   "title": "Understanding Claude's personalization features",
+   "source": "https://support.claude.com/en/articles/10185728-understanding-claude-s-personalization-features",
+   "domains": [
+    "product-model-selection",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Create effective system-level instructions",
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)"
+   ]
+  },
+  {
+   "slug": "support-12260368-use-incognito-chats",
+   "title": "Use incognito chats",
+   "source": "https://support.claude.com/en/articles/12260368-use-incognito-chats",
+   "domains": [
+    "product-model-selection",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)",
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "support-13345190-get-started-with-claude-cowork",
+   "title": "Get started with Claude Cowork",
+   "source": "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork",
+   "domains": [
+    "product-model-selection",
+    "workflow-integration-solution-design"
+   ],
+   "objectives": [
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)",
+    "Integrate Claude into existing workflows to augment or redesign them"
+   ]
+  },
+  {
+   "slug": "support-16761823-claude-cowork-and-chat-are-one-claude",
+   "title": "Claude Cowork and chat are one Claude",
+   "source": "https://support.claude.com/en/articles/16761823-claude-cowork-and-chat-are-one-claude",
+   "domains": [
+    "product-model-selection",
+    "workflow-integration-solution-design"
+   ],
+   "objectives": [
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)",
+    "Integrate Claude into existing workflows to augment or redesign them"
+   ]
+  },
+  {
+   "slug": "support-16923645-get-started-with-claude-docs",
+   "title": "Get started with Claude Docs",
+   "source": "https://support.claude.com/en/articles/16923645-get-started-with-claude-docs",
+   "domains": [
+    "output-evaluation-validation",
+    "product-model-selection"
+   ],
+   "objectives": [
+    "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)",
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)"
+   ]
+  },
+  {
+   "slug": "support-12738598-adapt-to-new-model-personas-after-deprecations",
+   "title": "Adapt to new model personas after deprecations",
+   "source": "https://support.claude.com/en/articles/12738598-adapt-to-new-model-personas-after-deprecations",
+   "domains": [
+    "product-model-selection",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Differentiate between Claude model types (Haiku, Sonnet, Opus)",
+    "Adjust approach based on feedback and results"
+   ]
+  },
+  {
+   "slug": "support-9517075-what-are-projects",
+   "title": "What are projects?",
+   "source": "https://support.claude.com/en/articles/9517075-what-are-projects",
+   "domains": [
+    "product-model-selection",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Configure Claude Projects with instructions and knowledge sources",
+    "Select appropriate Claude product features (Projects, research mode, chat, artifacts)",
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)"
+   ]
+  },
+  {
+   "slug": "support-9519177-how-can-i-create-and-manage-projects",
+   "title": "How can I create and manage projects?",
+   "source": "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects",
+   "domains": [
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Configure Claude Projects with instructions and knowledge sources",
+    "Inform, maintain, and update Claude configurations, knowledge sources, and instructions"
+   ]
+  },
+  {
+   "slug": "support-9519189-manage-project-visibility-and-sharing",
+   "title": "Manage project visibility and sharing",
+   "source": "https://support.claude.com/en/articles/9519189-manage-project-visibility-and-sharing",
+   "domains": [
+    "configuration-knowledge-management",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Configure Claude Projects with instructions and knowledge sources",
+    "Follow organizational AI policies and governance standards"
+   ]
+  },
+  {
+   "slug": "support-11473015-retrieval-augmented-generation-rag-for-projects",
+   "title": "Retrieval augmented generation \\(RAG\\) for projects",
+   "source": "https://support.claude.com/en/articles/11473015-retrieval-augmented-generation-rag-for-projects",
+   "domains": [
+    "product-model-selection",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Configure Claude Projects with instructions and knowledge sources",
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)",
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)"
+   ]
+  },
+  {
+   "slug": "support-11176164-use-connectors-to-extend-claude-s-capabilities",
+   "title": "Use connectors to extend Claude's capabilities",
+   "source": "https://support.claude.com/en/articles/11176164-use-connectors-to-extend-claude-s-capabilities",
+   "domains": [
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)"
+   ]
+  },
+  {
+   "slug": "support-10166901-use-google-workspace-connectors",
+   "title": "Use Google Workspace connectors",
+   "source": "https://support.claude.com/en/articles/10166901-use-google-workspace-connectors",
+   "domains": [
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)"
+   ]
+  },
+  {
+   "slug": "support-11725091-when-to-use-desktop-and-web-connectors",
+   "title": "When to use desktop and web connectors",
+   "source": "https://support.claude.com/en/articles/11725091-when-to-use-desktop-and-web-connectors",
+   "domains": [
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)"
+   ]
+  },
+  {
+   "slug": "support-13454812-use-interactive-connectors-in-claude",
+   "title": "Use interactive connectors in Claude",
+   "source": "https://support.claude.com/en/articles/13454812-use-interactive-connectors-in-claude",
+   "domains": [
+    "workflow-integration-solution-design",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)",
+    "Integrate Claude into existing workflows to augment or redesign them"
+   ]
+  },
+  {
+   "slug": "support-13730515-manage-claude-s-tool-access",
+   "title": "Manage Claude\u2019s tool access",
+   "source": "https://support.claude.com/en/articles/13730515-manage-claude-s-tool-access",
+   "domains": [
+    "configuration-knowledge-management",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)",
+    "Follow organizational AI policies and governance standards"
+   ]
+  },
+  {
+   "slug": "support-12512176-what-are-skills",
+   "title": "What are skills?",
+   "source": "https://support.claude.com/en/articles/12512176-what-are-skills",
+   "domains": [
+    "workflow-integration-solution-design",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Configure Claude Projects with instructions and knowledge sources",
+    "Create effective system-level instructions",
+    "Integrate Claude into existing workflows to augment or redesign them"
+   ]
+  },
+  {
+   "slug": "support-12512180-use-skills-in-claude",
+   "title": "Use skills in Claude",
+   "source": "https://support.claude.com/en/articles/12512180-use-skills-in-claude",
+   "domains": [
+    "workflow-integration-solution-design",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Configure Claude Projects with instructions and knowledge sources",
+    "Integrate Claude into existing workflows to augment or redesign them"
+   ]
+  },
+  {
+   "slug": "support-12512198-how-to-create-custom-skills",
+   "title": "How to create custom skills",
+   "source": "https://support.claude.com/en/articles/12512198-how-to-create-custom-skills",
+   "domains": [
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Create effective system-level instructions",
+    "Inform, maintain, and update Claude configurations, knowledge sources, and instructions"
+   ]
+  },
+  {
+   "slug": "support-13837440-use-plugins-in-claude",
+   "title": "Use plugins in Claude",
+   "source": "https://support.claude.com/en/articles/13837440-use-plugins-in-claude",
+   "domains": [
+    "workflow-integration-solution-design",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)",
+    "Integrate Claude into existing workflows to augment or redesign them"
+   ]
+  },
+  {
+   "slug": "support-14546867-set-organization-instructions",
+   "title": "Set organization instructions",
+   "source": "https://support.claude.com/en/articles/14546867-set-organization-instructions",
+   "domains": [
+    "configuration-knowledge-management",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Create effective system-level instructions",
+    "Follow organizational AI policies and governance standards"
+   ]
+  },
+  {
+   "slug": "support-14116274-organize-your-tasks-with-projects-in-claude-cowork",
+   "title": "Organize your tasks with projects in Claude Cowork",
+   "source": "https://support.claude.com/en/articles/14116274-organize-your-tasks-with-projects-in-claude-cowork",
+   "domains": [
+    "workflow-integration-solution-design",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Configure Claude Projects with instructions and knowledge sources",
+    "Integrate Claude into existing workflows to augment or redesign them"
+   ]
+  },
+  {
+   "slug": "support-16951679-use-claude-in-google-docs-sheets-and-slides",
+   "title": "Use Claude in Google Docs, Sheets, and Slides",
+   "source": "https://support.claude.com/en/articles/16951679-use-claude-in-google-docs-sheets-and-slides",
+   "domains": [
+    "workflow-integration-solution-design",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Integrate Claude into existing workflows to augment or redesign them",
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)"
+   ]
+  },
+  {
+   "slug": "support-15183774-connect-to-microsoft-365",
+   "title": "Connect to Microsoft 365",
+   "source": "https://support.claude.com/en/articles/15183774-connect-to-microsoft-365",
+   "domains": [
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)"
+   ]
+  },
+  {
+   "slug": "support-14730684-how-claude-suggests-connected-apps",
+   "title": "How Claude suggests connected apps",
+   "source": "https://support.claude.com/en/articles/14730684-how-claude-suggests-connected-apps",
+   "domains": [
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)"
+   ]
+  },
+  {
+   "slug": "support-14328846-browse-skills-connectors-and-plugins-in-one-directory",
+   "title": "Browse skills, connectors, and plugins in one directory",
+   "source": "https://support.claude.com/en/articles/14328846-browse-skills-connectors-and-plugins-in-one-directory",
+   "domains": [
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)"
+   ]
+  },
+  {
+   "slug": "support-11175166-get-started-with-custom-connectors-using-remote-mcp",
+   "title": "Get started with custom connectors using remote MCP",
+   "source": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+   "domains": [
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)"
+   ]
+  },
+  {
+   "slug": "support-8325621-i-would-like-to-input-sensitive-data-into-my-chats-with-claude-who-can-view-my-conversations",
+   "title": "I would like to input sensitive data into my chats with Claude. Who can view my conversations?",
+   "source": "https://support.claude.com/en/articles/8325621-i-would-like-to-input-sensitive-data-into-my-chats-with-claude-who-can-view-my-conversations",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "support-9265372-who-owns-and-manages-the-data-of-my-team",
+   "title": "Who owns and manages the data of my team?",
+   "source": "https://support.claude.com/en/articles/9265372-who-owns-and-manages-the-data-of-my-team",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations",
+    "Follow organizational AI policies and governance standards"
+   ]
+  },
+  {
+   "slug": "support-10440198-configure-custom-data-retention-controls-for-enterprise-plans",
+   "title": "Configure custom data retention controls for Enterprise plans",
+   "source": "https://support.claude.com/en/articles/10440198-configure-custom-data-retention-controls-for-enterprise-plans",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations",
+    "Follow organizational AI policies and governance standards"
+   ]
+  },
+  {
+   "slug": "support-9796617-can-you-delete-data-that-i-sent-via-team-and-enterprise-plans",
+   "title": "Can you delete data that I sent via Team and Enterprise plans?",
+   "source": "https://support.claude.com/en/articles/9796617-can-you-delete-data-that-i-sent-via-team-and-enterprise-plans",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "support-12053672-what-happens-to-a-user-s-data-when-they-are-removed-from-a-team-or-enterprise-organization",
+   "title": "What happens to a user's data when they are removed from a Team or Enterprise organization?",
+   "source": "https://support.claude.com/en/articles/12053672-what-happens-to-a-user-s-data-when-they-are-removed-from-a-team-or-enterprise-organization",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations",
+    "Follow organizational AI policies and governance standards"
+   ]
+  },
+  {
+   "slug": "support-12326764-can-i-use-my-outputs-to-train-an-ai-model",
+   "title": "Can I use my Outputs to train an AI model?",
+   "source": "https://support.claude.com/en/articles/12326764-can-i-use-my-outputs-to-train-an-ai-model",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Identify appropriate and inappropriate use cases",
+    "Understand the ethical implications of AI usage"
+   ]
+  },
+  {
+   "slug": "support-8106465-our-approach-to-user-safety",
+   "title": "Our Approach to User Safety",
+   "source": "https://support.claude.com/en/articles/8106465-our-approach-to-user-safety",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Identify appropriate and inappropriate use cases",
+    "Understand the ethical implications of AI usage"
+   ]
+  },
+  {
+   "slug": "support-8241253-safeguards-warnings-and-appeals",
+   "title": "Safeguards warnings and appeals",
+   "source": "https://support.claude.com/en/articles/8241253-safeguards-warnings-and-appeals",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Identify appropriate and inappropriate use cases",
+    "Understand the ethical implications of AI usage"
+   ]
+  },
+  {
+   "slug": "support-12005017-using-agents-according-to-our-usage-policy",
+   "title": "Using Agents According to Our Usage Policy",
+   "source": "https://support.claude.com/en/articles/12005017-using-agents-according-to-our-usage-policy",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Identify appropriate and inappropriate use cases",
+    "Follow organizational AI policies and governance standards"
+   ]
+  },
+  {
+   "slug": "support-13296973-hipaa-ready-enterprise-plans",
+   "title": "HIPAA-ready Enterprise plans",
+   "source": "https://support.claude.com/en/articles/13296973-hipaa-ready-enterprise-plans",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "support-15707726-using-claude-for-legal-work-privilege-confidentiality-and-how-to-think-about-configuration",
+   "title": "Using Claude for Legal Work: Privilege, Confidentiality, and How to Think About Configuration",
+   "source": "https://support.claude.com/en/articles/15707726-using-claude-for-legal-work-privilege-confidentiality-and-how-to-think-about-configuration",
+   "domains": [
+    "output-evaluation-validation",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations",
+    "Understand the ethical implications of AI usage",
+    "Determine when human review or additional verification is required"
+   ]
+  },
+  {
+   "slug": "support-9927533-control-project-sharing-for-your-organization",
+   "title": "Control project sharing for your organization",
+   "source": "https://support.claude.com/en/articles/9927533-control-project-sharing-for-your-organization",
+   "domains": [
+    "configuration-knowledge-management",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Follow organizational AI policies and governance standards",
+    "Inform, maintain, and update Claude configurations, knowledge sources, and instructions"
+   ]
+  },
+  {
+   "slug": "support-13364135-use-claude-cowork-safely",
+   "title": "Use Claude Cowork safely",
+   "source": "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely",
+   "domains": [
+    "workflow-integration-solution-design",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations",
+    "Understand the ethical implications of AI usage",
+    "Integrate Claude into existing workflows to augment or redesign them"
+   ]
+  },
+  {
+   "slug": "support-12902428-use-claude-in-chrome-safely",
+   "title": "Use Claude in Chrome safely",
+   "source": "https://support.claude.com/en/articles/12902428-use-claude-in-chrome-safely",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations",
+    "Understand the ethical implications of AI usage"
+   ]
+  },
+  {
+   "slug": "support-10593882-share-and-unshare-chats",
+   "title": "Share and unshare chats",
+   "source": "https://support.claude.com/en/articles/10593882-share-and-unshare-chats",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "support-16762437-public-links-for-shared-chats",
+   "title": "Public links for shared chats",
+   "source": "https://support.claude.com/en/articles/16762437-public-links-for-shared-chats",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "support-16762496-share-a-chat-with-specific-people",
+   "title": "Share a chat with specific people",
+   "source": "https://support.claude.com/en/articles/16762496-share-a-chat-with-specific-people",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "support-15694740-manage-model-access-for-your-organization",
+   "title": "Manage model access for your organization",
+   "source": "https://support.claude.com/en/articles/15694740-manage-model-access-for-your-organization",
+   "domains": [
+    "product-model-selection",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Follow organizational AI policies and governance standards",
+    "Align model selection with task requirements (cost, speed, quality)"
+   ]
+  },
+  {
+   "slug": "support-15330088-set-a-default-model-for-your-organization",
+   "title": "Set a default model for your organization",
+   "source": "https://support.claude.com/en/articles/15330088-set-a-default-model-for-your-organization",
+   "domains": [
+    "product-model-selection",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Follow organizational AI policies and governance standards",
+    "Align model selection with task requirements (cost, speed, quality)"
+   ]
+  },
+  {
+   "slug": "support-9267276-roles-and-permissions",
+   "title": "Roles and permissions",
+   "source": "https://support.claude.com/en/articles/9267276-roles-and-permissions",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Follow organizational AI policies and governance standards"
+   ]
+  },
+  {
+   "slug": "support-13119606-provision-and-manage-skills-for-your-organization",
+   "title": "Provision and manage skills for your organization",
+   "source": "https://support.claude.com/en/articles/13119606-provision-and-manage-skills-for-your-organization",
+   "domains": [
+    "configuration-knowledge-management",
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Follow organizational AI policies and governance standards",
+    "Inform, maintain, and update Claude configurations, knowledge sources, and instructions"
+   ]
+  },
+  {
+   "slug": "support-16994751-artifacts-admin-guide-for-team-and-enterprise-plans",
+   "title": "Artifacts admin guide for Team and Enterprise plans",
+   "source": "https://support.claude.com/en/articles/16994751-artifacts-admin-guide-for-team-and-enterprise-plans",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Follow organizational AI policies and governance standards"
+   ]
+  },
+  {
+   "slug": "support-15425996-data-retention-practices-for-covered-models",
+   "title": "Data retention practices for Covered Models",
+   "source": "https://support.claude.com/en/articles/15425996-data-retention-practices-for-covered-models",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "support-9267385-does-anthropic-act-as-a-data-processor-or-controller",
+   "title": "Does Anthropic Act as a Data Processor or Controller?",
+   "source": "https://support.claude.com/en/articles/9267385-does-anthropic-act-as-a-data-processor-or-controller",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "anthropic-legal-aup",
+   "title": "Usage Policy",
+   "source": "https://www.anthropic.com/legal/aup",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Identify appropriate and inappropriate use cases",
+    "Follow organizational AI policies and governance standards",
+    "Understand the ethical implications of AI usage"
+   ]
+  },
+  {
+   "slug": "privacy-10023548-how-long-do-you-store-my-data",
+   "title": "How long do you store my data?",
+   "source": "https://privacy.claude.com/en/articles/10023548-how-long-do-you-store-my-data",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "privacy-10023580-is-my-data-used-for-model-training",
+   "title": "Is my data used for model training?",
+   "source": "https://privacy.claude.com/en/articles/10023580-is-my-data-used-for-model-training",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "privacy-12109829-how-do-i-change-my-model-improvement-privacy-settings",
+   "title": "How do I change my model improvement privacy settings?",
+   "source": "https://privacy.claude.com/en/articles/12109829-how-do-i-change-my-model-improvement-privacy-settings",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "privacy-7996866-how-long-do-you-store-my-organization-s-data",
+   "title": "How long do you store my organization\u2019s data?",
+   "source": "https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "privacy-7996868-is-my-data-used-for-model-training",
+   "title": "Is my data used for model training?",
+   "source": "https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "privacy-10458704-how-does-anthropic-protect-the-personal-data-of-claude-users",
+   "title": "How does Anthropic protect the personal data of Claude users?",
+   "source": "https://privacy.claude.com/en/articles/10458704-how-does-anthropic-protect-the-personal-data-of-claude-users",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "privacy-8956058-i-have-a-zero-data-retention-agreement-with-anthropic-what-products-does-it-apply-to",
+   "title": "I have a zero data retention agreement with Anthropic. What products does it apply to?",
+   "source": "https://privacy.claude.com/en/articles/8956058-i-have-a-zero-data-retention-agreement-with-anthropic-what-products-does-it-apply-to",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "privacy-7996890-where-are-your-servers-located-do-you-host-your-models-on-eu-servers",
+   "title": "Where are your servers located? Do you host your models on EU servers?",
+   "source": "https://privacy.claude.com/en/articles/7996890-where-are-your-servers-located-do-you-host-your-models-on-eu-servers",
+   "domains": [
+    "governance-risk-responsible-use"
+   ],
+   "objectives": [
+    "Apply data sensitivity, regulatory, and privacy considerations"
+   ]
+  },
+  {
+   "slug": "support-13854387-schedule-recurring-tasks-in-claude-cowork",
+   "title": "Schedule recurring tasks in Claude Cowork",
+   "source": "https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork",
+   "domains": [
+    "workflow-integration-solution-design",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Integrate Claude into existing workflows to augment or redesign them",
+    "Optimize workflows for efficiency and effectiveness"
+   ]
+  },
+  {
+   "slug": "support-13947068-assign-tasks-from-anywhere-in-claude-cowork",
+   "title": "Assign tasks from anywhere in Claude Cowork",
+   "source": "https://support.claude.com/en/articles/13947068-assign-tasks-from-anywhere-in-claude-cowork",
+   "domains": [
+    "workflow-integration-solution-design"
+   ],
+   "objectives": [
+    "Integrate Claude into existing workflows to augment or redesign them"
+   ]
+  },
+  {
+   "slug": "support-14729249-use-live-artifacts-in-claude-cowork",
+   "title": "Use live artifacts in Claude Cowork",
+   "source": "https://support.claude.com/en/articles/14729249-use-live-artifacts-in-claude-cowork",
+   "domains": [
+    "output-evaluation-validation",
+    "workflow-integration-solution-design"
+   ],
+   "objectives": [
+    "Integrate Claude into existing workflows to augment or redesign them",
+    "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)"
+   ]
+  },
+  {
+   "slug": "support-12489464-use-enterprise-search",
+   "title": "Use enterprise search",
+   "source": "https://support.claude.com/en/articles/12489464-use-enterprise-search",
+   "domains": [
+    "workflow-integration-solution-design",
+    "configuration-knowledge-management"
+   ],
+   "objectives": [
+    "Leverage Claude for research, planning, and process optimization",
+    "Manage uploaded knowledge and connectors (e.g., Google Drive, Gmail)"
+   ]
+  },
+  {
+   "slug": "support-17454700-get-started-with-claude-dashboards",
+   "title": "Get started with Claude Dashboards",
+   "source": "https://support.claude.com/en/articles/17454700-get-started-with-claude-dashboards",
+   "domains": [
+    "output-evaluation-validation",
+    "workflow-integration-solution-design"
+   ],
+   "objectives": [
+    "Use Claude to support solution design, development, and iteration",
+    "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)"
+   ]
+  },
+  {
+   "slug": "support-16893491-get-started-with-smart-reports",
+   "title": "Get started with smart reports",
+   "source": "https://support.claude.com/en/articles/16893491-get-started-with-smart-reports",
+   "domains": [
+    "workflow-integration-solution-design"
+   ],
+   "objectives": [
+    "Leverage Claude for research, planning, and process optimization",
+    "Communicate Claude's value and limitations to stakeholders"
+   ]
+  },
+  {
+   "slug": "support-12466728-troubleshoot-claude-error-messages",
+   "title": "Troubleshoot Claude error messages",
+   "source": "https://support.claude.com/en/articles/12466728-troubleshoot-claude-error-messages",
+   "domains": [
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs"
+   ]
+  },
+  {
+   "slug": "support-17007452-what-is-a-limit-reset",
+   "title": "What is a limit reset?",
+   "source": "https://support.claude.com/en/articles/17007452-what-is-a-limit-reset",
+   "domains": [
+    "product-model-selection",
+    "troubleshooting-optimization"
+   ],
+   "objectives": [
+    "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)",
+    "Optimize workflows for efficiency and effectiveness"
+   ]
+  }
+ ]
+}

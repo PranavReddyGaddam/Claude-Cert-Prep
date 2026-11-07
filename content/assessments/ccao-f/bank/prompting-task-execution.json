@@ -1,0 +1,370 @@
+{
+ "id": "prompting-task-execution",
+ "title": "Prompting and Task Execution",
+ "questions": [
+  {
+   "id": "ccao-f-pt-01",
+   "domain": "prompting-task-execution",
+   "objective": "Create effective prompts for business and technical tasks",
+   "type": "single",
+   "prompt": "A facilities manager asks Claude to \"write a notice about the parking changes\" for all staff. The draft is upbeat and well written, but it gives no dates and names the wrong car parks. She has the estates team's change memo open on her desk. What should she do next?",
+   "options": [
+    "Paste in the estates memo and say who reads the notice, which dates and car parks it must state, and its length",
+    "Ask Claude to rewrite the notice in a more formal register and to double-check every detail before it answers",
+    "Tell Claude it is an experienced internal-communications officer and regenerate the notice with that persona",
+    "Regenerate the notice a few times and keep the version whose dates and car-park names look most plausible"
+   ],
+   "correct": [
+    0
+   ],
+   "explanation": "The draft is wrong because Claude never saw the facts: it filled the gap with plausible detail. Anthropic's advice is to treat Claude like a new contractor with no context and give it the information and specifics it needs, so the fix is the memo plus the audience, required facts and length. A more formal register and a request to double-check are cosmetic and rely on self-report; Claude cannot check details it was never given. A communications persona changes tone, not knowledge. Regenerating and picking the most plausible version selects for convincing errors, not correct ones.",
+   "references": [
+    "https://support.claude.com/en/articles/7996853-introduction-to-prompt-design",
+    "https://support.claude.com/en/articles/7996857-my-prompt-isn-t-giving-me-a-helpful-answer"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-02",
+   "domain": "prompting-task-execution",
+   "objective": "Create effective prompts for business and technical tasks",
+   "type": "single",
+   "prompt": "A customer-success lead writes \"Do not use tables\" in a prompt that drafts replies for the company's ticketing tool. Claude now writes multi-step setup instructions as long unbroken paragraphs, which customers find hard to follow. The tool only displays plain text. Which revision is most likely to fix this?",
+   "options": [
+    "Repeat \"Do not use tables\" in capitals at both the start and the end of the prompt so it is not missed",
+    "Paste in a few example replies that use tables, labelled as bad examples, so Claude sees what to avoid",
+    "Explain the tool shows plain text only, and ask for numbered steps on separate lines instead of tables",
+    "Ask Claude to use its own judgment about when a table would make a reply easier for customers to read"
+   ],
+   "correct": [
+    2
+   ],
+   "explanation": "Anthropic's prompting guidance makes two points that decide this: explain the reason behind an instruction so Claude can generalize from it, and tell Claude what to do instead of only what not to do. Saying the tool shows plain text, and asking for numbered plain-text steps, gives Claude both. Repeating the ban in capitals strengthens the instruction that caused the problem without saying what structure to use. Examples are among the strongest steering signals, so showing table replies tends to pull output toward tables, labelled or not. Leaving it to Claude's judgment brings tables back, which the tool cannot display.",
+   "references": [
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-03",
+   "domain": "prompting-task-execution",
+   "objective": "Create effective prompts for business and technical tasks",
+   "type": "multiple",
+   "prompt": "A claims analyst at an insurer types her question first, then pastes a 60-page claims guideline and three claim notes below it, all in one message. Claude's answer is general and does not point to anything specific in the guideline. Which TWO changes to the prompt are most likely to improve the answer?",
+   "options": [
+    "Place the guideline and claim notes at the top of the message and put her question at the end",
+    "Open the prompt by telling Claude it is a senior claims adjuster with twenty years of experience",
+    "Split the guideline across five new chats so that each chat only has to handle a short section",
+    "Ask Claude to quote the guideline passages that apply to each claim before it gives its assessment",
+    "Add a closing line asking Claude to be thorough, precise and careful when it reads the guideline"
+   ],
+   "correct": [
+    0,
+    3
+   ],
+   "explanation": "For long documents, Anthropic's prompting guide recommends putting the long material near the top and the query at the end, and, for long-document tasks, asking Claude to pull out relevant quotes first so the answer stays anchored to the text. Those are the two changes. A senior-adjuster persona may shift tone but adds no knowledge of this guideline. Splitting the guideline across separate chats breaks it apart: each chat sees only its own section, so no chat can apply the whole guideline to a claim. A closing plea to be thorough states a wish without changing what Claude can work with.",
+   "references": [
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-04",
+   "domain": "prompting-task-execution",
+   "objective": "Create effective prompts for business and technical tasks",
+   "type": "single",
+   "prompt": "A homewares retailer's copy team gives Claude four example product descriptions to show the house style. All four happen to be for winter coats. New descriptions for kitchen items now mention warmth, layering and cold weather. What is the best fix?",
+   "options": [
+    "Keep the four examples and add a line telling Claude never to mention the weather in product copy",
+    "Replace them with three to five examples from different product categories in the same house style",
+    "Remove the examples and describe the house style in adjectives such as warm, concise and practical",
+    "Switch to a more capable model, which should be less likely to copy patterns from the examples"
+   ],
+   "correct": [
+    1
+   ],
+   "explanation": "Anthropic recommends three to five examples that are relevant to the task and diverse enough that Claude doesn't pick up unintended patterns. All-coat examples taught an accidental rule, so the fix is a varied set in the same style. A ban on weather words patches one symptom while the examples keep teaching others, such as layering. Describing style in adjectives throws away the most reliable way to steer tone and structure. A more capable model is the blunt fix; the problem is the inputs, and any model will learn from consistent examples.",
+   "references": [
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-05",
+   "domain": "prompting-task-execution",
+   "objective": "Create effective prompts for business and technical tasks",
+   "type": "single",
+   "prompt": "A team lead asks Claude to \"review this project plan\" before a steering meeting. She gets light copy edits and a note that the plan looks solid. What she needed was the schedule risks, missing dependencies and tasks with no owner. Which follow-up prompt is most likely to get that?",
+   "options": [
+    "Ask Claude to review the plan again, this time much more thoroughly and critically than before",
+    "Raise the effort level to Max and repeat the original request so Claude spends longer on its review",
+    "Ask Claude to act as a senior project consultant and review the plan again from that perspective",
+    "List the three things she wants found and ask for each one with the plan section it affects and why"
+   ],
+   "correct": [
+    3
+   ],
+   "explanation": "Anthropic's guidance is to ask explicitly for anything beyond the literal task rather than hoping Claude infers it from a vague prompt. \"Review\" was read as an edit; naming risks, dependencies and unowned tasks, with the section and reason for each, defines the job. \"More thoroughly and critically\" is an adjective, not a requirement, so Claude still has to guess what she wants. Higher effort makes Claude think harder about the same vague request; Anthropic notes clear prompts help Claude use effort well, not the reverse. A consultant persona changes perspective but still leaves the three targets unstated.",
+   "references": [
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+    "https://support.claude.com/en/articles/8664678-change-the-model-effort-and-thinking-settings"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-06",
+   "domain": "prompting-task-execution",
+   "objective": "Apply task decomposition techniques to structure complex requests",
+   "type": "single",
+   "prompt": "An HR analyst must turn 30 exit-interview transcripts into three recommendations for the leadership team. Her one-prompt attempt produced confident recommendations, but several quoted reasons she cannot find in any transcript. Which way of structuring the work is best?",
+   "options": [
+    "Ask for the three recommendations first, then ask Claude to find supporting quotes for each of them",
+    "Process the transcripts in three batches of ten and merge the three batch summaries into recommendations",
+    "Extract reasons with quotes per transcript, check a sample against the source, then group them and draft",
+    "Ask for the recommendations in one prompt, then ask Claude to confirm each one appears in the transcripts"
+   ],
+   "correct": [
+    2
+   ],
+   "explanation": "Anthropic advises breaking complex requests into substeps; the useful boundaries are points where a person can verify an intermediate result before more is built on it. Extracting quoted reasons, spot-checking them, then grouping and drafting means recommendations rest on checked evidence. Drafting first and then hunting for quotes is the right steps in the wrong order: it invites evidence fitted to conclusions. Batching by ten splits by size and creates no checkpoint where anything is verified. Asking Claude to confirm its own recommendations is a self-report, which is exactly what failed in the first attempt.",
+   "references": [
+    "https://support.claude.com/en/articles/7996857-my-prompt-isn-t-giving-me-a-helpful-answer",
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-07",
+   "domain": "prompting-task-execution",
+   "objective": "Apply task decomposition techniques to structure complex requests",
+   "type": "multiple",
+   "prompt": "A programme manager splits a vendor evaluation across two chats in the same Claude Project. In chat A she extracts and checks each vendor's pricing. In chat B she asks Claude to score the vendors, and the scores use prices that differ from her checked figures. Which TWO statements are correct?",
+   "options": [
+    "A model with a larger context window would let chat B read chat A's figures without any extra step",
+    "Chats in a Project do not see each other's content unless that information is added to the Project knowledge",
+    "Renaming chat A to \"Pricing - verified\" lets other chats in the Project find and reuse its figures",
+    "Turning on extended thinking in chat B lets Claude reconstruct the prices it worked out in chat A",
+    "Bringing the checked pricing table into chat B, or adding it to the knowledge, gives scoring the right figures"
+   ],
+   "correct": [
+    1,
+    4
+   ],
+   "explanation": "Anthropic's Projects article states that context is not shared across chats within a project unless the information is added to the project knowledge base. Chat B never had the checked prices, so it used whatever it found or assumed. Carrying the verified table forward, or putting it in knowledge, connects the steps. A larger context window enlarges one chat's capacity; it does not connect separate chats. A chat's title is a label for people and doesn't make its content available elsewhere. Extended thinking improves reasoning over what is in the conversation and cannot recover content that is not there.",
+   "references": [
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-08",
+   "domain": "prompting-task-execution",
+   "objective": "Apply task decomposition techniques to structure complex requests",
+   "type": "single",
+   "prompt": "A marketing manager hands a Cowork task to Claude: \"Build the Q1 campaign report from the files in this folder.\" The report is for the CMO, who wants one page answering three questions. Claude's proposed plan lists nine sections covering every channel in detail. What is the best next step?",
+   "options": [
+    "Steer now: give the one-page format and the CMO's three questions, then let Claude run the revised plan",
+    "Let it run, since Cowork breaks the work into subtasks on its own, and cut the report down afterwards",
+    "Switch the task to Skip mode so Claude finishes the nine sections faster, then edit it down to one page",
+    "Cancel the task and run nine separate chat prompts, one per section, so each part gets more attention"
+   ],
+   "correct": [
+    0
+   ],
+   "explanation": "Cowork analyzes the request, creates a plan and breaks it into subtasks, and Anthropic's steps say to review Claude's approach before letting it run and to steer when it matters. The plan shows the brief lacked the audience and format, so the fix is to supply them now. Letting it run produces nine detailed sections that then have to be thrown away: Claude can only decompose toward the outcome it was given. Skip mode only removes approvals; it speeds up the wrong plan. Nine separate chats split the work by section without fixing the missing requirement, and those chats wouldn't share context.",
+   "references": [
+    "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork",
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-09",
+   "domain": "prompting-task-execution",
+   "objective": "Apply task decomposition techniques to structure complex requests",
+   "type": "single",
+   "prompt": "A compliance coordinator needs a supplier-onboarding checklist that meets a 15-point internal standard. Claude's first draft looks complete but she suspects it misses some points. She wants a dependable way to get a checklist she can sign off. Which approach is best?",
+   "options": [
+    "Ask Claude to produce the checklist and state in the same reply that it covers all 15 points of the standard",
+    "Paste the 15-point standard into the prompt twice so that Claude gives the standard more of its attention",
+    "Ask for the checklist as a table, because a table layout makes it harder for Claude to leave items out",
+    "In a separate step, have Claude check the draft against each of the 15 points and list gaps she can verify"
+   ],
+   "correct": [
+    3
+   ],
+   "explanation": "Anthropic's prompting guide names draft, then review against criteria, then refine as the most common chaining pattern. A point-by-point review that lists gaps gives the coordinator something concrete to verify before sign-off, and she stays the checker. A same-reply statement that all 15 points are covered is a self-report, not a check. Pasting the standard twice adds length, not structure, and doesn't create a review step. A table is a format choice: it may make gaps easier for her to spot later, but it does not make Claude compare the draft to each point.",
+   "references": [
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-10",
+   "domain": "prompting-task-execution",
+   "objective": "Iterate prompts to improve output quality",
+   "type": "single",
+   "prompt": "A sales-operations analyst's weekly pipeline summary keeps listing deals that closed last month. She has rewritten the instructions three times, adding \"only include open deals\" in stronger terms each time. Each week she attaches the same saved CRM export. What should she check next?",
+   "options": [
+    "Whether the instruction would work better in capitals and repeated at the end of the prompt as well",
+    "Whether the attached export's filter or date range still includes closed deals, and fix that first",
+    "Whether moving to the most capable model at Max effort makes Claude follow the instruction reliably",
+    "Whether asking Claude to rate its confidence that each deal is open, and dropping low scores, helps"
+   ],
+   "correct": [
+    1
+   ],
+   "explanation": "Three rounds of rewording that change nothing are the signal to stop polishing and look for a missing or wrong input. Anthropic's prompt engineering overview notes that not every failure is best solved by prompting. If the saved export still contains closed deals, Claude is summarizing what it was given. Capitals and repetition are a fourth rewording of the same instruction. The most capable model at Max effort is the blunt fix and still works from the same export. Self-rated confidence is a self-report; it does not tell Claude which deals actually closed.",
+   "references": [
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
+    "https://support.claude.com/en/articles/7996857-my-prompt-isn-t-giving-me-a-helpful-answer"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-11",
+   "domain": "prompting-task-execution",
+   "objective": "Iterate prompts to improve output quality",
+   "type": "multiple",
+   "prompt": "A support team lead is improving a prompt that drafts refund replies. She wants to be sure each change actually makes replies better before the team adopts it. Which TWO practices make her iteration trustworthy?",
+   "options": [
+    "Ask Claude to score each new reply out of ten and keep the version with the top score",
+    "Regenerate each version until one reply looks right, then save the prompt that produced it",
+    "Write down what a passing reply must contain before she starts changing the prompt",
+    "Rerun the same set of real tickets, including a few awkward ones, after each change",
+    "Add each fix as a new line at the end of the prompt and keep all the earlier lines as well"
+   ],
+   "correct": [
+    2,
+    3
+   ],
+   "explanation": "Anthropic's prompt engineering overview assumes a clear definition of success and a way to test against it before prompt work starts, so written pass criteria and a fixed set of representative tickets are the two practices. Claude's score of its own reply is a self-report, not a test. Regenerating until one reply looks right measures luck, because a single good sample says little about the next ticket. Stacking every fix on the end without removing old lines produces conflicting instructions, and Anthropic's guidance warns that contradictory instructions may not be followed reliably.",
+   "references": [
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/overview",
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+    "https://support.claude.com/en/articles/14546867-set-organization-instructions"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-12",
+   "domain": "prompting-task-execution",
+   "objective": "Iterate prompts to improve output quality",
+   "type": "single",
+   "prompt": "A policy writer asks Claude for a draft staff handbook with twelve sections. Claude writes sections one to seven in full and stops. The first seven sections are good and she wants the rest in the same structure. What is the best next step?",
+   "options": [
+    "Start a new chat and paste the full request again, adding a line telling Claude not to stop early",
+    "Switch to a model with a larger context window and send the original twelve-section request again",
+    "In the same chat, ask Claude to continue from section eight in the structure it already used",
+    "Ask for all twelve sections again in a shorter bullet-point form so that the whole handbook fits"
+   ],
+   "correct": [
+    2
+   ],
+   "explanation": "Anthropic's article on brief responses suggests giving Claude the previous prompt and response so it can pick up where it left off. Continuing in the same chat does that naturally, and Claude can match the seven sections already written. A new chat discards the good work and the structure Claude would need to match, and \"don't stop early\" is a wish, not a fix. A larger context window doesn't address where a single response ends; the same article notes the window applies to prompts rather than output. Switching to bullets changes the deliverable she asked for to make it fit.",
+   "references": [
+    "https://support.claude.com/en/articles/8114518-claude-s-response-to-my-prompt-is-too-brief"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-13",
+   "domain": "prompting-task-execution",
+   "objective": "Iterate prompts to improve output quality",
+   "type": "single",
+   "prompt": "After a dozen rounds of iteration, a training coordinator finally gets course summaries she likes from Claude, but she can't describe exactly what makes them good. Four colleagues need to produce summaries the same way. What is the best way to capture what worked?",
+   "options": [
+    "Ask Claude to review the chats behind the summaries she liked and draft instructions, then test them",
+    "Share the link to her final chat so colleagues can continue working in that same conversation",
+    "Tell colleagues to use the same model and effort level she used, since the settings made the difference",
+    "Copy her last prompt into the team wiki so that colleagues can paste it at the start of their chats"
+   ],
+   "correct": [
+    0
+   ],
+   "explanation": "Anthropic suggests that when you can't describe the qualities you want, you can ask Claude to review conversations you valued and craft instructions for itself based on them. Testing those instructions, then putting them somewhere shared such as a Project, makes the result reusable. A shared chat link gives colleagues a snapshot, not reusable instructions for their own courses. Model and effort may matter, but the dozen rounds of iteration changed the content of the guidance, not just the settings. Her last prompt depended on everything said earlier in the chat, so on its own it would not reproduce the result.",
+   "references": [
+    "https://support.claude.com/en/articles/12738598-adapt-to-new-model-personas-after-deprecations",
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-14",
+   "domain": "prompting-task-execution",
+   "objective": "Adapt prompting strategies based on task type (analysis, research, drafting, brainstorming)",
+   "type": "single",
+   "prompt": "A procurement officer needs one fact before approving an order today: whether a supplier's ISO 9001 certificate is still listed as valid on the certification body's public register. Which approach fits this task best?",
+   "options": [
+    "Start Research so Claude can gather many sources and produce a full report on the supplier",
+    "Turn effort up to Max so Claude reasons carefully about whether the certificate is still valid",
+    "Ask Claude from its own knowledge first, then use web search only if the answer seems uncertain",
+    "Use web search, ask Claude to check the certifier's own register page, and open the cited link"
+   ],
+   "correct": [
+    3
+   ],
+   "explanation": "Anthropic describes web search as best for straightforward factual queries that one or two searches can answer, and every web search response includes citations so you can verify the source. Asking for the certifier's own register and opening the link fits a single current fact. Research is built for five or more searches and a long report, which costs more usage for one fact. Higher effort improves reasoning on material Claude already has, but a certificate's status today is not in the model's training data. Training knowledge stops at the model's cutoff, so starting there invites an outdated answer.",
+   "references": [
+    "https://support.claude.com/en/articles/11095361-when-should-i-use-web-search-extended-thinking-and-research",
+    "https://support.claude.com/en/articles/10684626-enable-and-use-web-search",
+    "https://support.claude.com/en/articles/8114494-how-up-to-date-is-claude-s-training-data"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-15",
+   "domain": "prompting-task-execution",
+   "objective": "Adapt prompting strategies based on task type (analysis, research, drafting, brainstorming)",
+   "type": "multiple",
+   "prompt": "A strategy analyst starts Research for a briefing on how five regional competitors priced their 2026 subscription bundles. The last attempt mixed 2024 and 2026 prices and cited blog posts. Which TWO additions to her research prompt will most improve the result?",
+   "options": [
+    "Define a complete answer: for each competitor, the tiers, prices, date seen and a source link",
+    "Ask Claude to write the briefing in the voice of a senior management consultant",
+    "Set the 2026 window, prefer company pricing pages, and ask for cross-checks across sources",
+    "Ask for the report to be as long and comprehensive as Claude can possibly make it",
+    "Tell Claude to fill any gaps from its own training knowledge where results are thin"
+   ],
+   "correct": [
+    0,
+    2
+   ],
+   "explanation": "For research, Anthropic's prompting guide recommends giving clear success criteria and asking Claude to verify information across multiple sources. A per-competitor definition of done, plus a time window and preferred source types with cross-checks, targets both failures: mixed years and weak sources. A consultant voice changes tone but not which prices are found. Asking for maximum length is not a criterion and tends to add padding. Filling gaps from training knowledge would reintroduce stale prices, since the model's knowledge stops at its training cutoff.",
+   "references": [
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+    "https://support.claude.com/en/articles/11088861-use-research-on-claude",
+    "https://support.claude.com/en/articles/8114494-how-up-to-date-is-claude-s-training-data"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-16",
+   "domain": "prompting-task-execution",
+   "objective": "Adapt prompting strategies based on task type (analysis, research, drafting, brainstorming)",
+   "type": "single",
+   "prompt": "A primary-school teacher asks Claude for \"the best theme for our spring parents' evening\" and gets one sensible but predictable idea. She has a small budget, a school hall, and two weeks to prepare. Which approach is most likely to produce a theme she is happy with?",
+   "options": [
+    "Ask the same question again with effort set to Max so that Claude explores many more options",
+    "Ask for fifteen varied themes, then share her constraints and ask Claude to assess the list",
+    "Ask for one theme at a time and reject each one until an idea appears that she likes enough",
+    "Ask Claude to be far more creative and surprising, and to avoid any idea that sounds ordinary"
+   ],
+   "correct": [
+    1
+   ],
+   "explanation": "Anthropic lists brainstorming, offering different viewpoints, among Claude's strengths. As general practice, brainstorming works best in two steps: generate a wide, varied list, then judge it against the real constraints. Asking for \"the best\" collapses exploration into one safe answer. Max effort makes Claude think harder about the same single-answer request; it doesn't change what was asked for. One idea at a time is slow and gives no basis for comparison. \"Be more creative\" is an adjective with no constraints, so the results may be surprising and still impossible on her budget and timeline.",
+   "references": [
+    "https://support.claude.com/en/articles/7996845-what-are-some-things-i-can-use-claude-for",
+    "https://support.claude.com/en/articles/8664678-change-the-model-effort-and-thinking-settings"
+   ]
+  },
+  {
+   "id": "ccao-f-pt-17",
+   "domain": "prompting-task-execution",
+   "objective": "Adapt prompting strategies based on task type (analysis, research, drafting, brainstorming)",
+   "type": "multiple",
+   "prompt": "A finance coordinator uploads a year of expense claims as a CSV and asks Claude to \"look for anything odd\" before the audit committee meets. She wants a list she can investigate claim by claim. Which TWO prompt elements best suit this analysis task?",
+   "options": [
+    "Ask for an engaging narrative of the year's spending trends written for the audit committee",
+    "Define the anomalies to find, such as duplicate invoice numbers or claims over the approval limit",
+    "Run Research first so Claude can compare the spending with published industry benchmarks",
+    "Ask for each flagged claim as a row with the values that triggered it and the rule it broke",
+    "Ask Claude to flag whatever seems unusual and to explain how confident it is in each flag"
+   ],
+   "correct": [
+    1,
+    3
+   ],
+   "explanation": "Analysis prompts need the exact question, the criteria or method, and output that traces each conclusion to the data. Defining the anomaly rules and asking for each flagged row with its triggering values gives a list she can check claim by claim. Anthropic's guidance is to be specific about the output format and constraints. A narrative of trends is a drafting task for a different reader and loses the row-level trail. Research gathers external sources; it doesn't find anomalies in her own file. \"Whatever seems unusual\" leaves the criteria to Claude, and a confidence note is a self-report rather than evidence.",
+   "references": [
+    "https://platform.claude.com/docs/en/build-with-claude/prompt-engineering/claude-prompting-best-practices",
+    "https://support.claude.com/en/articles/11095361-when-should-i-use-web-search-extended-thinking-and-research"
+   ]
+  }
+ ]
+}

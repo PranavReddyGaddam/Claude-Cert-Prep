@@ -1,0 +1,315 @@
+{
+ "id": "product-model-selection",
+ "title": "Product and Model Selection",
+ "questions": [
+  {
+   "id": "ccao-f-pm-01",
+   "domain": "product-model-selection",
+   "objective": "Select appropriate Claude product features (Projects, research mode, chat, artifacts)",
+   "type": "single",
+   "prompt": "An HR business partner rewrites the same onboarding pack every quarter. Each time she opens a new chat and re-uploads the employee handbook, the benefits guide and last quarter's pack, then re-explains the tone the company uses. Which change best fits how she works?",
+   "options": [
+    "Keep one long chat for the pack and return to it each quarter so Claude still has the earlier uploads",
+    "Turn on memory so that Claude remembers the handbook and the benefits guide from her earlier chats",
+    "Create a Project with the three documents and the tone guidance, and start each quarter's chat in it",
+    "Ask Claude to put each quarter's pack in an artifact so she can reopen it and edit it the next time"
+   ],
+   "correct": [
+    2
+   ],
+   "explanation": "Projects are self-contained workspaces with their own knowledge base and instructions, and every chat in the Project starts with that knowledge, so recurring work on the same material belongs there. Reusing one long chat keeps adding to a single context window, consumes more of her usage as it grows and eventually hits the length limit. Memory is built to carry over preferences and context from past chats; it is not a store for full reference documents. An artifact keeps the finished pack editable, but it does not give a new quarter's chat the handbook, the benefits guide or the tone guidance.",
+   "references": [
+    "https://support.claude.com/en/articles/9517075-what-are-projects",
+    "https://support.claude.com/en/articles/9519177-how-can-i-create-and-manage-projects",
+    "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-02",
+   "domain": "product-model-selection",
+   "objective": "Select appropriate Claude product features (Projects, research mode, chat, artifacts)",
+   "type": "single",
+   "prompt": "A sales operations lead asks Claude to turn a quarter of pipeline data into something the regional managers can open, filter by region and check themselves before the Monday call. She will keep refining it with Claude over the week. Which output should she ask for?",
+   "options": [
+    "An artifact, such as a small interactive dashboard she can keep editing and then share with them",
+    "A long inline answer in the chat with one table per region that she can copy into her weekly email",
+    "A Research report on the pipeline, since Research produces a longer and better-cited final document",
+    "A generated image of the main chart, which she can paste into the slides for each manager"
+   ],
+   "correct": [
+    0
+   ],
+   "explanation": "Anthropic describes an artifact as something Claude makes that you would put in front of someone, including a dashboard or small interactive tool, that opens beside the chat and can be edited, revisited and shared. That fits a filterable view she will refine all week. An inline answer works for a one-time read but cannot be filtered and has to be redone after every change. Research gathers and cites external sources across many searches; it does not analyze her own pipeline file into a tool. Claude does not generate photographic images, and a static picture of a chart cannot be filtered by region anyway.",
+   "references": [
+    "https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them",
+    "https://support.claude.com/en/articles/11088861-use-research-on-claude",
+    "https://support.claude.com/en/articles/9002504-can-claude-produce-images"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-03",
+   "domain": "product-model-selection",
+   "objective": "Select appropriate Claude product features (Projects, research mode, chat, artifacts)",
+   "type": "multiple",
+   "prompt": "A communications manager has a two-page press release to tighten, and separately needs a Word document with the company's approved letterhead structure for a formal statement to regulators. Her team also writes the same type of statement several times a month. Which TWO choices fit these needs? (Select TWO.)",
+   "options": [
+    "Start Research on the press release so that Claude can check every sentence against the open web first",
+    "Ask Claude in chat to produce the statement as a Word file, with code execution and file creation on",
+    "Use Cowork for the press-release edit, since a short rewrite benefits from planned, multi-step execution",
+    "Add the letterhead rules to memory so that Claude builds future documents in that layout",
+    "Package the team's statement steps and template rules as a Skill, so Claude applies them every time"
+   ],
+   "correct": [
+    1,
+    4
+   ],
+   "explanation": "Claude can create Word, Excel, PowerPoint and PDF files directly in a chat when code execution and file creation is on, which covers the formal statement. Skills are folders of instructions and resources that Claude loads when a task calls for them, built for doing a specific task the same way every time, which fits a statement written several times a month. Research is for multi-source investigation and would spend extra usage on a two-page edit that needs no web sources. Cowork suits longer, multi-step tasks; a short rewrite is ordinary chat work. Memory carries context between chats, but it is not how Anthropic recommends storing a repeatable procedure or template.",
+   "references": [
+    "https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude",
+    "https://support.claude.com/en/articles/12512176-what-are-skills",
+    "https://support.claude.com/en/articles/13345190-get-started-with-claude-cowork"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-04",
+   "domain": "product-model-selection",
+   "objective": "Select appropriate Claude product features (Projects, research mode, chat, artifacts)",
+   "type": "single",
+   "prompt": "A policy researcher at a charity needs a briefing comparing how six countries currently fund early-years childcare, with citations she can follow. The question needs many searches across government sites. She is on a paid plan and has web search on. Which feature should she use?",
+   "options": [
+    "Web search, asking for the whole comparison in one message so that Claude answers in a single response",
+    "Chat with extended thinking on and no web access, since careful reasoning can stand in for current sources",
+    "A Project with last year's briefing uploaded, then ask Claude to update the figures from that document",
+    "Research, giving it the six countries, the comparison she needs and the kinds of sources it should favor"
+   ],
+   "correct": [
+    3
+   ],
+   "explanation": "Anthropic positions web search for quick factual questions that one or two searches can answer, and Research for questions that need many searches and a structured, cited report. Six countries' current funding models across government sites is the second kind. A single web-search message would cover the ground thinly. Extended thinking improves reasoning over what Claude already has, but current policy is not in the model's training data. A Project with last year's briefing would anchor the new answer to figures that may be out of date, and Claude cannot update them without a current source.",
+   "references": [
+    "https://support.claude.com/en/articles/11095361-when-should-i-use-web-search-extended-thinking-and-research",
+    "https://support.claude.com/en/articles/11088861-use-research-on-claude"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-05",
+   "domain": "product-model-selection",
+   "objective": "Differentiate between Claude model types (Haiku, Sonnet, Opus)",
+   "type": "single",
+   "prompt": "A customer success team drafts thousands of short, routine replies a week, such as order-status updates and password-reset steps, using templates their leads have already approved. Replies need to be quick and cheap, and quality has been fine in a pilot. Which model family fits this work best?",
+   "options": [
+    "Opus, since its reasoning reduces the risk of a wrong reply when the team sends thousands of them",
+    "Haiku, since its strengths are speed and low cost on simple, high-volume work like these replies",
+    "Sonnet for most replies, then a second Opus pass over every reply to check it before it is sent",
+    "The newest and most capable model on the plan, since a newer model will also give faster answers"
+   ],
+   "correct": [
+    1
+   ],
+   "explanation": "Anthropic describes Haiku as the fastest and most cost-effective family, suited to high-volume, straightforward work, and its guidance is to start with a faster, cheaper model and move up only if testing shows a gap. The pilot already shows quality is fine. Opus is built for complex, long-running work, so it adds cost and latency these templated replies do not need. A second Opus pass over every reply multiplies cost for a problem the pilot did not find. More capable models are generally slower and use more of the plan, not less.",
+   "references": [
+    "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+    "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-06",
+   "domain": "product-model-selection",
+   "objective": "Differentiate between Claude model types (Haiku, Sonnet, Opus)",
+   "type": "single",
+   "prompt": "A strategy director is preparing a merger assessment that weighs forty pages of due-diligence notes, conflicting analyst views and several financial scenarios. It will take a long session of back-and-forth, and she cares more about the depth of the reasoning than about speed. Which choice fits best?",
+   "options": [
+    "An Opus model at a high effort setting, accepting slower answers and heavier use of her limits",
+    "Haiku at its highest effort, since raising effort gives a small model the same depth as a large one",
+    "Sonnet with thinking switched off, so the long session uses less of the plan's limits",
+    "Whichever model is fastest, then ask Claude to repeat the analysis several times and average them"
+   ],
+   "correct": [
+    0
+   ],
+   "explanation": "Anthropic positions Opus for complex, long-running work where the depth of reasoning matters most, and effort settings trade speed and usage for more thorough thinking within a model. Higher effort helps any model think harder, but it does not turn Haiku into Opus; model choice and effort are separate levers. On the current Sonnet, Opus and Haiku models in Claude, thinking cannot be turned off, so that option is not even available, and it would cut the depth she said she needs. Repeating a fast model's analysis and averaging does not add the reasoning a hard, multi-source judgment requires.",
+   "references": [
+    "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+    "https://support.claude.com/en/articles/8664678-change-the-model-effort-and-thinking-settings"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-07",
+   "domain": "product-model-selection",
+   "objective": "Differentiate between Claude model types (Haiku, Sonnet, Opus)",
+   "type": "multiple",
+   "prompt": "An Enterprise employee notices that a few responses in her chat carry a label naming a different model from the one she selected. She also finds that one model she used last month is missing from her model menu. Which TWO statements explain what she is seeing? (Select TWO.)",
+   "options": [
+    "Claude switches to a cheaper model when her usage nears its limit and labels the replies that it moved",
+    "A missing model means it was retired, so the chats that used it can no longer be opened or continued",
+    "The label usually means an automated safety check moved that response to another model, which is shown",
+    "On Enterprise, the organization's owners can control which models each member can choose from the menu",
+    "She can stop the label by adding an instruction to her profile asking Claude to keep the model she chose"
+   ],
+   "correct": [
+    2,
+    3
+   ],
+   "explanation": "Anthropic's model-switching pages explain that some models run automated safety checks on requests and visibly fall back to another model in certain categories; the change is labelled, and there is a setting for it under Settings > Capabilities. On Enterprise, owners manage model access, so a model can disappear from a member's menu without being retired (Haiku models always stay available). The pages do not describe a silent move to a cheaper model when usage runs low; usage limits pause use until reset instead. An admin's model setting is not the same as a deprecation, and earlier chats are not deleted. A profile instruction cannot override a safety system.",
+   "references": [
+    "https://support.claude.com/en/articles/15363606-why-claude-switched-models-in-your-conversation-with-fable-5-or-fable-5-1",
+    "https://support.claude.com/en/articles/15694740-manage-model-access-for-your-organization",
+    "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-08",
+   "domain": "product-model-selection",
+   "objective": "Align model selection with task requirements (cost, speed, quality)",
+   "type": "single",
+   "prompt": "A marketing team wants to classify 2,000 open-text survey answers into eight agreed themes. A quick test on 50 answers with Sonnet at its default effort matched the analysts' own labels well, but the team lead asks whether they should move to the most capable model for the full run to be safe. What is the best advice?",
+   "options": [
+    "Move to the most capable model for the full set, since quality matters more than cost for survey data",
+    "Drop to the smallest model with effort at its lowest, since classification is always a simple task",
+    "Raise effort to Max on the tested model so every answer gets the deepest reasoning",
+    "Run the full set as tested, then spot-check a sample against the analysts' labels by theme"
+   ],
+   "correct": [
+    3
+   ],
+   "explanation": "Anthropic's guidance is to pick the lightest setup that passes tests on real examples and to move up only where testing shows a gap. The 50-answer test already shows Sonnet at default effort works, so the full run should use that setup with a spot-check against analyst labels to confirm. Moving to the top model adds cost and time with no evidence it is needed. Dropping to the smallest model at minimum effort changes a setup that was tested for one that was not. Max effort spends more usage and time per answer on a task the default already handles.",
+   "references": [
+    "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model",
+    "https://platform.claude.com/docs/en/about-claude/models/optimizing-for-cost-and-intelligence",
+    "https://support.claude.com/en/articles/8664678-change-the-model-effort-and-thinking-settings"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-09",
+   "domain": "product-model-selection",
+   "objective": "Align model selection with task requirements (cost, speed, quality)",
+   "type": "single",
+   "prompt": "A consultant on a Pro plan wants to try Fable 5.1 for a difficult client deliverable. When she selects it, she is told it will draw on usage credits rather than her plan's included usage. She assumed every model on her plan came out of the same allowance. What explains this?",
+   "options": [
+    "Fable models are only available on Enterprise plans, so the message is offering her an Enterprise trial",
+    "Her weekly limit is used up, so every model runs on usage credits until the reset",
+    "On Pro, Fable models sit outside the plan's included usage limits and run on paid usage credits",
+    "Fable models are in preview, so every plan pays for them with credits until they are generally released"
+   ],
+   "correct": [
+    2
+   ],
+   "explanation": "Anthropic's plan page says Fable 5 and Fable 5.1 are available on all paid plans, but on Pro and on standard Team seats they are not included in the plan's usage limits and run on usage credits; on Max, Ultra and premium seats they are part of the plan (as of November 2026). So the message reflects her plan, not her usage. The models are not Enterprise-only. Nothing in the stem says her weekly limit is spent, and if it were, the message would not be specific to one model. The page does not describe a preview pricing rule; plans differ in whether Fable is included.",
+   "references": [
+    "https://support.claude.com/en/articles/15424964-claude-fable-models-on-your-plan",
+    "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-10",
+   "domain": "product-model-selection",
+   "objective": "Align model selection with task requirements (cost, speed, quality)",
+   "type": "multiple",
+   "prompt": "A project coordinator on a paid plan keeps reaching her five-hour usage limit by early afternoon. She works in one very long chat all morning, re-uploads the same status reports several times a day and sends many short follow-up messages. Which TWO changes will stretch her usage the furthest without lowering quality? (Select TWO.)",
+   "options": [
+    "Put the recurring status reports in a Project, whose cached content counts less against limits",
+    "Switch every task to the most capable model so that she needs fewer attempts to get a good answer",
+    "Turn memory off, since memory is what uses most of a plan's limits during a long working session",
+    "Raise effort to Max so that Claude finishes each request in fewer messages",
+    "Combine related follow-up questions into one message instead of sending each of them separately"
+   ],
+   "correct": [
+    0,
+    4
+   ],
+   "explanation": "Anthropic's usage-limit best practices note that content in Projects is cached and counts less against limits when reused, and recommend batching similar requests into one message. Long conversations also consume more of the limit, so starting fresh chats for new topics helps too. More capable models use more of the limit per message, so moving everything up shortens her day. The pages do not describe memory as a major drain, and turning it off removes useful continuity. Max effort spends more usage on each response, which works against the goal.",
+   "references": [
+    "https://support.claude.com/en/articles/9797557-usage-limit-best-practices",
+    "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work",
+    "https://support.claude.com/en/articles/9517075-what-are-projects"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-11",
+   "domain": "product-model-selection",
+   "objective": "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)",
+   "type": "single",
+   "prompt": "An operations analyst has spent three hours in one chat working through a warehouse layout. Claude has started to contradict decisions they agreed early on, and the chat is near the length limit. The next phase, staffing rosters, uses only the final agreed layout. What should she do?",
+   "options": [
+    "Keep going in the same chat and repeat any earlier decision whenever Claude contradicts it again",
+    "Ask for a summary of the agreed decisions, check it, then start a new roster chat with that summary",
+    "Switch to a model with a larger context window in the same chat so that it can hold all three hours",
+    "Start a new chat for rosters with no summary, since memory will carry the agreed layout over in full"
+   ],
+   "correct": [
+    1
+   ],
+   "explanation": "A long chat that is near its length limit and drifting from early decisions is the case for summarizing and restarting: a checked summary carries forward only what the next phase needs, in a fresh context. Repeating decisions in the same chat adds to the same overloaded context. A larger context window does not fix a cluttered chat whose early details are being lost, and more context means more usage each message. Memory is built to carry over useful context between chats, but it is a summary that Claude maintains, not a full record of three hours of decisions, so she should not rely on it for exact layout details.",
+   "references": [
+    "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work",
+    "https://support.claude.com/en/articles/8606394-how-large-is-the-context-window-on-paid-claude-plans",
+    "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-12",
+   "domain": "product-model-selection",
+   "objective": "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)",
+   "type": "multiple",
+   "prompt": "A recruiter wants to ask Claude a one-off question about a sensitive salary dispute. She does not want it in her chat history or to shape Claude's memory of her work, and her company is on an Enterprise plan. Which TWO statements about using an incognito chat are accurate? (Select TWO.)",
+   "options": [
+    "The chat is deleted as soon as she closes it, so nothing remains that the organization could export",
+    "The chat will not be saved to her chat history, and it will not be added to Claude's memory either",
+    "The chat is still retained for a period, according to the organization's data retention setting",
+    "She can start the incognito chat inside her recruiting Project to use its files",
+    "Incognito keeps the content away from her organization's administrators and from all of its policies"
+   ],
+   "correct": [
+    1,
+    2
+   ],
+   "explanation": "Anthropic's incognito page says incognito chats are not saved to chat history and are not used for or added to memory. It also says they are still retained, for 30 days by default or longer under an Enterprise organization's custom retention setting, so the content is not gone when the chat closes and remains subject to the organization's data controls. Incognito chats are not available inside Projects, so she cannot use the Project's files. Incognito changes what appears in her history and memory; it does not exempt the content from her employer's policies or controls.",
+   "references": [
+    "https://support.claude.com/en/articles/12260368-use-incognito-chats",
+    "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-13",
+   "domain": "product-model-selection",
+   "objective": "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)",
+   "type": "single",
+   "prompt": "A grant writer works with Claude on several funders over months. She keeps re-explaining her organization's mission and preferred writing style in every new chat, and she wants Claude to recall the history of each funder's application only inside that funder's work. Which setup fits best?",
+   "options": [
+    "Put her style in profile instructions and give each funder a Project with its own files and memory",
+    "Keep every funder in one long chat so Claude can always see the mission and each funder's history",
+    "Paste the mission and style into the first message of every chat, since Claude cannot persist context",
+    "Rely on memory outside Projects for everything, since memory keeps each funder's history separate"
+   ],
+   "correct": [
+    0
+   ],
+   "explanation": "Anthropic describes profile instructions as account-wide preferences, and Projects as separate workspaces whose chats share the Project's knowledge, with memory kept per Project, so each funder's history stays in its own space. One long chat for months of work runs into length limits and mixes funders together. Pasting the same text into every chat works but is the repetition she is trying to end; Claude does offer ways to persist context. Memory outside Projects is a single shared memory, so it would not keep each funder's history separate, which is exactly what Projects add.",
+   "references": [
+    "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context",
+    "https://support.claude.com/en/articles/9517075-what-are-projects",
+    "https://support.claude.com/en/articles/11647753-how-do-usage-and-length-limits-work"
+   ]
+  },
+  {
+   "id": "ccao-f-pm-14",
+   "domain": "product-model-selection",
+   "objective": "Understand and manage context limitations and memory considerations (when to restart, summarize, or persist)",
+   "type": "single",
+   "prompt": "A finance analyst's chat includes a question about a supplier's payment terms that she discussed with Claude two months ago. Claude's memory recalls the terms as net 30. A colleague says the contract was renegotiated last month. Before she schedules this month's payments, what should she do?",
+   "options": [
+    "Trust the remembered terms, since memory records exactly what was said in her earlier conversation",
+    "Ask Claude how confident it is that net 30 is still right, and proceed if it is",
+    "Turn memory off for her account so that Claude can no longer give her out-of-date supplier details",
+    "Check the current contract or the accounts system, then correct Claude's memory if terms changed"
+   ],
+   "correct": [
+    3
+   ],
+   "explanation": "Memory gives continuity across chats, but it reflects what was discussed at the time and cannot know a contract changed later, so anything that may have moved needs checking against the current source. Memory can be viewed and edited, so correcting it afterwards keeps later chats accurate. Trusting the recall ignores her colleague's warning. Claude's stated confidence is not evidence about a contract it has never seen. Turning memory off removes useful continuity and still leaves today's payment unverified.",
+   "references": [
+    "https://support.claude.com/en/articles/11817273-use-claude-s-chat-search-and-memory-to-build-on-previous-context"
+   ]
+  }
+ ]
+}

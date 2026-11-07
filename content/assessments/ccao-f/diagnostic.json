@@ -30,7 +30,7 @@
     {
       "id": "ccao-d-002",
       "domain": "prompting-task-execution",
-      "objective": "Decompose complex requests into manageable work",
+      "objective": "Apply task decomposition techniques to structure complex requests",
       "type": "multiple",
       "prompt": "A team is building a source-backed policy briefing. Which two stage boundaries most improve verification? Select two.",
       "options": [
@@ -52,7 +52,7 @@
     {
       "id": "ccao-d-003",
       "domain": "output-evaluation-validation",
-      "objective": "Fact-check against authoritative evidence",
+      "objective": "Apply fact-checking and validation techniques",
       "type": "single",
       "prompt": "A response cites a real policy page beside the claim that all refunds require director approval. The page only says some refunds require approval. What is the primary defect?",
       "options": [
@@ -73,7 +73,7 @@
     {
       "id": "ccao-d-004",
       "domain": "output-evaluation-validation",
-      "objective": "Choose when human review or additional verification is required",
+      "objective": "Determine when human review or additional verification is required",
       "type": "multiple",
       "prompt": "Which two checks should be handled first by deterministic code rather than subjective model judgment? Select two.",
       "options": [
@@ -95,7 +95,7 @@
     {
       "id": "ccao-d-005",
       "domain": "product-model-selection",
-      "objective": "Choose among Projects, research, chat, and artifacts",
+      "objective": "Select appropriate Claude product features (Projects, research mode, chat, artifacts)",
       "type": "single",
       "prompt": "A team repeats the same internal planning workflow each week using maintained instructions and an approved reference set. Which starting surface best fits?",
       "options": [
@@ -116,7 +116,7 @@
     {
       "id": "ccao-d-006",
       "domain": "product-model-selection",
-      "objective": "Balance quality, speed, and cost",
+      "objective": "Align model selection with task requirements (cost, speed, quality)",
       "type": "multiple",
       "prompt": "Which two practices make a model-selection recommendation durable? Select two.",
       "options": [
@@ -139,7 +139,7 @@
     {
       "id": "ccao-d-007",
       "domain": "workflow-integration-solution-design",
-      "objective": "Augment or redesign existing workflows",
+      "objective": "Integrate Claude into existing workflows to augment or redesign them",
       "type": "single",
       "prompt": "Analysts spend hours writing explanations for differences between two conflicting systems. What is the strongest first intervention?",
       "options": [
@@ -160,7 +160,7 @@
     {
       "id": "ccao-d-008",
       "domain": "workflow-integration-solution-design",
-      "objective": "Communicate value and limitations to stakeholders",
+      "objective": "Communicate Claude's value and limitations to stakeholders",
       "type": "multiple",
       "prompt": "Which two items belong in a handoff to the person who must approve a high-impact recommendation? Select two.",
       "options": [
@@ -182,7 +182,7 @@
     {
       "id": "ccao-d-009",
       "domain": "configuration-knowledge-management",
-      "objective": "Configure Projects with instructions and knowledge",
+      "objective": "Configure Claude Projects with instructions and knowledge sources",
       "type": "single",
       "prompt": "Where should a recurring behavioral rule such as exposing conflicts between policy sources primarily live?",
       "options": [
@@ -203,7 +203,7 @@
     {
       "id": "ccao-d-010",
       "domain": "configuration-knowledge-management",
-      "objective": "Maintain configurations and sources over time",
+      "objective": "Inform, maintain, and update Claude configurations, knowledge sources, and instructions",
       "type": "multiple",
       "prompt": "Which two metadata fields most directly help prevent stale or superseded knowledge from remaining active? Select two.",
       "options": [
@@ -225,7 +225,7 @@
     {
       "id": "ccao-d-011",
       "domain": "governance-risk-responsible-use",
-      "objective": "Apply privacy, data-sensitivity, and regulatory constraints",
+      "objective": "Apply data sensitivity, regulatory, and privacy considerations",
       "type": "single",
       "prompt": "An employee wants to paste confidential customer transcripts into an unapproved personal Claude account. What is the correct first response?",
       "options": [
@@ -247,7 +247,7 @@
     {
       "id": "ccao-d-012",
       "domain": "governance-risk-responsible-use",
-      "objective": "Recognize ethical implications and escalate risk",
+      "objective": "Understand the ethical implications of AI usage",
       "type": "multiple",
       "prompt": "A workflow recommends eligibility decisions that materially affect people. Which two controls are essential? Select two.",
       "options": [
@@ -269,7 +269,7 @@
     {
       "id": "ccao-d-013",
       "domain": "troubleshooting-optimization",
-      "objective": "Diagnose underperforming prompts and poor outputs",
+      "objective": "Identify, diagnose, and resolve issues with underperforming prompts or poor outputs",
       "type": "single",
       "prompt": "A report repeatedly omits an exception that is absent from every supplied source. What should be fixed first?",
       "options": [

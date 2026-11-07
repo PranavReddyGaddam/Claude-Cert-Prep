@@ -8,6 +8,7 @@ Copyright (c) 2026 Pranav Reddy Gaddam
 
 - `architect-notes/`: the Architect Foundations notes
 - `architect-pro-notes/`: the Architect Professional notes
+- `associate-notes/`: the Associate Foundations notes
 - `assessments/*/scenarios/`: the scenario-based practice questions
 - `assessments/*/bank/`: the standalone practice questions
 

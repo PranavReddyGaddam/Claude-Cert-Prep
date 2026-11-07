@@ -1,0 +1,401 @@
+{
+  "id": "workflow-integration-solution-design",
+  "title": "Workflow Integration and Solution Design",
+  "questions": [
+    {
+      "id": "ccao-f-wf-01",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Apply Claude to analyze requirements and use cases",
+      "type": "single",
+      "prompt": "The COO of a logistics firm sends the HR operations lead a one-line request: \"use Claude to fix onboarding.\" She also has notes from three hiring managers, and each describes a different problem. Before anything is drafted, what should she ask Claude to do first?",
+      "options": [
+        "Draft a complete onboarding redesign from the three sets of notes, so the managers have something concrete to react to.",
+        "Rewrite the COO's request as a detailed project charter with goals, scope, timeline and success measures for approval.",
+        "Rate how complete the three managers' notes are on a scale of one to ten, and explain the reasoning behind the score.",
+        "List the assumptions it would have to make, where the managers' notes conflict, and the questions that must be answered."
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "The request is vague and the three managers disagree, so the first job is to surface gaps: assumptions, conflicts and open questions she can take back to the people who own the answers. Drafting a full redesign first anchors everyone on Claude's guesses; it is the right step in the wrong order. A detailed charter is a cosmetic fix: it makes an unclear request look finished without resolving the disagreement. A completeness score is trusting the model's self-report, since Claude cannot know what the managers left unsaid. Gap-finding first, drafting second, is General practice for requirements work.",
+      "references": [
+        "https://support.claude.com/en/articles/7996845-what-are-some-things-i-can-use-claude-for"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-02",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Apply Claude to analyze requirements and use cases",
+      "type": "multiple",
+      "prompt": "A program manager at a food-bank charity is screening possible first uses of Claude for her six-person team, which works on a Team plan. She wants a first use that shows value quickly with little risk. Which TWO characteristics make a candidate strong? (Select TWO.)",
+      "options": [
+        "The step exists to reconcile two donor databases that disagree each month, which takes a volunteer a full day.",
+        "The output is a draft that a staff member already reads in full and can check against documents they can open.",
+        "Claude would decide which families get emergency food boxes this week, which today takes a committee two hours.",
+        "The task recurs every week in the same shape, and a wrong draft costs only the time needed to rewrite it.",
+        "The task happens once a year, changes every time, and its figures can only be checked by the external auditor."
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Good first uses have checkable output and low, reversible consequences, and they recur so the effort to set them up pays back. A draft a person already reads against sources they can open, and a weekly task where a mistake costs a rewrite, both fit. Reconciling two disagreeing databases is a step that patches an upstream problem; the better move is to redesign the source, not to automate the patch. Deciding which families receive emergency assistance is a decision about access to essential services, which the Usage Policy treats as high-risk and which needs a qualified person, so it is a poor first use. A once-a-year task that only an auditor can verify fails the checkability and repetition tests.",
+      "references": [
+        "https://www.anthropic.com/legal/aup",
+        "https://support.claude.com/en/articles/7996845-what-are-some-things-i-can-use-claude-for"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-03",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Apply Claude to analyze requirements and use cases",
+      "type": "single",
+      "prompt": "An operations analyst at a retail chain asks Claude to turn a workshop transcript into acceptance criteria for a new returns process. The draft includes a 30-day return window, but nobody in the transcript mentioned any time limit. What should the analyst do before circulating the draft?",
+      "options": [
+        "Keep the criterion, since a 30-day window is a common retail standard and Claude probably inferred it from context.",
+        "Mark the window as an unconfirmed assumption and confirm it with the process owner before the draft goes out.",
+        "Ask Claude to point to where the transcript supports the 30-day window, and keep the criterion if it can do so.",
+        "Delete the criterion and have Claude regenerate the whole draft with an instruction never to add time limits."
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Claude filled a gap with a plausible assumption. The fix is to label it as unconfirmed and get the answer from the person who owns the process, because requirements come from stakeholders, not from the model. Keeping it because it is common practice treats a guess as a requirement. Asking Claude to justify itself is trusting the model's self-report, and it may produce a confident but wrong pointer. Deleting it and banning time limits overcorrects: the process may genuinely need a window, and the team still has not asked. This is General practice for requirements analysis.",
+      "references": [
+        "https://support.claude.com/en/articles/7996845-what-are-some-things-i-can-use-claude-for"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-04",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Apply Claude to analyze requirements and use cases",
+      "type": "single",
+      "prompt": "A city council's communications officer must publish an evacuation notice tonight in English, Portuguese, Tagalog and Somali. A professional translation agency cannot deliver until tomorrow afternoon. She plans to use Claude to produce the three translations. Which approach is best?",
+      "options": [
+        "Use Claude's drafts and have a fluent speaker check every translation before it is published tonight.",
+        "Have fluent speakers check only the Tagalog and Somali drafts, since Portuguese is a strong language for Claude.",
+        "Ask Claude to translate each draft back into English and publish any version whose back-translation matches.",
+        "Publish in English only tonight and add the three translations once the agency delivers them tomorrow."
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Anthropic says Claude is best at English and translates other languages to varying degrees of success, naming Portuguese, French and German as especially strong. Strong is not the same as checked: for a public safety notice every version needs a fluent human reviewer, so skipping the Portuguese check applies a real fact to the wrong stakes. A back-translation by the same model is a self-check and can hide errors that a reader would notice. Waiting for the agency drops the task for the people who most need the notice tonight, which is an overreaction when a reviewed draft is achievable.",
+      "references": [
+        "https://support.claude.com/en/articles/7996845-what-are-some-things-i-can-use-claude-for"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-05",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Leverage Claude for research, planning, and process optimization",
+      "type": "single",
+      "prompt": "A sales enablement manager on her company's Team plan has ten minutes before a call and needs the current rule for approving discounts above 20%. She knows it is somewhere in SharePoint or in a Slack thread. An Owner has already set up the organization's enterprise search project. What should she do?",
+      "options": [
+        "Turn on Research so Claude runs several searches across the web and connected tools and builds a full report.",
+        "Ask in the enterprise search project, naming SharePoint and Slack and the discount rule she is looking for.",
+        "Create a new project, upload the policy files she can find, and ask Claude to locate the approval rule there.",
+        "Ask a regular chat with web search on, since the company may have published its discount policy online."
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic describes enterprise search as optimized for quick knowledge retrieval from connected internal sources, and recommends naming the sources to search. That matches a two-minute lookup of an internal rule. Research is built for deep, multi-step questions, takes longer and uses more of the plan's limits, so it is a real feature on the wrong job. Building a new project depends on her finding the files first, which is the problem she is trying to solve. Web search looks at the public web, where an internal approval rule is unlikely to be and where an outdated version could mislead her.",
+      "references": [
+        "https://support.claude.com/en/articles/12489464-use-enterprise-search",
+        "https://support.claude.com/en/articles/11088861-use-research-on-claude"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-06",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Leverage Claude for research, planning, and process optimization",
+      "type": "single",
+      "prompt": "A management consultant starts Research from the Claude mobile app on her commute, asking it to combine her client notes in Google Docs with public market data. The finished report cites only public websites and never mentions her notes. No error appeared. What is the most likely cause, and the fix?",
+      "options": [
+        "The Google Docs connector has expired; reconnect it in settings and then run the same research again from the phone.",
+        "Research runs on a fixed model that cannot read Google Docs; switch the chat's model selector to Opus and rerun it.",
+        "Research started in Claude Mobile searches only the web; start the same research again on the web or in Desktop.",
+        "The request was too broad; in the same mobile session, tell Claude to pull relevant context from her Google Docs."
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Anthropic's research page says that research started in Claude Mobile searches only the web, skips connectors, and shows no error. The fix is the surface: run it on the web or in Claude Desktop. An expired connector is a reasonable guess, but it does not explain a silent web-only result, and rerunning on the phone would skip connectors again. Research does run on a fixed model regardless of the chat's selection, so changing the selector does nothing. Steering with a prompt to pull internal context is Anthropic's advice for non-mobile runs, so it is misapplied here.",
+      "references": [
+        "https://support.claude.com/en/articles/11088861-use-research-on-claude"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-07",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Leverage Claude for research, planning, and process optimization",
+      "type": "multiple",
+      "prompt": "Two project coordinators at an engineering firm on an Enterprise plan ask the same question in the organization's enterprise search project. One gets an answer that cites a design memo; the other's answer never mentions it. Which TWO explanations are consistent with how enterprise search works? (Select TWO.)",
+      "options": [
+        "Results are permission-aware, so the second coordinator may not have access to the memo in its source system.",
+        "Enterprise search indexes company data overnight in Anthropic's systems, and the memo was added after the last run.",
+        "The second coordinator has edited the project's system prompt, which changes how her searches are ranked.",
+        "Enterprise search ranks results by the selected model, and the second coordinator was using a smaller model.",
+        "The second coordinator may not have authenticated the connector for the service where the memo is stored."
+      ],
+      "correct": [
+        0,
+        4
+      ],
+      "explanation": "Enterprise search shows each person only what they can access in the original system, and each user authenticates connectors with their own credentials, so a missing permission or a connector that was never authenticated both explain the gap. Anthropic's troubleshooting list includes checking both. It does not index data in Anthropic's systems; results come from live calls to the connected services, so a stale overnight index is not the cause. The project's instructions are maintained by Anthropic rather than edited by users. Nothing on the page ties results to the model selected, so that option invents a mechanism.",
+      "references": [
+        "https://support.claude.com/en/articles/12489464-use-enterprise-search"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-08",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Leverage Claude for research, planning, and process optimization",
+      "type": "single",
+      "prompt": "An Enterprise admin runs a smart report on the finance team. It shows many sessions blocked because the document-store connector was never set up, and rework loops on a monthly variance memo. The head of finance asks to use the report to find which analysts are least effective. What is the best response?",
+      "options": [
+        "Turn on attribution to individual users, reveal names in the drilldowns, and share them so she can coach low scorers.",
+        "Run a separate smart report scoped to each analyst, so individuals are compared fairly instead of the whole team.",
+        "Download the report as HTML and ask Claude in a chat to rank the analysts by their cost per session and outcomes.",
+        "Enable the missing connector and package the variance memo as a skill, but decline to use the report to judge people."
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Anthropic states that smart reports aren't designed for and should not be used for evaluating individual performance or making employment decisions. They are an adoption and investment tool. The report's own recommendations point to the fix: a missing connector an admin can enable, and a recurring workflow worth packaging as a shared skill. Revealing names to coach low scorers uses the attribution feature for the purpose Anthropic rules out. Scoping per analyst and ranking from an export are the same misuse with extra steps. All three distractors also ignore the actual friction the report found.",
+      "references": [
+        "https://support.claude.com/en/articles/16893491-get-started-with-smart-reports"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-09",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Use Claude to support solution design, development, and iteration",
+      "type": "single",
+      "prompt": "A customer success manager builds a Claude Dashboard of monthly churn from the company's data warehouse to show at a leadership meeting. The churn figure for last month is twice what finance reports. What should she do first?",
+      "options": [
+        "Ask Claude to double-check the churn figure and confirm it is correct before the dashboard is presented.",
+        "Open the chart's query, see what it counts, tell Claude what to change, and recheck against finance's figure.",
+        "Rebuild the dashboard with a more detailed prompt that specifies the chart type, colours and axis labels.",
+        "Drop the dashboard and rebuild the calculation in a spreadsheet, since dashboards are only for exploring."
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Every Dashboard chart shows the query behind it, and Anthropic says to open the query to see how Claude got the number and tell Claude what to change if it isn't counting what you meant. Checking the corrected figure against finance's known number confirms the fix. Asking Claude to confirm the figure is trusting the model's self-report. A prompt about chart type and colours is a cosmetic fix for a counting problem. Abandoning the dashboard overreacts: Anthropic does describe dashboards as exploratory, but one wrong definition is fixed by correcting the query, not by dropping the tool.",
+      "references": [
+        "https://support.claude.com/en/articles/17454700-get-started-with-claude-dashboards"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-10",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Use Claude to support solution design, development, and iteration",
+      "type": "multiple",
+      "prompt": "A training coordinator has built, with Claude, a template that turns trainer feedback forms into a one-page course summary for department heads. Before the team relies on it each month, she wants evidence that it works. Which TWO steps are the strongest? (Select TWO.)",
+      "options": [
+        "Ask Claude to generate five realistic sample feedback forms and confirm the template handles each of them well.",
+        "Ask Claude to review its own template, list possible edge cases, and confirm that the template handles them all.",
+        "Run the template on several real past forms, including a messy one, and compare the results with staff summaries.",
+        "Add a persona and formal section headings to the template so every summary reads more polished and consistent.",
+        "Write down what a good summary must contain before she reads any of Claude's outputs, and grade against that list."
+      ],
+      "correct": [
+        2,
+        4
+      ],
+      "explanation": "A prototype is tested on real past cases, including an awkward one, and judged against criteria written before looking at the output, so impressions don't stand in for quality. Anthropic's own advice on file creation is to expect to review and refine outputs. Forms that Claude writes itself test the happy path the template was built around. Asking Claude to list and confirm edge cases is trusting the model's self-report. A persona and headings are a cosmetic change that does nothing to show the summaries are accurate or complete. Testing on real cases with pre-set criteria is General practice.",
+      "references": [
+        "https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-11",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Use Claude to support solution design, development, and iteration",
+      "type": "single",
+      "prompt": "A marketing operations specialist has built a lead-scoring rubric in a Claude Project that her team trusts. Her director now wants scores written into every new lead's CRM record each night. The CRM has no connector, and she is not a developer. What is the best next step?",
+      "options": [
+        "Write up the inputs, rubric, expected output, edge cases and review owner, and hand it to the systems team.",
+        "Ask Claude to write an integration script, then run it herself from her laptop each night after work.",
+        "Set a nightly Cowork scheduled task that signs in to the CRM in a browser and types each score into records.",
+        "Keep pasting the scores into the CRM by hand each morning, since CRM updates should not involve Claude."
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A nightly write into a system with no connector is an integration that needs real software, so the Associate's deliverable is a clear requirement handed to developers. Running a script Claude wrote, unreviewed, from a personal laptop is building past her remit. A scheduled task that writes to business records overnight goes against Anthropic's guidance to avoid consequential, hard-to-undo actions in scheduled tasks, which run unwatched; it is a real feature misapplied. Copying by hand forever is an overreaction that throws away the value she has already proven, and the rubric itself is not a high-risk use.",
+      "references": [
+        "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely",
+        "https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-12",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Use Claude to support solution design, development, and iteration",
+      "type": "single",
+      "prompt": "A budget analyst asks Claude to build an Excel forecast with working formulas from last year's figures. The first file has the right structure, but two formulas in the summary tab point at the wrong rows. The director needs it by the end of the day. What should the analyst do next?",
+      "options": [
+        "Ask Claude to regenerate the whole workbook from scratch with a more detailed prompt about formatting and layout.",
+        "Ask Claude to confirm that every other formula in the workbook is correct, then send the file to the director.",
+        "Name the two cells and what each should calculate, ask for a corrected file, then check totals against actuals.",
+        "Build the forecast manually instead, since one formula error means none of Claude's formulas can be trusted."
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Iteration should be targeted: point to the specific cells, state what each should compute, and then verify the corrected file against a figure she knows, such as last year's actual totals. Anthropic's file creation guidance says to be specific about structure and content and to expect to review and refine outputs. Regenerating with a formatting-focused prompt risks new errors and fixes nothing about the logic. Asking Claude to vouch for the rest is trusting the model's self-report, when the analyst has already found errors it missed. Rebuilding by hand overreacts to a fixable, located problem.",
+      "references": [
+        "https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-13",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Integrate Claude into existing workflows to augment or redesign them",
+      "type": "single",
+      "prompt": "A project manager at an architecture firm wants a Cowork scheduled task that every Friday compiles project status from the team's tools and emails it to the client. She has never automated this report before. Which first setup best follows Anthropic's guidance?",
+      "options": [
+        "Schedule it with \"Skip all approvals\" so it runs without interruption while she is in site meetings on Fridays.",
+        "Schedule it to email the client directly, and add an instruction to double-check every date before sending.",
+        "Schedule it to draft the report to a folder, review each run, and send it herself until the drafts are proven.",
+        "Schedule it to send only items Claude rates as high-confidence, and hold the others for her to review later."
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Anthropic's advice for scheduled tasks is to start with low-risk work such as summaries, avoid tasks that send messages on your behalf or are hard to undo, and review outputs after each run. Drafting to a folder and sending herself keeps the client-facing step with a person while the routine is proven. Skip all approvals removes every check on a task nobody is watching. An instruction to double-check is an instruction where a control is needed; the email still goes out unreviewed. Filtering on Claude's own confidence rating is trusting the model's self-report.",
+      "references": [
+        "https://support.claude.com/en/articles/13364135-use-claude-cowork-safely",
+        "https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-14",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Integrate Claude into existing workflows to augment or redesign them",
+      "type": "multiple",
+      "prompt": "An office manager on a Pro plan sets up a daily scheduled task in Cowork that summarizes her inbox and calendar each morning using her connectors. She is unsure how it behaves when she is away. Which TWO statements are accurate? (Select TWO.)",
+      "options": [
+        "It runs only while the Claude Desktop app is open, so she must leave her laptop awake overnight for it to work.",
+        "It runs on schedule even when her computer is asleep or the desktop app is closed, unless it needs local files.",
+        "From the Scheduled page she can review past runs, edit the instructions, pause the task or run it on demand.",
+        "Each run continues one ongoing session, so Claude sees all of the previous days' briefings in its conversation.",
+        "Scheduled tasks cannot use connectors, so she has to upload her inbox and calendar exports before each run."
+      ],
+      "correct": [
+        1,
+        2
+      ],
+      "explanation": "Scheduled tasks run remotely, so they keep their cadence when the computer is asleep or the app is closed; a task that needs local files or apps runs only locally. The Scheduled page lists upcoming and past runs and lets her edit, pause, resume, delete or run a task on demand. Requiring the desktop app to stay open describes local-only tasks and older behaviour, not this one. Each scheduled run is its own Cowork session, not one continuing conversation. Scheduled tasks have the same capabilities as regular Cowork tasks, including connectors, so no manual upload is needed.",
+      "references": [
+        "https://support.claude.com/en/articles/13854387-schedule-recurring-tasks-in-claude-cowork"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-15",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Integrate Claude into existing workflows to augment or redesign them",
+      "type": "single",
+      "prompt": "A sales operations analyst made a live artifact in Cowork in July 2026 that shows pipeline figures through her Salesforce connector. She shares it with her VP inside the organization. The VP can open it, but the pipeline section shows an error instead of figures. What is the most likely reason?",
+      "options": [
+        "Live artifacts made before August 19, 2026 have stopped working and must be rebuilt from scratch by their owner.",
+        "Live artifacts can only be shared through public links, and the VP's signed-in organization account blocks that.",
+        "The VP has view-only access, and view-only viewers cannot see sections that draw on the owner's connector data.",
+        "A shared live artifact uses the viewer's own connectors and access, and the VP cannot reach that Salesforce data."
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Anthropic's page on live artifacts says a shared artifact connects to the viewer's connectors and data sources, not the owner's; if the viewer lacks access to an underlying source, that part shows an error. Live artifacts made before August 19, 2026 keep working; they just cannot be edited in place and are republished to keep editing. Sharing for live artifacts stays inside the organization, with no external or public links. Nothing on the page ties the error to view versus edit access, so that option invents a rule. The fix is to give the VP access to the data or share a static export.",
+      "references": [
+        "https://support.claude.com/en/articles/14729249-use-live-artifacts-in-claude-cowork"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-16",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Integrate Claude into existing workflows to augment or redesign them",
+      "type": "single",
+      "prompt": "A policy writer at an insurer uses the Claude sidebar in Google Docs to tighten a shared draft that legal has been reviewing. She wants legal to see each change Claude makes so they can accept or reject it individually. What should she know before she starts?",
+      "options": [
+        "Claude's edits appear as suggestions credited to Claude, so legal can accept or reject each change in the usual way.",
+        "Claude's edits land as direct edits made as her, so she should use \"Ask before edits\" or work on a separate copy.",
+        "Claude can read every file in her Drive from the sidebar, so it will update the linked legal memo to match as well.",
+        "Claude can accept or reject legal's open suggestions for her first, and then apply its own changes on top of them."
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic's page says Claude in Google Docs edits the file in place, as you, and its edits land as direct edits rather than suggestions, so legal would not get individual suggestions to accept. Choosing \"Ask before edits\" lets her review each change, and a copy keeps the reviewed draft clean. The page also says Claude reads the file you have open, and only that file, so it will not touch the linked memo. And it says Claude cannot accept or reject existing suggestions. Knowing how the tool behaves inside an existing review process is the integration question here.",
+      "references": [
+        "https://support.claude.com/en/articles/16951679-use-claude-in-google-docs-sheets-and-slides"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-17",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Communicate Claude's value and limitations to stakeholders",
+      "type": "single",
+      "prompt": "After a four-week pilot, a hospital foundation's communications lead is writing the opening of a proposal to roll Claude out to her ten-person team. Her director will approve the budget, and legal will review the data handling. Which opening statement is strongest?",
+      "options": [
+        "\"Of 11 pilot drafts, 8 needed light edits and 2 a factual fix caught in review; turnaround fell from two days to one.\"",
+        "\"Claude produces publication-ready press releases in minutes, which removes the need for our two-day review cycle.\"",
+        "\"Claude is a capable writing assistant, though in practice it is mainly useful for fixing grammar and tightening copy.\"",
+        "\"The attached release is the strongest from the pilot, and it shows the quality the team can expect from now on.\""
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Stakeholders need measured results from real cases, including the errors and how they were caught, plus the end-to-end time saved. The first statement gives all three and implies review stays in place. Claiming publication-ready output that removes review is overclaiming, and the first mistake would undo the proposal's credibility. Calling Claude mainly a grammar tool underclaims and is just as inaccurate about what the pilot showed. Presenting the best output as typical is a demo standing in for evidence. This is General practice for communicating value and limits.",
+      "references": [
+        "https://support.claude.com/en/articles/7996845-what-are-some-things-i-can-use-claude-for"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-18",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Communicate Claude's value and limitations to stakeholders",
+      "type": "multiple",
+      "prompt": "A school district's digital learning coordinator is presenting a Claude pilot to the district's privacy officer. Teachers used the district's Enterprise workspace to draft lesson plans and parent letters. Which TWO points belong in this briefing? (Select TWO.)",
+      "options": [
+        "Which plan and workspace held the data, and that its commercial terms do not use inputs for training by default.",
+        "The teacher satisfaction scores from the pilot survey and the hours each teacher estimated they saved.",
+        "A live demo of the best lesson plan from the pilot, to show the quality teachers can expect to get from Claude.",
+        "Who could see the pilot's shared projects and chats, and the retention period set for the district's data.",
+        "Claude's own answer, asked during the pilot, confirming that it does not store or remember any student data."
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "explanation": "A privacy officer needs the data facts: which plan and workspace held the data, the training position under its terms (commercial products are not used for training by default), who could access shared work, and how long the data is kept. On Team and Enterprise plans the organization controls this data. Satisfaction scores and hours saved belong in the sponsor's briefing, not the privacy review. A best-case demo is not evidence for anyone. Claude's own assurance about storage is trusting the model's self-report; retention and access are settings and terms, not things the model can vouch for.",
+      "references": [
+        "https://privacy.claude.com/en/articles/7996868-is-my-data-used-for-model-training",
+        "https://support.claude.com/en/articles/9265372-who-owns-and-manages-the-data-of-my-team"
+      ]
+    },
+    {
+      "id": "ccao-f-wf-19",
+      "domain": "workflow-integration-solution-design",
+      "objective": "Communicate Claude's value and limitations to stakeholders",
+      "type": "single",
+      "prompt": "An Enterprise admin is preparing for the company's Claude renewal. The CFO has asked for evidence of what the company gets for its spend, team by team. Smart reports are already turned on. What should the admin bring to the meeting?",
+      "options": [
+        "The organization's total messages sent per month over the past year, plotted as a single trend line for the CFO.",
+        "A list of the ten individual employees with the highest spend, presented as the company's leading Claude users.",
+        "Smart reports scoped to functional teams, showing workstreams, cost per output type and the main pain points.",
+        "A survey asking employees how many hours a week they think Claude saves them, averaged across the organization."
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Anthropic lists bringing evidence to renewals as a smart-reports use case: a per-team view of adoption, cost and output instead of a blended usage number, and recommends scoping reports to functional teams so findings are specific enough to act on. A single message-count trend is exactly the blended number the page contrasts with. A top-spender list turns the discussion toward individuals, which Anthropic says smart reports should not be used to evaluate. A self-estimate survey is weak evidence on its own and measures belief rather than work done; it can supplement, but not replace, the team-level data.",
+      "references": [
+        "https://support.claude.com/en/articles/16893491-get-started-with-smart-reports"
+      ]
+    }
+  ]
+}

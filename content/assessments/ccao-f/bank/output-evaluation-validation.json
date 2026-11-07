@@ -1,0 +1,544 @@
+{
+  "id": "output-evaluation-validation",
+  "title": "Output Evaluation and Validation",
+  "questions": [
+    {
+      "id": "ccao-f-ev-01",
+      "domain": "output-evaluation-validation",
+      "objective": "Evaluate Claude-generated outputs for accuracy and completeness",
+      "type": "single",
+      "prompt": "An operations lead asks Claude to turn eight site incident logs into a weekly safety brief for the regional director. She spot-checks every sentence against the logs and all of them are accurate. While reading, she notices the brief names only seven sites. What should she do before sending it?",
+      "options": [
+        "Ask Claude to confirm that it used every one of the eight logs, and send the brief once it says it did",
+        "Send the brief as written, because every statement in it was checked against the logs and found accurate",
+        "Ask Claude to expand each site section with more detail so the brief reads as a complete weekly picture",
+        "Find out why the eighth site is missing, supply its log or mark it as no data, then regenerate the brief"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Accuracy and completeness fail independently: every sentence can be true while the brief still misses a site the job required. The fix is to close the gap with the real input (or state plainly that no data arrived). Asking Claude to confirm it used all eight logs is a self-report, and Claude can be wrong without signalling it. Sending as is treats sentence-level accuracy as the whole check. Asking for more detail adds length to seven sites and invites plausible filler, without touching the missing eighth.",
+      "references": [
+        "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-02",
+      "domain": "output-evaluation-validation",
+      "objective": "Evaluate Claude-generated outputs for accuracy and completeness",
+      "type": "single",
+      "prompt": "A finance coordinator pastes twelve monthly expense exports into a chat and asks Claude for total annual travel spend to put in a CFO report. Claude gives a total and a month-by-month table, but the rows in the table add up to a slightly different figure than the stated total. What is the best next step?",
+      "options": [
+        "Ask Claude which of the two figures is correct and use the one it says it is more confident about",
+        "Recompute the total from the source exports with code execution or a spreadsheet before using either figure",
+        "Use the sum of the table rows, since a detailed breakdown is more likely to be right than one summary number",
+        "Regenerate the answer with the effort level raised, and use the new total if the table and total then agree"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "An internal inconsistency means at least one figure is wrong, and Anthropic says mission-critical calculations should be verified with specialized software or manual methods, so the fix is a recomputation from the source. Asking Claude which figure is right is a confidence self-report, not a check. Assuming the table is right is a guess: either figure, or both, may have dropped a row. A higher-effort rerun that agrees with itself is still unverified, because two consistent figures can share the same misread input.",
+      "references": [
+        "https://support.claude.com/en/articles/10366421-how-does-claude-handle-mathematical-equations-and-calculations",
+        "https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-03",
+      "domain": "output-evaluation-validation",
+      "objective": "Evaluate Claude-generated outputs for accuracy and completeness",
+      "type": "multiple",
+      "prompt": "An HR adviser asks Claude to summarize a 30-page leave policy into a two-page guide for line managers. The draft reads well and its statements match the policy where she has checked. She now wants to judge whether the guide is complete enough to publish. Which TWO checks best do that?",
+      "options": [
+        "Compare the guide's sections against the policy's list of leave types to see whether any type is missing",
+        "Ask Claude to score the guide's completeness from one to ten and explain any gaps that it can see",
+        "Check that each eligibility rule and exception in the policy is either in the guide or deliberately left out",
+        "Read the guide aloud to check that it flows well and uses the same terms for each kind of leave throughout",
+        "Confirm that the guide stays within the two pages the HR director asked for and uses the house template"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "Completeness is judged against the requirements, not against what is on the page, so the two strong checks map the guide back to the policy: every leave type, and every eligibility rule and exception, present or knowingly excluded. A completeness score from Claude is a self-report and cannot reveal gaps it does not know about. Reading for flow and consistent terms is a style check. Checking the page limit and template confirms format requirements, which matter, but neither says whether anything substantive is missing.",
+      "references": [
+        "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-04",
+      "domain": "output-evaluation-validation",
+      "objective": "Evaluate Claude-generated outputs for accuracy and completeness",
+      "type": "single",
+      "prompt": "A grant writer at a charity uploads a funder's guidelines, which list six required sections and the evidence expected in each, and asks Claude for a first draft. The draft is persuasive and well structured. She has one afternoon before the internal deadline. Which check best tells her whether the draft is ready for internal sign-off?",
+      "options": [
+        "Ask a colleague to read the draft for tone and say whether it would persuade a reviewer at the funder",
+        "Compare each section against the funder's listed requirements and evidence, noting anything missing",
+        "Ask Claude to score the draft against what usually makes funding applications succeed in this sector",
+        "Ask Claude to rewrite the weakest-sounding section so the whole draft reads at the same strong level"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "The funder has defined what complete means, so the decisive check maps each section against the six required sections and the evidence asked for in each. A colleague reading for tone tests persuasiveness, which is worth having, but a persuasive draft can still be missing a required item and be rejected on eligibility. A score based on what usually succeeds is a self-assessment against general knowledge, not the funder's criteria. Rewriting the weakest-sounding section is a cosmetic fix that leaves gaps in substance untouched.",
+      "references": [
+        "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-05",
+      "domain": "output-evaluation-validation",
+      "objective": "Identify hallucinations, inconsistencies, and biases in responses",
+      "type": "single",
+      "prompt": "An event coordinator uses Claude in a project to update a conference schedule. No email connector or other integration is set up. At the end, Claude replies, \"I've sent the updated schedule to all 14 speakers.\" What is the most accurate reading of this reply, and what should she do?",
+      "options": [
+        "Claude probably used web search to look up the speakers' addresses, so she should ask it for the delivery receipts",
+        "The email was likely queued for later delivery, so she should wait a few hours and then ask Claude if it went out",
+        "Claude cannot send email without an integration, so the claim is false and she should send the schedule herself",
+        "Claude sent it through the project's sharing settings, so she should check the project's member list for speakers"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Anthropic says Claude can hallucinate its capabilities and falsely claim to have sent emails, because it has no access to email or other tools that are not explicitly integrated. The claim must be checked in the real system, and here no integration exists, so nothing was sent. Web search retrieves public pages and cannot send mail. There is no hidden queue to wait for, and asking Claude later just invites another self-report. Project sharing controls who can open the project; it does not email anyone.",
+      "references": [
+        "https://support.claude.com/en/articles/8241188-claude-is-producing-links-that-don-t-work-and-falsely-claiming-that-it-has-sent-emails-or-produced-external-documents-what-s-going-on"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-06",
+      "domain": "output-evaluation-validation",
+      "objective": "Identify hallucinations, inconsistencies, and biases in responses",
+      "type": "single",
+      "prompt": "A compliance officer uploads the same supplier contract to two fresh chats and asks each one for the termination notice period. One answer says 30 days and the other says 60 days. Both answers are worded confidently and give a short explanation. What should she conclude and do next?",
+      "options": [
+        "Use the answer from the chat that used the more capable model, since that one is more likely to be right",
+        "Ask Claude in a third chat to look at both answers and decide which of the two is correct, and why",
+        "Treat the disagreement as a sign that one answer is unsupported, and read the termination clause herself",
+        "Record the longer period as the notice term, since overstating the notice carries the smaller legal risk"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Anthropic suggests comparing multiple runs because inconsistencies across outputs can indicate hallucination. The disagreement points to the exact claim that needs checking, and the authority is the contract clause itself. Preferring the more capable model assumes capability equals correctness on this document. A third chat acting as judge is another unverified answer and cannot settle what the contract says. Choosing the longer period is a guess presented as caution, and it could misstate the company's obligations.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+        "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-07",
+      "domain": "output-evaluation-validation",
+      "objective": "Identify hallucinations, inconsistencies, and biases in responses",
+      "type": "multiple",
+      "prompt": "A researcher at an education nonprofit uses research mode to summarize evidence on a reading program's effectiveness for the board. The report cites eleven sources, every link works, and eight of the sources are the program vendor's own website and press releases. Which TWO responses are best?",
+      "options": [
+        "Treat it as a source-selection problem and check whether independent evaluations exist that the report left out",
+        "Ask Claude to rewrite the report in a more neutral, academic tone so that it reads as balanced to the board",
+        "Re-run the research with explicit criteria favoring independent, peer-reviewed or government evaluations",
+        "Accept the report as it is, since every claim has a citation and every cited link opens to a working page",
+        "Add a footnote saying that some sources may be affiliated with the vendor, and then send the report as is"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "Anthropic's own engineers found early research agents preferring easy-to-find, low-authority sources over authoritative ones, so reviewers need to look at which sources were used, not just whether citations exist. Checking for missing independent evaluations and re-running with source criteria both fix the cause. A neutral tone does not change one-sided evidence. Working links prove the pages exist, not that the evidence is balanced or supports the claims. A footnote discloses the problem but still hands the board a conclusion built mostly on vendor material.",
+      "references": [
+        "https://www.anthropic.com/research/multi-agent-research-system",
+        "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on",
+        "https://support.claude.com/en/articles/11088861-use-research-on-claude"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-08",
+      "domain": "output-evaluation-validation",
+      "objective": "Identify hallucinations, inconsistencies, and biases in responses",
+      "type": "single",
+      "prompt": "A procurement lead asks Claude, \"Explain why Vendor A is the best choice for our new CRM,\" and attaches proposals from Vendors A, B and C. The answer is strongly in favor of Vendor A. She plans to present it to the steering committee as a comparison. What change most improves the reliability of the analysis?",
+      "options": [
+        "Ask Claude to add a short weaknesses section for Vendors B and C so the comparison looks more complete",
+        "Ask Claude to review its own answer for any signs of bias and to flag the parts it thinks are unfair",
+        "Re-ask neutrally, applying the committee's selection criteria to all three proposals equally",
+        "Switch to a more capable model, which is less likely to favor any one vendor when comparing proposals"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "The bias came from the framing: a prompt asking why A is best gets an argument for A. The fix is a neutral question with the same criteria applied to every proposal. Adding weaknesses for B and C keeps the slanted frame and only makes the result look balanced. Asking Claude to audit its own bias is a self-report from the same framing. A more capable model answers the question it was asked more skilfully, so it would still argue for Vendor A.",
+      "references": [
+        "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-09",
+      "domain": "output-evaluation-validation",
+      "objective": "Identify hallucinations, inconsistencies, and biases in responses",
+      "type": "single",
+      "prompt": "An HR generalist, with web search turned off, asks Claude for the current statutory minimum wage in her state for a pay policy taking effect next month. Claude answers immediately with a specific figure and no caveats. How should she treat the figure before it goes into the policy?",
+      "options": [
+        "Treat it as reliable, since Claude gave it without any hedging and pay rates come from official sources",
+        "Ask Claude what date its information comes from, and use the figure if that date falls within this year",
+        "Turn on web search, ask the question again, and use whichever figure Claude returns from the search",
+        "Treat it as possibly out of date and confirm it on the official government source before using it"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Each model has a training cutoff, and Anthropic says models may not know about later changes, so a pay rate could have changed since then. A policy figure should be confirmed at the authoritative source. Answering without hedging is not evidence. Asking for the date of its information is another self-report. Web search adds current, cited information and is a reasonable step, but using whatever figure comes back skips reading the citation, and Anthropic advises authoritative sources for critical decisions.",
+      "references": [
+        "https://support.claude.com/en/articles/8114494-how-up-to-date-is-claude-s-training-data",
+        "https://support.claude.com/en/articles/10684626-enable-and-use-web-search",
+        "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-10",
+      "domain": "output-evaluation-validation",
+      "objective": "Apply fact-checking and validation techniques",
+      "type": "multiple",
+      "prompt": "A communications officer is drafting a press release with Claude from three approved product briefs. Legal has said the release may contain only facts that appear in those briefs. Which TWO techniques from Anthropic's guidance on reducing hallucinations best support that requirement?",
+      "options": [
+        "Instruct Claude to use only the three briefs and not its general knowledge when it writes the release",
+        "Ask Claude to write in the voice of an experienced PR director so that the claims stay measured",
+        "After drafting, have Claude find a supporting quote for each claim and remove any claim without one",
+        "Ask Claude to add a confidence percentage after each paragraph so legal can see which parts are weak",
+        "Ask Claude to make the release longer so each claim has room for supporting detail from the briefs"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "Anthropic's guidance lists restricting Claude to the provided documents and verifying each claim with a supporting quote, removing claims it cannot support. Both tie the release to the briefs, and the quotes give legal something to check. A PR-director persona changes the voice, not the grounding. Confidence percentages are self-reports and do not show where a claim came from. A longer release creates more claims to check and more room for unsupported detail.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-11",
+      "domain": "output-evaluation-validation",
+      "objective": "Apply fact-checking and validation techniques",
+      "type": "single",
+      "prompt": "An internal auditor asks Claude to summarize a 90-page audit report, and the summary lists six key findings. She will share them with the audit committee tomorrow and wants to validate them first. Which follow-up request to Claude is the most useful validation step?",
+      "options": [
+        "\"For each finding, quote the passage in the report it comes from and give the page number.\"",
+        "\"Are you confident that these six findings are accurate? Flag any that you are less sure of.\"",
+        "\"Rewrite the six findings more precisely so they leave no room for any misinterpretation.\"",
+        "\"Summarize the report again from scratch and confirm that the same six findings come out.\""
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Quoting the source passage with a page number is an evidence-anchored check: it produces something she can open and verify, which is the claim-and-quote pattern in Anthropic's hallucination guidance. Asking about confidence produces another unverified statement. Rewriting for precision is cosmetic and can make a wrong finding sound more authoritative. A second summary can reveal inconsistency, but asking Claude to confirm a match is a self-report, and the same misreading can repeat in both runs without showing her where to look.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+        "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-12",
+      "domain": "output-evaluation-validation",
+      "objective": "Apply fact-checking and validation techniques",
+      "type": "multiple",
+      "prompt": "A café owner uses Claude to work out break-even volume and margins for a bank loan application. Claude gave the figures in chat text, with a paragraph of explanation. The bank will scrutinize the numbers. Which TWO steps best validate the figures before he submits them?",
+      "options": [
+        "Ask Claude to explain each assumption in plainer language so the bank finds the model convincing",
+        "Have Claude rebuild the model as a spreadsheet with working formulas he can inspect and change",
+        "Ask Claude to double-check its arithmetic and to confirm that the final figures are all correct",
+        "Check the key inputs and results against his own sales records and supplier invoices by hand",
+        "Switch to Max effort, ask the same question again, and use the figures if both answers match"
+      ],
+      "correct": [
+        1,
+        3
+      ],
+      "explanation": "Anthropic says complex or mission-critical calculations should be verified with specialized software or manual methods. A spreadsheet with working formulas makes every calculation inspectable, and checking inputs and results against his own records is a manual check against real data. Plainer explanations of assumptions improve presentation, not correctness. Asking Claude to double-check and confirm is a self-report. Two matching answers at higher effort can share the same wrong assumption, so agreement is not verification.",
+      "references": [
+        "https://support.claude.com/en/articles/10366421-how-does-claude-handle-mathematical-equations-and-calculations",
+        "https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-13",
+      "domain": "output-evaluation-validation",
+      "objective": "Apply fact-checking and validation techniques",
+      "type": "single",
+      "prompt": "A sales operations manager builds a Claude Dashboard from the company's data warehouse. One chart shows 1,240 active customers, but the CRM's own report shows about 1,100. The chart says its data was refreshed this morning. What should she do first?",
+      "options": [
+        "Ask Claude to refresh the dashboard again, since the warehouse data is probably out of date",
+        "Rebuild the dashboard from scratch in a new chat after selecting a more capable model",
+        "Add a note to the chart saying the figures are estimates and may differ from the CRM",
+        "Open the chart's query to see what it is counting, then tell Claude what to change"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Each dashboard chart shows its query, and Anthropic's guidance is to check the query to see how Claude got the number and tell Claude what to change if it is not counting what you meant. A gap of this size usually means a different definition of active customer. The chart was refreshed this morning, so another refresh will not explain the gap. Rebuilding with another model may repeat the same definition. A caveat note publishes a number she already has reason to doubt.",
+      "references": [
+        "https://support.claude.com/en/articles/17454700-get-started-with-claude-dashboards"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-14",
+      "domain": "output-evaluation-validation",
+      "objective": "Determine when human review or additional verification is required",
+      "type": "single",
+      "prompt": "A talent acquisition team uses Claude to score 200 applications for a dispatcher role against a rubric. To save time, they want to send rejections automatically to the lowest-scoring half. Which approach meets the requirements in Anthropic's Usage Policy?",
+      "options": [
+        "Send the rejections automatically, provided HR leadership approves the scoring rubric before Claude applies it",
+        "Have a second Claude chat re-score the lower half independently, and reject only where both scores agree",
+        "Add a line to each rejection email saying AI was used and inviting candidates to appeal the decision",
+        "Have a qualified recruiter review each ranking before any rejection, and tell candidates AI was involved"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Screening and rejecting candidates is a High-risk AI Recommendation under the Usage Policy's employment area. A qualified person must meaningfully review it, with authority to change it, before it is used, and the people affected must be told AI was involved. Approving the rubric in advance is not review of each recommendation. A second model is not a qualified person. Disclosure with an appeal route covers the disclosure half only; the rejection still goes out unreviewed.",
+      "references": [
+        "https://www.anthropic.com/legal/aup"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-15",
+      "domain": "output-evaluation-validation",
+      "objective": "Determine when human review or additional verification is required",
+      "type": "multiple",
+      "prompt": "A city council's benefits team wants to use Claude for several tasks. Under Anthropic's Usage Policy, which TWO of them fall outside the requirement for qualified human review before delivery?",
+      "options": [
+        "Summarizing a newly published state benefits regulation into an internal briefing for the caseworkers",
+        "Assessing whether individual applicants meet the eligibility criteria for an emergency assistance fund",
+        "Explaining in plain language to a resident a decision that a caseworker has already made on their claim",
+        "Recommending which applicants on the housing support waiting list should move up in priority this month",
+        "Drafting a decision letter that approves a resident's hardship grant at a reduced, conditional amount"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "The Usage Policy excludes internal drafting, research and summarization that is not the final recommendation, and explaining a decision a qualified person has already made. Assessing individual eligibility for assistance is a listed high-risk use under public benefits, and ranking applicants for housing support falls under the housing and public benefits areas. A reduced, conditional approval is not wholly favorable, so the favorable-decision exception does not apply and a qualified reviewer is still required.",
+      "references": [
+        "https://www.anthropic.com/legal/aup"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-16",
+      "domain": "output-evaluation-validation",
+      "objective": "Determine when human review or additional verification is required",
+      "type": "single",
+      "prompt": "A project manager uses Claude to draft three documents this week: notes from her own team's stand-up, a client update with revised delivery dates, and a change order with new pricing that binds the company. Which review plan is most proportionate?",
+      "options": [
+        "Skim the stand-up notes, check the client dates against the plan, have the commercial lead approve pricing",
+        "Have the commercial lead approve all three documents, because a Claude draft of any kind could contain an error",
+        "Give all three documents the same careful line-by-line check, since every one of them was drafted by Claude",
+        "Check only the change order before sending, since the stand-up notes and client update are just informational"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Review should scale with consequence, reach and reversibility. Internal stand-up notes are low risk. A client update travels outside the company and wrong dates are hard to take back, so dates are checked against the plan. A binding pricing document needs a qualified person with authority. Routing everything to the commercial lead wastes scarce review and encourages rubber-stamping. A uniform check ignores risk. Skipping the client update misjudges an external commitment as merely informational.",
+      "references": [
+        "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on",
+        "https://www.anthropic.com/legal/aup"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-17",
+      "domain": "output-evaluation-validation",
+      "objective": "Determine when human review or additional verification is required",
+      "type": "single",
+      "prompt": "A university lecturer suspects a student's essay was written with Claude. A colleague says the university can check it for Claude's embedded watermark. Under the university's process, the lecturer must decide whether to open an academic misconduct case. What is the soundest approach?",
+      "options": [
+        "Open the case if a Claude watermark is detected, since a detected mark proves that Claude wrote the essay",
+        "Close the matter if no watermark is detected, since text from current Claude models carries a mark",
+        "Ask Claude directly whether it wrote the essay, and attach its answer to the case as supporting evidence",
+        "Treat any result as one signal only, and leave the misconduct finding to a qualified person's judgment"
+      ],
+      "correct": [
+        3
+      ],
+      "explanation": "Anthropic says a detected mark is not fully conclusive: Claude may only have proofread or translated the student's own work. No mark does not mean no AI either, since editing, short passages and older models defeat it. A misconduct determination is also listed as a high-risk education use under the Usage Policy, so a qualified person must make it. Treating either detection result as proof misreads the documented limits. Claude's answer about authorship is a self-report with no evidential value.",
+      "references": [
+        "https://support.claude.com/en/articles/16266773-how-claude-marks-ai-generated-content",
+        "https://www.anthropic.com/legal/aup"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-18",
+      "domain": "output-evaluation-validation",
+      "objective": "Edit, adapt, refine, and compare outputs for the intended audience",
+      "type": "single",
+      "prompt": "A communications manager at a water utility uses Claude to turn a technical incident report into a customer notice. The report says the boil-water advisory remains \"until further notice\". The customer version Claude wrote says service \"will be restored this evening\". What process change best prevents this?",
+      "options": [
+        "Ask Claude to use a more cautious, reassuring tone in every customer version it writes from now on",
+        "Name the facts that must stay identical in the request, and check them against the report after each rewrite",
+        "Write the customer versions by hand from now on, and use Claude only for the internal technical versions",
+        "Ask Claude to confirm at the end of each version that it has not changed any facts from the original report"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "When adapting for an audience, the facts should stay fixed while the treatment changes. Naming the facts that must not change, then checking them against the source after each rewrite, catches drift like this one. A cautious tone does not stop a wrong time from being stated. Writing by hand overreacts and gives up the value of adapting the draft. Claude confirming it changed nothing is a self-report, and the error was made in exactly the pass that would be confirming it.",
+      "references": [
+        "https://support.claude.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-19",
+      "domain": "output-evaluation-validation",
+      "objective": "Edit, adapt, refine, and compare outputs for the intended audience",
+      "type": "multiple",
+      "prompt": "A finance business partner sends the CFO a three-page Claude-drafted summary of a capital request. The CFO replies, \"I couldn't find the number I needed or what you want me to approve.\" The content is accurate and complete. Which TWO edits best address the feedback?",
+      "options": [
+        "Move the recommendation and the requested budget figure into the opening paragraph",
+        "Ask Claude to rewrite the whole summary in a more formal, executive register",
+        "Put the method and background after the decision and the key figures, not before",
+        "Add further supporting analysis so that each of the figures is fully justified",
+        "Ask Claude to rewrite the summary in the persona of a CFO's chief of staff"
+      ],
+      "correct": [
+        0,
+        2
+      ],
+      "explanation": "The content is accurate and complete, so the failure is structure: the reader could not find the decision or the number. Leading with the recommendation and figure, and moving method and background after them, fixes exactly that. A more formal register changes style, not where things sit on the page. More analysis makes the document longer and buries the ask further. A persona is a cosmetic instruction that does not by itself put the decision first.",
+      "references": [
+        "https://support.claude.com/en/articles/16923645-get-started-with-claude-docs",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-20",
+      "domain": "output-evaluation-validation",
+      "objective": "Edit, adapt, refine, and compare outputs for the intended audience",
+      "type": "single",
+      "prompt": "A training manager has two Claude drafts of an onboarding guide for warehouse staff. Draft B reads more smoothly, but she realizes it came from a chat where she forgot to attach the current safety procedure. Draft A was written with the procedure attached. How should she decide which draft to use?",
+      "options": [
+        "Choose Draft B, because readability is what matters most to new hires reading an onboarding guide",
+        "Ask Claude which of the two drafts is better and why, then go with the one that it recommends",
+        "Compare both drafts against the safety procedure and her written requirements before choosing",
+        "Merge the two drafts into one longer guide so that nothing useful from either one gets lost"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "Comparisons are only fair against written criteria and the authoritative source. Draft B was written without the procedure, so its smoothness may hide missing or invented safety steps. Checking both against the procedure and her requirements reveals which can be used and what needs fixing. Choosing by readability treats polish as a criterion. Asking Claude to pick is a self-report. Merging doubles the length and carries any unsupported content from Draft B into the final guide.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/reduce-hallucinations",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-21",
+      "domain": "output-evaluation-validation",
+      "objective": "Edit, adapt, refine, and compare outputs for the intended audience",
+      "type": "single",
+      "prompt": "A policy writer has a Claude Doc with eight sections. A rule change means only the Eligibility section needs updating. Twice, when she described the change in the chat, Claude also reworded other sections she had already had approved. What is the best way to make the change?",
+      "options": [
+        "Highlight the Eligibility text, choose \"Edit with Claude\", and describe the change right there",
+        "Start a new chat, paste in the whole document, and ask Claude to change the Eligibility part only",
+        "Ask Claude to regenerate the full document with the new rule built in consistently throughout",
+        "Add a line to her profile instructions telling Claude never to edit sections it was not asked about"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "Anthropic's artifacts guidance describes highlighting text in a doc, choosing Edit with Claude and typing the request, so Claude makes the edit where you marked it without you having to describe the section. That is the targeted refinement this case needs. A new chat with the pasted document has the same problem of describing the location and creates a separate copy outside the doc. Regenerating the whole document guarantees changes to approved sections. A profile instruction applies to every conversation and is a blunt tool for a single edit.",
+      "references": [
+        "https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them",
+        "https://support.claude.com/en/articles/16923645-get-started-with-claude-docs"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-22",
+      "domain": "output-evaluation-validation",
+      "objective": "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)",
+      "type": "single",
+      "prompt": "A support team lead uploads a CSV of ticket volumes and asks Claude what the data shows. Claude responds with an interactive custom visual of monthly trends. She wants to use the same chart in every monthly review, update it, and share it with her manager. What should she do?",
+      "options": [
+        "Leave it in the chat, because custom visuals are saved to the Artifacts tab automatically",
+        "Save the visual as an artifact so that it persists and can be shared and updated over time",
+        "Copy the visual as an image each month and paste the snapshot into her monthly review slides",
+        "Ask Claude to store the visual in memory so it reappears whenever she starts a new chat later"
+      ],
+      "correct": [
+        1
+      ],
+      "explanation": "Anthropic describes custom visuals as ephemeral by default, more like a whiteboard sketch, and lists saving as an artifact as the way to keep one you can publish and iterate on. Artifacts are persistent and shareable from the start. Visuals are not saved to the Artifacts tab automatically. Copying as an image is a real option, but it gives a static snapshot that cannot be updated or explored. Memory carries context and preferences, not a saved visual.",
+      "references": [
+        "https://support.claude.com/en/articles/13979539-custom-visuals-in-chat-and-cowork",
+        "https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-23",
+      "domain": "output-evaluation-validation",
+      "objective": "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)",
+      "type": "multiple",
+      "prompt": "A school business manager needs several outputs from Claude this week and wants each in a suitable format. Which TWO pairings of need and output format are most appropriate?",
+      "options": [
+        "A budget that governors will adjust and recalculate, as an Excel file with working formulas",
+        "A policy that she and two colleagues will edit and comment on, as a custom visual in the chat",
+        "A quick answer to how many teaching days remain this term, as a Slides artifact she can present",
+        "A termly return imported into a fixed template, as a table with exact columns and an example row",
+        "A process diagram she will look at once to understand a procedure, as a Dashboards template"
+      ],
+      "correct": [
+        0,
+        3
+      ],
+      "explanation": "File creation produces Excel files with working formulas, which fits a budget others will change and recalculate. A return going into a fixed template needs exact columns and an example, which Anthropic's consistency guidance recommends. A custom visual is ephemeral and not built for collaborative editing; a Claude Doc fits that need. A one-line answer does not need a slide deck. Dashboards are for questions over connected company data, not for a diagram viewed once, which an inline visual handles.",
+      "references": [
+        "https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude",
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency",
+        "https://support.claude.com/en/articles/13979539-custom-visuals-in-chat-and-cowork",
+        "https://support.claude.com/en/articles/17454700-get-started-with-claude-dashboards"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-24",
+      "domain": "output-evaluation-validation",
+      "objective": "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)",
+      "type": "single",
+      "prompt": "A consultant on her firm's Team plan builds an artifact as a deliverable for an external client. When she opens Share, the \"Anyone with the link\" option is grayed out. She needs the client to see the deliverable by Friday. What is the best next step?",
+      "options": [
+        "Copy the artifact into her personal Pro account and share a public link to it from there",
+        "Set access to \"Anyone at\" her organization, and then send the resulting link to the client",
+        "Ask an Owner to allow external sharing for the artifact, or export it and send it the usual way",
+        "Change the client's access level to Commenter, which lets people outside the firm view it"
+      ],
+      "correct": [
+        2
+      ],
+      "explanation": "On Team and Enterprise plans artifacts stay inside the organization by default, and \"Anyone with the link\" is available only when an Owner turns on external sharing or allows that artifact. If it is grayed out, Anthropic says to ask an Owner or Primary Owner; exporting through the firm's normal channel also works. Moving work-product into a personal account sidesteps an organizational control. An organization-only link will not open for the client. Access levels set what people can do, not whether outsiders can open it.",
+      "references": [
+        "https://support.claude.com/en/articles/9547008-share-artifacts",
+        "https://support.claude.com/en/articles/17153992-what-are-artifacts-and-how-do-i-use-them"
+      ]
+    },
+    {
+      "id": "ccao-f-ev-25",
+      "domain": "output-evaluation-validation",
+      "objective": "Organize and curate information and select appropriate output formats (artifacts, inline, structured data)",
+      "type": "single",
+      "prompt": "An operations coordinator asks Claude each week to compile supplier quality issues from about 40 emails into a list. The quality team imports it into their tracker. Each week the column names and order differ slightly, and some fields come back blank, so the import fails. What is the best fix?",
+      "options": [
+        "Specify the exact columns and order, what to enter when a value is missing, and one example row",
+        "Ask Claude to make the list clearer and more professional each week before the team imports it",
+        "Switch to a more capable model so that the structure of the list comes out more consistently",
+        "Produce the list as a Claude Doc so that the quality team can tidy up the columns before import"
+      ],
+      "correct": [
+        0
+      ],
+      "explanation": "A downstream import needs a fixed shape, and Anthropic's consistency guidance says to define the output format precisely and give examples, which work better than abstract instructions. Naming columns, order and a missing-value rule with an example row removes the variation. Clearer, more professional prose is a cosmetic fix that does not create stable columns. A more capable model still has to guess the format nobody has specified. A Doc moves the clean-up work onto the quality team instead of fixing the cause.",
+      "references": [
+        "https://platform.claude.com/docs/en/test-and-evaluate/strengthen-guardrails/increase-consistency"
+      ]
+    }
+  ]
+}
