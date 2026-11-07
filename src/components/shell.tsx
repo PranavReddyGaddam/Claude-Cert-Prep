@@ -14,11 +14,26 @@ import { Button } from "@/components/ui/button"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { SettingsPanel } from "@/components/reader-settings"
 import { SmoothScroll } from "@/components/smooth-scroll"
+import { ResetProgress } from "@/components/stats"
 
 export type NavTrack = {
   id: string
   books: { id: string; title: string; docs: { slug: string; title: string; sections: { id: string; text: string }[] }[] }[]
   banks: { id: string; title: string; subtitle: string }[]
+}
+
+function ProgressButton({ className }: { className: string }) {
+  return (
+    <Popover>
+      <PopoverTrigger render={<button className={className}>Progress</button>} />
+      <PopoverContent align="end" className="w-72 space-y-3 text-sm">
+        <p className="leading-relaxed text-muted-foreground">
+          Chapters read, quiz scores and missed questions are saved in this browser only, for every certification.
+        </p>
+        <ResetProgress />
+      </PopoverContent>
+    </Popover>
+  )
 }
 
 function SettingsButton() {
@@ -333,6 +348,7 @@ export function Shell({ tracks, children }: { tracks: NavTrack[]; children: Reac
                   Practice
                 </Link>
               )}
+              {meta?.available && <ProgressButton className={link(false)} />}
               <SettingsButton />
             </nav>
           </div>

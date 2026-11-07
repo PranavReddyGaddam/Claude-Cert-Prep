@@ -26,7 +26,7 @@ Two properties of this exam shape the whole book, and both are worth knowing bef
 
 **Nearly every wrong answer is a mechanism that works.** Options are not built from nonsense. They are built from real features used one step out of place: a Skill where a server was needed, a context file where a hook was needed, a retry where the failure was permanent. So knowing that a mechanism exists is worth very little here, and knowing what it is for is worth almost everything.
 
-**A third of it is not about Claude.** Domain 2 alone is **33.1%** and it covers REST semantics, versioning, review discipline and application boundaries. Domain 4, which covers evaluation, testing and debugging, is **2.6%**. That is a thirteen-fold spread, and a reader who budgets study time by how interesting a topic is will spend their evenings in the wrong place. The coverage map at the back prints every weight so you can spend them deliberately.
+**A third of it is not about Claude.** Domain 2 alone is **33.1%** and it covers REST semantics, versioning, review discipline and application boundaries. Domain 4, which covers evaluation, testing and debugging, is **2.6%**. That is a thirteen-fold spread, and a reader who budgets study time by how interesting a topic is will spend their evenings in the wrong place. The [coverage map](/ccdv-f/read/guide/95-coverage-map) at the back prints every weight so you can spend them deliberately.
 
 ## How a Chapter Is Built
 

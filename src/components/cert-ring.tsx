@@ -13,6 +13,9 @@ const R_OUT = 184
 const R_MID = (R_IN + R_OUT) / 2
 const PAD = 1.6 // degrees of gap on each side of a sector
 const LIFT = 22 // half the label's height plus its gap
+const SPIN_TURNS = 2 // full turns the mark makes during the intro
+const SPIN_UP = 0.5 // seconds to reach full speed
+const SPIN_COAST = 2.6 // seconds to spin down again while the keywords fly out
 
 // The fill plays once per page load; coming back to home within the app skips it.
 let introPlayed = false
@@ -43,6 +46,8 @@ export function CertRing() {
   const [open, setOpen] = useState(false)
   const [active, setActive] = useState<string | null>(null)
   const [ready, setReady] = useState(() => introPlayed)
+  // The keywords burst out as soon as the intro starts; clicks wait for `ready`.
+  const [launched, setLaunched] = useState(() => introPlayed)
 
   useLayoutEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -68,12 +73,19 @@ export function CertRing() {
 
   // Intro: the mark fills with orange from the bottom up, and nothing is clickable until it's full.
   useLayoutEffect(() => {
-    if (introPlayed) return
+    // With cacheComponents, Next keeps this page in a hidden <Activity> on navigation and re-runs effects when it is
+    // shown again (e.g. a swipe back), so make sure no clip from an earlier intro is left on the mark.
+    if (introPlayed) {
+      gsap.set(root.current!.querySelector("[data-fill]"), { clearProps: "clipPath" })
+      gsap.set(root.current!.querySelector("[data-title]"), { clearProps: "opacity,visibility" })
+      gsap.set(root.current!.querySelectorAll("[data-spin]"), { clearProps: "transform" })
+      return
+    }
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches
     const ctx = gsap.context(() => {
       gsap.set("[data-title]", { autoAlpha: 0 })
       gsap
-        .timeline({ delay: 0.25, onComplete: () => ((introPlayed = true), setReady(true)) })
+        .timeline({ delay: 0.25, onStart: () => setLaunched(true), onComplete: () => ((introPlayed = true), setReady(true)) })
         .fromTo(
           "[data-fill]",
           { clipPath: "inset(100% 0% 0% 0%)" },
@@ -81,8 +93,18 @@ export function CertRing() {
         )
         .fromTo(logo.current, { scale: 0.94 }, { scale: 1, duration: reduce ? 0.01 : 1.5, ease: "power2.inOut" }, 0)
         .to("[data-title]", { autoAlpha: 1, duration: reduce ? 0.01 : 0.5, ease: "power2.out" }, "-=0.15")
+      if (reduce) return
+      // The mark spins up fast as the keywords launch, then coasts to a stop while they fly out and it fills. The two
+      // legs meet at matching speed (power2.in ends at 2Δ/t, power3.out starts at 3Δ/t) and add up to whole turns.
+      const total = SPIN_TURNS * 360
+      const upTurn = total / (1 + (2 * SPIN_COAST) / (3 * SPIN_UP))
+      gsap
+        .timeline({ delay: 0.25 })
+        .to("[data-spin]", { rotation: upTurn, duration: SPIN_UP, ease: "power2.in" })
+        .to("[data-spin]", { rotation: total, duration: SPIN_COAST, ease: "power3.out" })
     }, root)
-    return () => ctx.revert()
+    // Reverting a finished intro would restore the empty clip it started from.
+    return () => (introPlayed ? ctx.kill() : ctx.revert())
   }, [])
 
   useEffect(() => {
@@ -127,7 +149,7 @@ export function CertRing() {
 
   return (
     <>
-      <KeywordField show={ready} dim={open} />
+      <KeywordField show={launched} dim={open} />
       {/* Holds every click until the intro finishes. */}
       {!ready && <div aria-hidden className="fixed inset-0 z-50 cursor-progress" />}
       <div
@@ -224,9 +246,12 @@ export function CertRing() {
           onClick={show}
           className="absolute top-1/2 left-1/2 -mt-[66px] -ml-[66px] grid size-[132px] place-items-center rounded-full text-[#D97757] outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          {/* A faint outline of the mark, with the orange copy clipped over it as it fills. */}
-          <SiClaude className="absolute inset-0 size-full text-foreground/10" />
-          <SiClaude data-fill className="relative size-full" style={ready ? undefined : { clipPath: "inset(100% 0% 0% 0%)" }} />
+          {/* A faint outline of the mark, with the orange copy clipped over it as it fills. The clip stays upright so the
+              fill rises straight up while both marks spin inside it (apart from the button's own turn). */}
+          <SiClaude data-spin className="absolute inset-0 size-full text-foreground/10" />
+          <span data-fill className="relative block size-full" style={ready ? undefined : { clipPath: "inset(100% 0% 0% 0%)" }}>
+            <SiClaude data-spin className="size-full" />
+          </span>
         </button>
 
         {/* Sits under the logo without shifting it off centre; gives way to the ring. */}

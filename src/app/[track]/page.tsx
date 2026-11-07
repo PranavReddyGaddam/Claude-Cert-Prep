@@ -3,7 +3,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 import { getBanks, getBooks, getTrack, trackQuestions } from "@/lib/content"
 import { TRACKS } from "@/lib/tracks"
-import { BestScore, MissedCount, ReadCount, ResetProgress } from "@/components/stats"
+import { BestScore, MissedCount, ReadCount } from "@/components/stats"
 
 export function generateStaticParams() {
   return TRACKS.map((t) => ({ track: t.id }))
@@ -14,18 +14,6 @@ type Params = Promise<{ track: string }>
 export async function generateMetadata({ params }: { params: Params }) {
   const track = getTrack((await params).track)
   return { title: track ? `${track.code} · Claude Cert Study` : "Claude Cert Study" }
-}
-
-// Developer Guide chapters per CCDV-F domain (the guide's own coverage map).
-const GUIDE_CHAPTERS: Record<string, string> = {
-  "applications-integration": "Ch. 3, 15–18, 23",
-  "model-selection-optimization": "Ch. 1, 2, 4, 8",
-  "agents-workflows": "Ch. 12, 13",
-  "prompt-context-engineering": "Ch. 5–7",
-  "tools-mcps": "Ch. 9–11",
-  "security-safety": "Ch. 20–22",
-  "claude-code": "Ch. 14",
-  "eval-testing-debugging": "Ch. 19",
 }
 
 const SOURCES: Record<string, { href: string; name: string; license?: string }[]> = {
@@ -53,7 +41,7 @@ const SOURCES: Record<string, { href: string; name: string; license?: string }[]
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-20">
-      <h2 className="mb-6 text-sm text-muted-foreground">{title}</h2>
+      <h2 className="mb-6 text-2xl text-muted-foreground">{title}</h2>
       {children}
     </section>
   )
@@ -87,7 +75,16 @@ async function TrackHome({ params }: { params: Params }) {
   const books = getBooks(id)
   const banks = getBanks(id)
   const bank = (b: string) => banks.find((x) => x.id === b)
-  const lessonNo = (slug: string) => Number(slug.slice(0, 2))
+  const PRACTICE_TITLES: Record<string, string> = {
+    "exam-simulation": "Exam simulation",
+    diagnostic: "Diagnostic",
+    "mock-01": "Full mock exam",
+  }
+  const tests = Object.keys(PRACTICE_TITLES).flatMap((b) => {
+    const x = bank(b)
+    return x ? [{ id: b, bank: x, title: PRACTICE_TITLES[b], count: x.drawWeighted ?? x.questions.length }] : []
+  })
+  const lessonQuizzes = banks.filter((b) => b.kind === "lesson").length
 
   return (
     <div className="mx-auto max-w-2xl px-6 pt-20 pb-24 sm:px-8 lg:pt-32">
@@ -102,30 +99,20 @@ async function TrackHome({ params }: { params: Params }) {
         <>
           <Section title="Practice">
             <ul>
-              {["exam-simulation", "diagnostic", "mock-01"].map((b) => {
-                const x = bank(b)
-                const title = b === "exam-simulation" ? "Exam simulation" : b === "mock-01" ? "Full mock exam" : "Diagnostic"
-                return (
-                  x && (
-                    <Item
-                      key={b}
-                      href={`/${id}/quiz/${b}`}
-                      title={title}
-                      meta={<BestScore bankId={x.key} fallback={`${x.drawWeighted ?? x.questions.length} questions`} />}
-                    />
-                  )
-                )
-              })}
+              {tests.map((t) => (
+                <Item
+                  key={t.id}
+                  href={`/${id}/quiz/${t.id}`}
+                  title={t.title}
+                  meta={<BestScore bankId={t.bank.key} fallback={`${t.count} questions`} />}
+                />
+              ))}
               <Item
                 href={`/${id}/quiz/missed`}
                 title="Questions you missed"
                 meta={<MissedCount ids={trackQuestions(id).map((q) => q.id)} />}
               />
-              <Item
-                href={`/${id}/quiz`}
-                title="Quizzes by lesson"
-                meta={`${banks.filter((b) => b.kind === "lesson").length} quizzes`}
-              />
+              <Item href={`/${id}/quiz`} title="Quizzes by lesson" meta={`${lessonQuizzes} quizzes`} />
             </ul>
           </Section>
 
@@ -146,26 +133,8 @@ async function TrackHome({ params }: { params: Params }) {
         <p className="mt-20 text-lg">Material for this exam is on its way.</p>
       )}
 
-      <Section title="Where the marks are">
-        <ul>
-          {track.domains.map((d) => {
-            const lessons = track.lessons
-              .filter((l) => l.domains.includes(d.id) && lessonNo(l.slug) < 29)
-              .map((l) => lessonNo(l.slug))
-            const refs = id === "ccdv-f" ? GUIDE_CHAPTERS[d.id] : lessons.length ? `Lessons ${lessons.join(", ")}` : ""
-            return (
-              <li key={d.id} className="flex items-baseline gap-4 py-2">
-                <span className="flex-1">{d.name}</span>
-                <span className="hidden text-right text-sm text-muted-foreground sm:inline">{refs}</span>
-                <span className="w-14 text-right tabular-nums">{d.weight.toFixed(1)}%</span>
-              </li>
-            )
-          })}
-        </ul>
-      </Section>
-
-      <footer className="mt-24 space-y-3 text-sm leading-relaxed text-muted-foreground">
-        {SOURCES[id] && (
+      {SOURCES[id] && (
+        <footer className="mt-24 text-sm leading-relaxed text-muted-foreground">
           <p>
             Material from{" "}
             {SOURCES[id].map((s, i) => (
@@ -179,10 +148,8 @@ async function TrackHome({ params }: { params: Params }) {
             ))}
             .
           </p>
-        )}
-        <p>Progress is saved in your browser only.</p>
-        <ResetProgress />
-      </footer>
+        </footer>
+      )}
     </div>
   )
 }
